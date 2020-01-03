@@ -11,12 +11,16 @@ headerFinder = HeaderFinder()
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-m', '--mode', help = "Mode, available options are bucketFinder, tokenFinder, headerFinder or full for all three",
+parser.add_argument('-m', '--mode', help = "Available options are bucketFinder, tokenFinder, headerFinder or full for all three. Refer to documentation for more info",
 					required = 'True',
 					action = 'store')
 parser.add_argument('-i', '--input', help = "Input file that contains urls to be scanned (With HTTP/HTTPS)",
 					required = 'True',
 					action = 'store')
+parser.add_argument('-t', '--teams', help = "OPTIONAL Url for MSTeams webhook, used for notifications",
+					required = 'False',
+					action = 'store',
+					default = 'False')
 
 args = parser.parse_args()
 
@@ -34,6 +38,10 @@ print(urls)
 if not os.path.exists('output'):
 	os.makedirs('output')
 
+#if args.teams != 'False':
+	#msTeams = pymsteams.connectorcard(args.teams)
+	#bucketFinder.setMsTeams(msTeams)
+	
 if args.mode == 'bucketFinder':
 	bucketFinder.run(urls)
 elif args.mode == 'tokenFinder':
