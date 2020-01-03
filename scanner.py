@@ -12,13 +12,13 @@ headerFinder = HeaderFinder()
 parser = argparse.ArgumentParser()
 
 parser.add_argument('-m', '--mode', help = "Available options are bucketFinder, tokenFinder, headerFinder or full for all three. Refer to documentation for more info",
-					required = 'True',
+					required = True,
 					action = 'store')
 parser.add_argument('-i', '--input', help = "Input file that contains urls to be scanned (With HTTP/HTTPS)",
-					required = 'True',
+					required = True,
 					action = 'store')
-parser.add_argument('-t', '--teams', help = "OPTIONAL Url for MSTeams webhook, used for notifications",
-					required = 'False',
+parser.add_argument('-t', '--teams', help = "Url for MSTeams webhook, used for notifications",
+					required = False,
 					action = 'store',
 					default = 'False')
 

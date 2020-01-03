@@ -64,8 +64,8 @@ class TokenFinder():
 		tokens = re.findall('token="(.+?)"', response.text)
 		tokens_2 = re.findall('Token="(.+?)"', response.text)
 		keys = re.findall('key="(.+?)"', response.text)
-		usernames = re.findall('name="(.+?)"', response.text)
-		passwords = re.findall('word="(.+?)"', response.text)
+		usernames = re.findall('Username="(.+?)"', response.text)
+		passwords = re.findall('Password="(.+?)"', response.text)
 
 		if len(tokens) > 0:
 			for token in tokens:
@@ -102,8 +102,8 @@ class TokenFinder():
 		tokens = re.findall('token="(.+?)"', response.text)
 		tokens_2 = re.findall('Token="(.+?)"', response.text)
 		keys = re.findall('key="(.+?)"', response.text)
-		usernames = re.findall('name="(.+?)"', response.text)
-		passwords = re.findall('word="(.+?)"', response.text)
+		usernames = re.findall('Username="(.+?)"', response.text)
+		passwords = re.findall('Password="(.+?)"', response.text)
 
 		if len(tokens) > 0:
 			for token in tokens:
@@ -122,6 +122,24 @@ class TokenFinder():
 				self.data.append([url, 'Password', password])
 
 	def run (self, urls):
+
+		print('---------------------------------------------------------------------------------------')
+		print('---------------------------++++++++++++++------++++++++++++++----------./*/.-----------')
+		print('--------------------./*/.--++++++++++++++------++++++++++++++--------------------------')
+		print('--------------------------------++++-----------+++--------------./*/.------------------')
+		print('---./*/.------------------------++++-----------+++-------------------------------------')
+		print('--------------------------------++++-----------++++++++++++++--------------------------')
+		print('------------./*/.---------------++++-----------++++++++++++++-----------./*/.----------')
+		print('--------------------------------++++-----------+++-------------------------------------')
+		print('--------------------------------++++-----------+++-------------------------------------')
+		print('--------------------------------++++-----------+++-----------------------------./*/.---')
+		print('------------./*/.---------------++++-----------+++---------------./*/.-----------------')
+		print('---------------------------------------------------------------------------------------')
+		print('                                                                                       ')
+		print('------------------------------------ Handerllon © -------------------------------------')
+		print('                                                                                       ')
+		print('-------------------------------- Starting token finder --------------------------------')
+		print('Searching urls on input...')
 
 		for url in urls:
 			print('-----------------------------')
