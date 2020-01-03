@@ -29,11 +29,7 @@ with open(args.input) as fp:
 	lines = fp.read()
 	urls = lines.split('\n')
 
-print(urls)
-
-#msTeams = pymsteams.connectorcard("")
-#bucketFinder.setMsTeams(msTeams)
-#bucketFinder.run(urls)
+#print(urls)
 
 if not os.path.exists('output'):
 	os.makedirs('output')

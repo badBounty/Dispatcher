@@ -211,7 +211,7 @@ class BucketFinder():
 
 			js_in_url = self.get_js_files(url)
 
-			print(js_in_url)
+			#print(js_in_url)
 			
 			for js_endpoint in js_in_url:
 				# Searching for buckets
