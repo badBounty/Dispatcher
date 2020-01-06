@@ -51,7 +51,7 @@ class OpenRedirect():
 		print('                                                                                       ')
 		print('------------------------------------ Handerllon © -------------------------------------')
 		print('                                                                                       ')
-		print('-------------------------- Starting security header scanner ---------------------------')
+		print('--------------------------- Starting open redirect scanner ----------------------------')
 		print('Listing headers on input...')
 
 	def run(self, urls):

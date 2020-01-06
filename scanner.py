@@ -101,8 +101,8 @@ elif args.mode == 'openRedirect':
 			t.start()
 	except KeyboardInterrupt:
 		openRedirect.output()
-		
-#------------------ All --------------------
+
+#----------------------- All -------------------------
 elif args.mode == 'full':
 	bucketFinder = BucketFinder()
 	tokenFinder = TokenFinder()
