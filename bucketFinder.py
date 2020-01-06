@@ -108,8 +108,8 @@ class BucketFinder():
 		for i in range (len(bucket_list)):
 			bucket_list[i] = bucket_list[i].replace('/','')
 
-		if len(bucket_list) == 0:
-			print('No buckets found at: ' + url)
+		#if len(bucket_list) == 0:
+			#print('No buckets found at: ' + url)
 
 		return bucket_list
 
@@ -121,7 +121,8 @@ class BucketFinder():
 				output = subprocess.check_output('aws s3 ls s3://' + bucket, shell = True, stderr = subprocess.DEVNULL)
 				ls_allowed_buckets.append(bucket)
 			except subprocess.CalledProcessError:
-				print('Bucket ' + bucket + ' has ls blocked')
+				continue
+				#print('Bucket ' + bucket + ' has ls blocked')
 
 		return ls_allowed_buckets
 
@@ -134,7 +135,8 @@ class BucketFinder():
 				subprocess.check_output('aws s3 rm s3://' + bucket + '/test.txt', shell = True)
 				cprm_allowed_buckets.append(bucket)
 			except subprocess.CalledProcessError as e:
-				print('Bucket ' + bucket + ' has cprm blocked')
+				continue
+				#print('Bucket ' + bucket + ' has cprm blocked')
 
 		return cprm_allowed_buckets
 
@@ -181,11 +183,11 @@ class BucketFinder():
 			access_denied = list(set(bucket_list) - set(ls_allowed) - set(cprm_allowed)) 
 
 			#print('Buckets that allowed ls are the following:')
-			print(ls_allowed)
+			#print(ls_allowed)
 			#print('Buckets that allowed cp and rm are the following:')
-			print(cprm_allowed)
+			#print(cprm_allowed)
 			#print('No permissions buckets:')
-			print(access_denied)
+			#print(access_denied)
 
 			self.configureOutput(hostname, subname, bucket_list, ls_allowed, cprm_allowed)
 
@@ -231,5 +233,5 @@ class BucketFinder():
 		self.output()
 
 
-		print('-------------------------- Finished! --------------------------')
-		print('###__Found buckets sent to output.csv, errors sent to ErrorOutput.csv__###')
+		#print('-------------------------- Finished! --------------------------')
+		#print('###__Found buckets sent to output.csv, errors sent to ErrorOutput.csv__###')
