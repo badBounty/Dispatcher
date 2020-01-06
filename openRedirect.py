@@ -11,12 +11,12 @@ class OpenRedirect():
 	data = []
 
 	def output(self):
-		df = pd.DataFrame(self.data, columns = ['Url','parameter','payload'])
+		df = pd.DataFrame(self.data, columns = ['Url','parameter','payload','destination'])
 		df.to_csv('output/openRedirect.csv', index = False)
 
 
-	def testOpenRedirect(self,url):
-
+	def testOpenRedirect(self,session,url):
+		print('Scanning ' + url + ' ...')
 		for parameter in self.parameters:
 			for payload in self.payloads:
 				finalPayload = parameter.replace("{payload}",payload)
@@ -28,19 +28,28 @@ class OpenRedirect():
 				if response.history:
 					for resp in response.history:
 						print (resp.status_code, resp.url)
-					print('Url ' + url + ' was redirected')
-					print('Payload: ' + finalPayload)
-					self.data.append([url,parameter,payload])
+					print('Url ' + url_to_scan + ' was redirected')
+					print('To ' + response.url)
+					print('With trace:')
+					for resp in response.history:
+						print (resp.status_code, resp.url)
+
+					self.data.append([url,parameter,payload,response.url])
 					return
 
-				else:
-					print('Url ' + url + ' was not redirected')
+				#else:
+					#print('Url ' + url + ' was not redirected')
 
 		
 		return
 
 
 	def run(self, urls):
+
+		session = requests.Session()
+		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
+
+		session.headers.update(headers)
 
 		with open('extra/openRedirect_parameters.txt') as fp:
 			lines = fp.read()
@@ -55,7 +64,7 @@ class OpenRedirect():
 
 		for url in urls:
 
-			self.testOpenRedirect(url)
+			self.testOpenRedirect(session, url)
 
 		self.output()
 

@@ -61,7 +61,7 @@ elif args.mode == 'headerFinder':
 
 #### OpenRedirect
 elif args.mode == 'openRedirect':
-	headerFinder = HeaderFinder()
+	openRedirect = OpenRedirect()
 	try:
 		openRedirect.run(urls)
 	except KeyboardInterrupt:
