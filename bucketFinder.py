@@ -166,7 +166,7 @@ class BucketFinder():
 			elif js_found[i][:1] != 'h':
 				js_found[i] = 'https://' + js_found[i]
 
-		print(str(len(js_found)) + ' js files were found!')
+		#print(str(len(js_found)) + ' js files were found!')
 		return(js_found)
 
 	def check_buckets(self, hostname, subname, bucket_list):
@@ -174,23 +174,23 @@ class BucketFinder():
 			print('The following bucket/s were found at ' + subname + ' :')
 			print(bucket_list)
 
-			print('Checking bucket/s that allow ls...')
+			#print('Checking bucket/s that allow ls...')
 			ls_allowed = self.get_ls_buckets(bucket_list)
-			print('Checking bucket/s that allow cprm...')
+			#print('Checking bucket/s that allow cprm...')
 			cprm_allowed = self.get_cprm_buckets(bucket_list)
 			access_denied = list(set(bucket_list) - set(ls_allowed) - set(cprm_allowed)) 
 
-			print('Buckets that allowed ls are the following:')
+			#print('Buckets that allowed ls are the following:')
 			print(ls_allowed)
-			print('Buckets that allowed cp and rm are the following:')
+			#print('Buckets that allowed cp and rm are the following:')
 			print(cprm_allowed)
-			print('No permissions buckets:')
+			#print('No permissions buckets:')
 			print(access_denied)
 
 			self.configureOutput(hostname, subname, bucket_list, ls_allowed, cprm_allowed)
 
-	#Receives an urlList
-	def run(self,urls):
+	
+	def showStartScreen(self):
 		print('---------------------------------------------------------------------------------------')
 		print('---------------------------++++++++++++++------++++++++++++++----------./*/.-----------')
 		print('--------------------./*/.--++++++++++++++------++++++++++++++--------------------------')
@@ -208,8 +208,12 @@ class BucketFinder():
 		print('                                                                                       ')
 		print('-------------------------- Starting vulnerable bucket finder --------------------------')
 		print('Searching buckets on input...')
+
+
+	#Receives an urlList
+	def run(self,urls):
+		
 		for url in urls:
-			print('-----------------------------')
 			print('Searching '+ url)
 
 			buckets_in_html = self.get_buckets(url, 'html code')

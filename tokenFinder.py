@@ -51,7 +51,7 @@ class TokenFinder():
 			elif js_found[i][:1] != 'h':
 				js_found[i] = 'https://' + js_found[i]
 
-		print(str(len(js_found)) + ' js files were found!')
+		#print(str(len(js_found)) + ' js files were found!')
 		return(js_found)
 
 	def processHtml(self, url):
@@ -128,7 +128,8 @@ class TokenFinder():
 			for password in passwords:
 				self.data.append([url, 'Password', password])
 
-	def run (self, urls):
+
+	def showStartScreen(self):
 
 		print('---------------------------------------------------------------------------------------')
 		print('---------------------------++++++++++++++------++++++++++++++----------./*/.-----------')
@@ -148,14 +149,15 @@ class TokenFinder():
 		print('-------------------------------- Starting token finder --------------------------------')
 		print('Searching urls on input...')
 
+	def run (self, urls):
+
 		for url in urls:
-			print('-----------------------------')
 			print('Searching '+ url)
 
 			self.processHtml(url)
 			js_in_url = self.get_js_files(url)
 
-			print('Scanning js files...')
+			#print('Scanning js files...')
 
 			for js_endpoint in js_in_url:
 				self.processJavascript(js_endpoint)

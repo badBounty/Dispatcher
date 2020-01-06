@@ -10,7 +10,7 @@ class HeaderFinder():
 
 	data = []
 
-	def run(self, urls):
+	def showStartScreen(self):
 
 		print('---------------------------------------------------------------------------------------')
 		print('---------------------------++++++++++++++-----+++---------+++----------./*/.-----------')
@@ -29,6 +29,8 @@ class HeaderFinder():
 		print('                                                                                       ')
 		print('-------------------------- Starting security header scanner ---------------------------')
 		print('Listing headers on input...')
+
+	def run(self, urls):
 
 		for url in urls:
 			try:

@@ -23,26 +23,36 @@ class OpenRedirect():
 				
 				url_to_scan = url + finalPayload
 
-				response = requests.get(url_to_scan, verify = False)
+				response = session.get(url_to_scan, verify = False)
 				
-				if response.history:
-					for resp in response.history:
-						print (resp.status_code, resp.url)
+				response_list = response.url.split('/')
+				#print (response_list)
+				if response_list[2] == 'google.com':
 					print('Url ' + url_to_scan + ' was redirected')
 					print('To ' + response.url)
-					print('With trace:')
-					for resp in response.history:
-						print (resp.status_code, resp.url)
-
-					self.data.append([url,parameter,payload,response.url])
-					return
-
-				#else:
-					#print('Url ' + url + ' was not redirected')
-
 		
 		return
 
+
+	def showStartScreen(self):
+
+		print('---------------------------------------------------------------------------------------')
+		print('---------------------------++++++++++++++-----+++---------+++----------./*/.-----------')
+		print('--------------------./*/.--++++++++++++++-----+++---------+++--------------------------')
+		print('---------------------------+++----------------+++---------+++---./*/.------------------')
+		print('---./*/.-------------------+++----------------+++---------+++--------------------------')
+		print('---------------------------++++++++++++++-----+++++++++++++++--------------------------')
+		print('------------./*/.----------++++++++++++++-----+++++++++++++++-----------./*/.----------')
+		print('--------------------------------------+++-----+++---------+++--------------------------')
+		print('--------------------------------------+++-----+++---------+++--------------------------')
+		print('---------------------------++++++++++++++-----+++---------+++------------------./*/.---')
+		print('------------./*/.----------++++++++++++++-----+++---------+++----./*/.-----------------')
+		print('---------------------------------------------------------------------------------------')
+		print('                                                                                       ')
+		print('------------------------------------ Handerllon © -------------------------------------')
+		print('                                                                                       ')
+		print('-------------------------- Starting security header scanner ---------------------------')
+		print('Listing headers on input...')
 
 	def run(self, urls):
 
