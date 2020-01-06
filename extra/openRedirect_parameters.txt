@@ -1,0 +1,12 @@
+/{payload}
+?next={payload}
+?url={payload}
+?return_to={payload}
+?redirect_to={payload}
+?redirect_uri={payload}
+?origin={payload}
+?redirect_url={payload}
+?link={payload}
+?redirect={payload}
+?return={payload}
+?return_url={payload}

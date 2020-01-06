@@ -4,10 +4,7 @@ import argparse
 from bucketFinder import BucketFinder
 from tokenFinder import TokenFinder
 from securityHeaders import HeaderFinder
-
-bucketFinder = BucketFinder()
-tokenFinder = TokenFinder()
-headerFinder = HeaderFinder()
+from openRedirect import OpenRedirect
 
 parser = argparse.ArgumentParser()
 
@@ -37,14 +34,52 @@ if not os.path.exists('output'):
 #if args.teams != 'False':
 	#msTeams = pymsteams.connectorcard(args.teams)
 	#bucketFinder.setMsTeams(msTeams)
-	
+
+#### BucketFinder
 if args.mode == 'bucketFinder':
-	bucketFinder.run(urls)
+	bucketFinder = BucketFinder()
+	try:
+		bucketFinder.run(urls)
+	except KeyboardInterrupt:
+		bucketFinder.output()
+
+#### TokenFinder
 elif args.mode == 'tokenFinder':
-	tokenFinder.run(urls)
+	tokenFinder = TokenFinder()
+	try:
+		tokenFinder.run(urls)
+	except KeyboardInterrupt:
+		tokenFinder.output()
+
+#### HeaderFinder
 elif args.mode == 'headerFinder':
-	headerFinder.run(urls)
+	headerFinder = HeaderFinder()
+	try:
+		headerFinder.run(urls)
+	except KeyboardInterrupt:
+		headerFinder.output()
+
+#### OpenRedirect
+elif args.mode == 'openRedirect':
+	headerFinder = HeaderFinder()
+	try:
+		openRedirect.run(urls)
+	except KeyboardInterrupt:
+		openRedirect.output()
+
+#### All
 elif args.mode == 'full':
-	bucketFinder.run(urls)
-	tokenFinder.run(urls)
-	headerFinder.run(urls)
+	bucketFinder = BucketFinder()
+	tokenFinder = TokenFinder()
+	headerFinder = HeaderFinder()
+	openRedirect = OpenRedirect()
+	try:
+		bucketFinder.run(urls)
+		tokenFinder.run(urls)
+		headerFinder.run(urls)
+		openRedirect.run(urls)
+	except KeyboardInterrupt:
+		bucketFinder.output()
+		tokenFinder.output()
+		headerFinder.output()
+		openRedirect.output()

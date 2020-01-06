@@ -68,7 +68,9 @@ class HeaderFinder():
 		        			x_xss_protection, x_frame_options, x_content_type_options, 
 		        			strict_transport_security, access_control_allow_policy])
 
+		self.output()
 
+	def output(self):
 		df = pd.DataFrame(self.data, columns = ['url','Content-Security-Policy','X-XSS-Protection',
 								   		'x-frame-options', 'X-Content-Type-options', 'Strict-Transport-Security',
 								   		'Access-Control-Allow-Origin'])

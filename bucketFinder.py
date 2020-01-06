@@ -15,6 +15,12 @@ class BucketFinder():
 	error_data = []
 	msTeamsActivated = False
 
+	def output(self):
+		df = pd.DataFrame(self.data, columns = ['SourceURL','js_reference','Bucket Name','ls allowed', 'cprm allowed'])
+		df.to_csv('output/bucketFinder.csv', index = False)
+		df2 = pd.DataFrame(self.error_data, columns = ['SourceURL','js_reference','Reason'])
+		df2.to_csv('output/bucketFinderError.csv', index = False)
+
 	def setMsTeams(self,msTeams):
 		self.msTeamsActivated = True
 		self.msTeams = msTeams
@@ -217,14 +223,8 @@ class BucketFinder():
 				# Searching for buckets
 				bucket_list = self.get_buckets(js_endpoint, url)
 				self.check_buckets(url, js_endpoint, bucket_list)
-		
-		if not os.path.exists('output'):
-			os.makedirs('output')
 
-		df = pd.DataFrame(self.data, columns = ['SourceURL','js_reference','Bucket Name','ls allowed', 'cprm allowed'])
-		df.to_csv('output/bucketFinder.csv', index = False)
-		df2 = pd.DataFrame(self.error_data, columns = ['SourceURL','js_reference','Reason'])
-		df2.to_csv('output/bucketFinderError.csv', index = False)
+		self.output()
 
 
 		print('-------------------------- Finished! --------------------------')

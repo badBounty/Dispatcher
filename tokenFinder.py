@@ -8,6 +8,13 @@ class TokenFinder():
 	data = []
 	error_data = []
 
+	def output(self):
+		df = pd.DataFrame(self.data, columns = ['SourceURL','Type','Found'])
+		df.to_csv('output/tokenFinder.csv', index = False)
+		df2 = pd.DataFrame(self.error_data, columns = ['SourceURL','Reason'])
+		df2.to_csv('output/tokenFinderError.csv', index = False)
+
+
 	def filterInvalids(self,some_list):
 		res = []
 		#------ Filter invalid matches
@@ -153,9 +160,6 @@ class TokenFinder():
 			for js_endpoint in js_in_url:
 				self.processJavascript(js_endpoint)
 
-		df = pd.DataFrame(self.data, columns = ['SourceURL','Type','Found'])
-		df.to_csv('output/tokenFinder.csv', index = False)
-		df2 = pd.DataFrame(self.error_data, columns = ['SourceURL','Reason'])
-		df2.to_csv('output/tokenFinderError.csv', index = False)
+		self.output()
 
 
