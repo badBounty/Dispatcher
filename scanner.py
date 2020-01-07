@@ -8,6 +8,8 @@ from tokenFinder import TokenFinder
 from securityHeaders import HeaderFinder
 from openRedirect import OpenRedirect
 
+import time
+
 
 parser = argparse.ArgumentParser()
 
@@ -49,7 +51,6 @@ for i in range(len(urls)):
 if not os.path.exists('output'):
 	os.makedirs('output')
 
-
 #------------------ Bucket Finder --------------------
 if args.mode == 'bucketFinder':
 	bucketFinder = BucketFinder()
@@ -61,7 +62,7 @@ if args.mode == 'bucketFinder':
 			threads.append(t)
 			t.start()
 	except KeyboardInterrupt:
-		openRedirect.output()
+		bucketFinder.output()
 
 #------------------ Token Finder --------------------
 elif args.mode == 'tokenFinder':
@@ -74,7 +75,7 @@ elif args.mode == 'tokenFinder':
 			threads.append(t)
 			t.start()
 	except KeyboardInterrupt:
-		openRedirect.output()
+		tokenFinder.output()
 
 #------------------ Header Finder --------------------
 elif args.mode == 'headerFinder':
@@ -87,7 +88,7 @@ elif args.mode == 'headerFinder':
 			threads.append(t)
 			t.start()
 	except KeyboardInterrupt:
-		openRedirect.output()
+		headerFinder.output()
 
 #------------------ Open Redirect --------------------
 elif args.mode == 'openRedirect':
