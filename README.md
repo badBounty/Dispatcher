@@ -10,4 +10,8 @@ It presents several modes:
 
 - headerFinder: Checks the security headers present in the webpage, this mode is the fastest and serves as data collection.
 
+- openRedirect: Checks if the url has openRedirect vulnerability
+
+- cssChecker: Verifies if any css files present in the url have a `response.status_code != 200` (Could cause CSS Injection)
+
 Input urls must contain http or https
