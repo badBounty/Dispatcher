@@ -156,7 +156,7 @@ class TokenFinder():
 	def run (self, urls):
 
 		for url in urls:
-			print('Searching '+ url)
+			print('Scanning '+ url)
 
 			self.processHtml(url)
 			js_in_url = self.get_js_files(url)

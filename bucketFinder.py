@@ -174,7 +174,7 @@ class BucketFinder():
 			
 		get_text = get_response.text
 
-		js_found = re.findall('"([^\s",\'%]+)\.js', get_text)
+		js_found = re.findall('([^\s",\'%]+)\.js', get_text)
 		js_found = self.filterInvalids(js_found)
 		for i in range (len(js_found)):
 			#We add the .js that was removed at the regex
@@ -220,7 +220,7 @@ class BucketFinder():
 	def run(self,urls):
 		
 		for url in urls:
-			print('Searching '+ url)
+			print('Scanning '+ url)
 
 			buckets_in_html = self.get_buckets(url, 'html code')
 			self.check_buckets(url, 'html code', buckets_in_html)

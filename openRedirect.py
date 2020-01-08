@@ -42,7 +42,7 @@ class OpenRedirect():
 
 
 	def testOpenRedirect(self,session,url):
-		print('Scanning ' + url + ' ...')
+		print('Scanning ' + url)
 		for parameter in self.parameters:
 			for payload in self.payloads:
 				finalPayload = parameter.replace("{payload}",payload)

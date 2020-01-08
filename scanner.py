@@ -8,6 +8,12 @@ from tokenFinder import TokenFinder
 from securityHeaders import HeaderFinder
 from openRedirect import OpenRedirect
 
+def fullScan(bucketFinder, tokenFinder, headerFinder, openRedirect, urls):
+	bucketFinder.run(urls)
+	tokenFinder.run(urls)
+	headerFinder.run(urls)
+	openRedirect.run(urls)
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument('-m', '--mode', help = "Available options are bucketFinder, tokenFinder, headerFinder or full for all three. Refer to documentation for more info",
@@ -75,10 +81,10 @@ elif args.mode == 'headerFinder':
 	headerFinder = HeaderFinder()
 	headerFinder.showStartScreen()
 	try:
-		threads = []
+		#threads = []
 		for i in range(args.threads):
 			t = threading.Thread(target = headerFinder.run, args = (urls[i],))
-			threads.append(t)
+			#threads.append(t)
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
@@ -107,6 +113,26 @@ elif args.mode == 'full':
 	headerFinder = HeaderFinder()
 	openRedirect = OpenRedirect()
 	try:
+		for i in range(args.threads):
+			t = threading.Thread(target = fullScan, args = (bucketFinder, tokenFinder, headerFinder, openRedirect, urls[i],))
+			t.start()
+			t.join()
+	except KeyboardInterrupt:
+		bucketFinder.output()
+		tokenFinder.output()
+		headerFinder.output()
+		openRedirect.output()
+
+
+
+'''
+#----------------------- All -------------------------
+elif args.mode == 'full':
+	bucketFinder = BucketFinder()
+	tokenFinder = TokenFinder()
+	headerFinder = HeaderFinder()
+	openRedirect = OpenRedirect()
+	try:
 		bucketFinder.run(urls)
 		tokenFinder.run(urls)
 		headerFinder.run(urls)
@@ -116,3 +142,5 @@ elif args.mode == 'full':
 		tokenFinder.output()
 		headerFinder.output()
 		openRedirect.output()
+'''
+
