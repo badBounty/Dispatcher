@@ -57,7 +57,8 @@ class CssChecker():
 			
 		get_text = get_response.text
 
-		css_found = re.findall('([;^\s",\'%]+)\.css', get_text)
+		css_found = re.findall('([^\s",\'%]+)\.css', get_text)
+		#print(css_found)
 		css_found = self.filterInvalids(css_found)
 		for i in range (len(css_found)):
 			#We add the .css that was removed at the regex

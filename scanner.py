@@ -3,11 +3,11 @@ import os
 import argparse
 import numpy as np
 import threading
-from bucketFinder import BucketFinder
-from tokenFinder import TokenFinder
-from securityHeaders import HeaderFinder
-from openRedirect import OpenRedirect
-from cssChecker import CssChecker
+from modules.bucketFinder import BucketFinder
+from modules.tokenFinder import TokenFinder
+from modules.securityHeaders import HeaderFinder
+from modules.openRedirect import OpenRedirect
+from modules.cssChecker import CssChecker
 
 def fullScan(bucketFinder, tokenFinder, headerFinder, openRedirect, urls):
 	bucketFinder.run(urls)
@@ -18,7 +18,7 @@ def fullScan(bucketFinder, tokenFinder, headerFinder, openRedirect, urls):
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-m', '--mode', help = "Available options are bucketFinder, tokenFinder, headerFinder, cssChecker or full for all three. Refer to documentation for more info",
+parser.add_argument('-m', '--mode', help = "Available options are bucketFinder, tokenFinder, headerFinder, cssChecker or full for all. Refer documentation for more info",
 					required = True,
 					action = 'store')
 parser.add_argument('-i', '--input', help = "Input file that contains urls to be scanned (With HTTP/HTTPS)",
@@ -140,3 +140,4 @@ elif args.mode == 'full':
 		tokenFinder.output()
 		headerFinder.output()
 		openRedirect.output()
+		cssChecker.output()
