@@ -8,9 +8,6 @@ from tokenFinder import TokenFinder
 from securityHeaders import HeaderFinder
 from openRedirect import OpenRedirect
 
-import time
-
-
 parser = argparse.ArgumentParser()
 
 parser.add_argument('-m', '--mode', help = "Available options are bucketFinder, tokenFinder, headerFinder or full for all three. Refer to documentation for more info",
@@ -25,14 +22,6 @@ parser.add_argument('-t','--threads', help = "Number of threads for the program"
 					action = 'store',
 					default = 3,
 					type = int)
-
-#parser.add_argument('-t', '--teams', help = "Url for MSTeams webhook, used for notifications",
-#					required = False,
-#					action = 'store',
-#					default = 'False')
-#if args.teams != 'False':
-	#msTeams = pymsteams.connectorcard(args.teams)
-	#bucketFinder.setMsTeams(msTeams)
 
 args = parser.parse_args()
 
@@ -61,8 +50,10 @@ if args.mode == 'bucketFinder':
 			t = threading.Thread(target = bucketFinder.run, args = (urls[i],))
 			threads.append(t)
 			t.start()
+			t.join()
 	except KeyboardInterrupt:
 		bucketFinder.output()
+	bucketFinder.showEndScreen()
 
 #------------------ Token Finder --------------------
 elif args.mode == 'tokenFinder':
@@ -74,8 +65,10 @@ elif args.mode == 'tokenFinder':
 			t = threading.Thread(target = tokenFinder.run, args = (urls[i],))
 			threads.append(t)
 			t.start()
+			t.join()
 	except KeyboardInterrupt:
 		tokenFinder.output()
+	tokenFinder.showEndScreen()
 
 #------------------ Header Finder --------------------
 elif args.mode == 'headerFinder':
@@ -87,8 +80,10 @@ elif args.mode == 'headerFinder':
 			t = threading.Thread(target = headerFinder.run, args = (urls[i],))
 			threads.append(t)
 			t.start()
+			t.join()
 	except KeyboardInterrupt:
 		headerFinder.output()
+	headerFinder.showEndScreen()
 
 #------------------ Open Redirect --------------------
 elif args.mode == 'openRedirect':
@@ -100,8 +95,10 @@ elif args.mode == 'openRedirect':
 			t = threading.Thread(target = openRedirect.run, args = (urls[i],))
 			threads.append(t)
 			t.start()
+			t.join()
 	except KeyboardInterrupt:
 		openRedirect.output()
+	openRedirect.showEndScreen()
 
 #----------------------- All -------------------------
 elif args.mode == 'full':

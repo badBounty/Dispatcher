@@ -30,6 +30,18 @@ class HeaderFinder():
 		print('-------------------------- Starting security header scanner ---------------------------')
 		print('Listing headers on input...')
 
+	def showEndScreen(self):
+
+		print('---------------------------------------------------------------------------------------')
+		print('Finished! Please check output/headerFinder.csv for results!')
+
+	def output(self):
+		df = pd.DataFrame(self.data, columns = ['url','Content-Security-Policy','X-XSS-Protection',
+								   		'x-frame-options', 'X-Content-Type-options', 'Strict-Transport-Security',
+								   		'Access-Control-Allow-Origin'])
+
+		df.to_csv('output/headerFinder.csv', index = False)
+
 	def run(self, urls):
 
 		for url in urls:
@@ -71,10 +83,3 @@ class HeaderFinder():
 		        			strict_transport_security, access_control_allow_policy])
 
 		self.output()
-
-	def output(self):
-		df = pd.DataFrame(self.data, columns = ['url','Content-Security-Policy','X-XSS-Protection',
-								   		'x-frame-options', 'X-Content-Type-options', 'Strict-Transport-Security',
-								   		'Access-Control-Allow-Origin'])
-
-		df.to_csv('output/headerFinder.csv', index = False)
