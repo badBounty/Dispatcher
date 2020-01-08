@@ -89,10 +89,10 @@ class BucketFinder():
 			#Adding to data for exporting
 			self.data.append([url, js_endpoint, bucket, ls, cprm])
 
-	def get_buckets(self, url, host):
+	def get_buckets(self, session, url, host):
 
 		try:
-			response = requests.get(url, verify = False)
+			response = session.get(url, verify = False)
 		except:
 			print('Url: ' + url + ' could not be accessed')
 			self.error_data.append([host,url,'Invalid js file'])
@@ -165,16 +165,16 @@ class BucketFinder():
 
 		return cprm_allowed_buckets
 
-	def get_js_files(self,url):
+	def get_js_files(self, session, url):
 
 		try:
-			get_response = requests.get(url, verify = False)
+			get_response = session.get(url, verify = False)
 		except Exception:
 			return []
 			
 		get_text = get_response.text
 
-		js_found = re.findall('([^\s",\'%]+)\.js', get_text)
+		js_found = re.findall('([;^\s",\'%]+)\.js', get_text)
 		js_found = self.filterInvalids(js_found)
 		for i in range (len(js_found)):
 			#We add the .js that was removed at the regex
@@ -218,20 +218,25 @@ class BucketFinder():
 
 	#Receives an urlList
 	def run(self,urls):
+
+		session = requests.Session()
+		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
+
+		session.headers.update(headers)
 		
 		for url in urls:
 			print('Scanning '+ url)
 
-			buckets_in_html = self.get_buckets(url, 'html code')
+			buckets_in_html = self.get_buckets(session, url, 'html code')
 			self.check_buckets(url, 'html code', buckets_in_html)
 
-			js_in_url = self.get_js_files(url)
+			js_in_url = self.get_js_files(session, url)
 
 			#print(js_in_url)
 			
 			for js_endpoint in js_in_url:
 				# Searching for buckets
-				bucket_list = self.get_buckets(js_endpoint, url)
+				bucket_list = self.get_buckets(session, js_endpoint, url)
 				self.check_buckets(url, js_endpoint, bucket_list)
 
 		self.output()

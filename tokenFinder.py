@@ -57,7 +57,7 @@ class TokenFinder():
 			
 		get_text = get_response.text
 
-		js_found = re.findall('([^\s",\']+)\.js', get_text)
+		js_found = re.findall('([;^\s",\'%]+)\.js', get_text)
 		js_found = self.filterInvalids(js_found)
 		for i in range (len(js_found)):
 			#We add the .js that was removed at the regex
@@ -79,10 +79,10 @@ class TokenFinder():
 		#print(str(len(js_found)) + ' js files were found!')
 		return(js_found)
 
-	def processHtml(self, url):
+	def processHtml(self, session, url):
 
 		try:
-			response = requests.get(url, verify = False)
+			response = session.get(url, verify = False)
 		except:
 			print('Url: ' + url + ' could not be accessed')
 			self.error_data.append([url,'Invalid js file'])
@@ -117,10 +117,10 @@ class TokenFinder():
 
 		
 
-	def processJavascript(self, url):
+	def processJavascript(self, session, url):
 
 		try:
-			response = requests.get(url, verify = False)
+			response = session.get(url, verify = False)
 		except:
 			print('Url: ' + url + ' could not be accessed')
 			self.error_data.append([url,'Invalid js file'])
@@ -155,16 +155,21 @@ class TokenFinder():
 
 	def run (self, urls):
 
+		session = requests.Session()
+		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
+
+		session.headers.update(headers)
+
 		for url in urls:
 			print('Scanning '+ url)
 
-			self.processHtml(url)
+			self.processHtml(session, url)
 			js_in_url = self.get_js_files(url)
 
 			#print('Scanning js files...')
 
 			for js_endpoint in js_in_url:
-				self.processJavascript(js_endpoint)
+				self.processJavascript(session, js_endpoint)
 
 		self.output()
 

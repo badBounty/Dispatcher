@@ -7,16 +7,18 @@ from bucketFinder import BucketFinder
 from tokenFinder import TokenFinder
 from securityHeaders import HeaderFinder
 from openRedirect import OpenRedirect
+from cssChecker import CssChecker
 
 def fullScan(bucketFinder, tokenFinder, headerFinder, openRedirect, urls):
 	bucketFinder.run(urls)
 	tokenFinder.run(urls)
 	headerFinder.run(urls)
 	openRedirect.run(urls)
+	cssChecker.run(urls)
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-m', '--mode', help = "Available options are bucketFinder, tokenFinder, headerFinder or full for all three. Refer to documentation for more info",
+parser.add_argument('-m', '--mode', help = "Available options are bucketFinder, tokenFinder, headerFinder, cssChecker or full for all three. Refer to documentation for more info",
 					required = True,
 					action = 'store')
 parser.add_argument('-i', '--input', help = "Input file that contains urls to be scanned (With HTTP/HTTPS)",
@@ -106,15 +108,31 @@ elif args.mode == 'openRedirect':
 		openRedirect.output()
 	openRedirect.showEndScreen()
 
+#------------------- Css Checker ---------------------
+elif args.mode == 'cssChecker':
+	cssChecker = CssChecker()
+	cssChecker.showStartScreen()
+	try:
+		threads = []
+		for i in range(args.threads):
+			t = threading.Thread(target = cssChecker.run, args = (urls[i],))
+			threads.append(t)
+			t.start()
+			t.join()
+	except KeyboardInterrupt:
+		cssChecker.output()
+	cssChecker.showEndScreen()
+
 #----------------------- All -------------------------
 elif args.mode == 'full':
 	bucketFinder = BucketFinder()
 	tokenFinder = TokenFinder()
 	headerFinder = HeaderFinder()
 	openRedirect = OpenRedirect()
+	cssChecker = OpenRedirect()
 	try:
 		for i in range(args.threads):
-			t = threading.Thread(target = fullScan, args = (bucketFinder, tokenFinder, headerFinder, openRedirect, urls[i],))
+			t = threading.Thread(target = fullScan, args = (bucketFinder, tokenFinder, headerFinder, openRedirect, cssChecker, urls[i],))
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
@@ -122,25 +140,3 @@ elif args.mode == 'full':
 		tokenFinder.output()
 		headerFinder.output()
 		openRedirect.output()
-
-
-
-'''
-#----------------------- All -------------------------
-elif args.mode == 'full':
-	bucketFinder = BucketFinder()
-	tokenFinder = TokenFinder()
-	headerFinder = HeaderFinder()
-	openRedirect = OpenRedirect()
-	try:
-		bucketFinder.run(urls)
-		tokenFinder.run(urls)
-		headerFinder.run(urls)
-		openRedirect.run(urls)
-	except KeyboardInterrupt:
-		bucketFinder.output()
-		tokenFinder.output()
-		headerFinder.output()
-		openRedirect.output()
-'''
-
