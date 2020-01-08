@@ -1,14 +1,1 @@
 google.com/
-@google.com/
-//google.com/
-//example.com@google.com/
-///google.com/
-///example.com@google.com/
-////google.com/
-////example.com@google.com/
-https://google.com/
-https:google.com
-\/\/google.com/
-/\/google.com/
-//google%E3%80%82com
-//google%00.com
