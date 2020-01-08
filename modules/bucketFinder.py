@@ -11,6 +11,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class BucketFinder():
 
+	scanned_targets = []
 	data = []
 	error_data = []
 	msTeamsActivated = False
@@ -91,20 +92,21 @@ class BucketFinder():
 
 	def get_buckets(self, session, url, host):
 
+		if url in self.scanned_targets:
+			return []
+
+		self.scanned_targets.append(url)
 		try:
 			response = session.get(url, verify = False)
 		except:
 			print('Url: ' + url + ' could not be accessed')
 			self.error_data.append([host,url,'Invalid js file'])
 			return []
-
+		
 		if response.status_code == 404:
 			print('Url: ' + url + ' returned 404')
 			self.error_data.append([host,url,'Returned 404'])
 			return []
-
-		responseText = response.text
-		#print(responseText)
 
 		#Buckets can come in different ways
 		#Way 1: http<s>://s3.amazonaws.com/bucketName
@@ -112,19 +114,19 @@ class BucketFinder():
 		#Way 3: //bucketName.s3.amazonaws.com
 
 		#---------Way I----------
-		bucketsFirstHTTPS = re.findall('"https://s3.amazonaws.com(.+?)"', responseText)
+		bucketsFirstHTTPS = re.findall('"https://s3.amazonaws.com(.+?)"', response.text)
 		bucketsFirstHTTPS = self.filterInvalids(bucketsFirstHTTPS)
-		bucketsFirstHTTP = re.findall('"http://s3.amazonaws.com(.+?)"', responseText)
+		bucketsFirstHTTP = re.findall('"http://s3.amazonaws.com(.+?)"', response.text)
 		bucketsFirstHTTP = self.filterInvalids(bucketsFirstHTTP)
 
 		#---------Way II----------
-		bucketsSecondHTTPS = re.findall('"https://(.+?).s3.amazonaws.com', responseText)
+		bucketsSecondHTTPS = re.findall('"https://(.+?).s3.amazonaws.com', response.text)
 		bucketsSecondHTTPS = self.filterInvalids(bucketsSecondHTTPS)
-		bucketsSecondHTTP = re.findall('"http://(.+?).s3.amazonaws.com', responseText)
+		bucketsSecondHTTP = re.findall('"http://(.+?).s3.amazonaws.com', response.text)
 		bucketsSecondHTTP = self.filterInvalids(bucketsSecondHTTP)
 
 		#---------Way III---------
-		bucketsThird = re.findall('\"//(.+?).s3.amazonaws.com', responseText)
+		bucketsThird = re.findall('\"//(.+?).s3.amazonaws.com', response.text)
 		bucketsThird = self.filterInvalids(bucketsThird)
 
 		bucket_list = bucketsFirstHTTP + bucketsSecondHTTP + bucketsFirstHTTPS + bucketsSecondHTTPS + bucketsThird
@@ -132,9 +134,6 @@ class BucketFinder():
 
 		for i in range (len(bucket_list)):
 			bucket_list[i] = bucket_list[i].replace('/','')
-
-		#if len(bucket_list) == 0:
-			#print('No buckets found at: ' + url)
 
 		return bucket_list
 

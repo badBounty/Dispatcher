@@ -8,13 +8,7 @@ from modules.tokenFinder import TokenFinder
 from modules.securityHeaders import HeaderFinder
 from modules.openRedirect import OpenRedirect
 from modules.cssChecker import CssChecker
-
-def fullScan(bucketFinder, tokenFinder, headerFinder, openRedirect, urls):
-	bucketFinder.run(urls)
-	tokenFinder.run(urls)
-	headerFinder.run(urls)
-	openRedirect.run(urls)
-	cssChecker.run(urls)
+from modules.fullScanner import FullScanner
 
 parser = argparse.ArgumentParser()
 
@@ -53,10 +47,8 @@ if args.mode == 'bucketFinder':
 	bucketFinder = BucketFinder()
 	bucketFinder.showStartScreen()
 	try:
-		threads = []
 		for i in range(args.threads):
 			t = threading.Thread(target = bucketFinder.run, args = (urls[i],))
-			threads.append(t)
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
@@ -68,10 +60,8 @@ elif args.mode == 'tokenFinder':
 	tokenFinder = TokenFinder()
 	tokenFinder.showStartScreen()
 	try:
-		threads = []
 		for i in range(args.threads):
 			t = threading.Thread(target = tokenFinder.run, args = (urls[i],))
-			threads.append(t)
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
@@ -83,10 +73,8 @@ elif args.mode == 'headerFinder':
 	headerFinder = HeaderFinder()
 	headerFinder.showStartScreen()
 	try:
-		#threads = []
 		for i in range(args.threads):
 			t = threading.Thread(target = headerFinder.run, args = (urls[i],))
-			#threads.append(t)
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
@@ -98,10 +86,8 @@ elif args.mode == 'openRedirect':
 	openRedirect = OpenRedirect()
 	openRedirect.showStartScreen()
 	try:
-		threads = []
 		for i in range(args.threads):
 			t = threading.Thread(target = openRedirect.run, args = (urls[i],))
-			threads.append(t)
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
@@ -113,31 +99,23 @@ elif args.mode == 'cssChecker':
 	cssChecker = CssChecker()
 	cssChecker.showStartScreen()
 	try:
-		threads = []
 		for i in range(args.threads):
 			t = threading.Thread(target = cssChecker.run, args = (urls[i],))
-			threads.append(t)
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
 		cssChecker.output()
 	cssChecker.showEndScreen()
 
-#----------------------- All -------------------------
+#----------------------- Full -------------------------
 elif args.mode == 'full':
-	bucketFinder = BucketFinder()
-	tokenFinder = TokenFinder()
-	headerFinder = HeaderFinder()
-	openRedirect = OpenRedirect()
-	cssChecker = OpenRedirect()
+	fullScanner = FullScanner()
+	fullScanner.showStartScreen()
 	try:
 		for i in range(args.threads):
-			t = threading.Thread(target = fullScan, args = (bucketFinder, tokenFinder, headerFinder, openRedirect, cssChecker, urls[i],))
+			t = threading.Thread(target = fullScanner.run, args = (urls[i],))
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
-		bucketFinder.output()
-		tokenFinder.output()
-		headerFinder.output()
-		openRedirect.output()
-		cssChecker.output()
+		fullScanner.output()
+	fullScanner.showEndScreen()
