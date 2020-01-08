@@ -9,6 +9,10 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 class HeaderFinder():
 
 	data = []
+	outputActivated = False
+
+	def activateOutput(self):
+		self.outputActivated = True
 
 	def showStartScreen(self):
 
@@ -25,7 +29,7 @@ class HeaderFinder():
 		print('------------./*/.----------++++++++++++++-----+++---------+++----./*/.-----------------')
 		print('---------------------------------------------------------------------------------------')
 		print('                                                                                       ')
-		print('------------------------------------ Handerllon © -------------------------------------')
+		print('----------------------------------- Handerllon ©_© ------------------------------------')
 		print('                                                                                       ')
 		print('-------------------------- Starting security header scanner ---------------------------')
 		print('Listing headers on input...')
@@ -46,7 +50,8 @@ class HeaderFinder():
 
 		for url in urls:
 			try:
-				print('Scanning ' + url)
+				if self.outputActivated:
+					print('Scanning ' + url)
 				response = requests.get(url, verify = False)
 			except requests.exceptions.MissingSchema:
 				print('Missing schema error on ' + url)

@@ -46,6 +46,7 @@ if not os.path.exists('output'):
 if args.mode == 'bucketFinder':
 	bucketFinder = BucketFinder()
 	bucketFinder.showStartScreen()
+	bucketFinder.activateOutput()
 	try:
 		for i in range(args.threads):
 			t = threading.Thread(target = bucketFinder.run, args = (urls[i],))
@@ -59,6 +60,7 @@ if args.mode == 'bucketFinder':
 elif args.mode == 'tokenFinder':
 	tokenFinder = TokenFinder()
 	tokenFinder.showStartScreen()
+	tokenFinder.activateOutput()
 	try:
 		for i in range(args.threads):
 			t = threading.Thread(target = tokenFinder.run, args = (urls[i],))
@@ -72,6 +74,7 @@ elif args.mode == 'tokenFinder':
 elif args.mode == 'headerFinder':
 	headerFinder = HeaderFinder()
 	headerFinder.showStartScreen()
+	headerFinder.activateOutput()
 	try:
 		for i in range(args.threads):
 			t = threading.Thread(target = headerFinder.run, args = (urls[i],))
@@ -85,6 +88,7 @@ elif args.mode == 'headerFinder':
 elif args.mode == 'openRedirect':
 	openRedirect = OpenRedirect()
 	openRedirect.showStartScreen()
+	openRedirect.activateOutput()
 	try:
 		for i in range(args.threads):
 			t = threading.Thread(target = openRedirect.run, args = (urls[i],))
@@ -98,6 +102,7 @@ elif args.mode == 'openRedirect':
 elif args.mode == 'cssChecker':
 	cssChecker = CssChecker()
 	cssChecker.showStartScreen()
+	cssChecker.activateOutput()
 	try:
 		for i in range(args.threads):
 			t = threading.Thread(target = cssChecker.run, args = (urls[i],))

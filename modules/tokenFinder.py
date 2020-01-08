@@ -8,6 +8,10 @@ class TokenFinder():
 	scanned_targets = []
 	data = []
 	error_data = []
+	outputActivated = False
+
+	def activateOutput(self):
+		self.outputActivated = True
 
 	def showStartScreen(self):
 
@@ -24,7 +28,7 @@ class TokenFinder():
 		print('------------./*/.---------------++++-----------+++---------------./*/.-----------------')
 		print('---------------------------------------------------------------------------------------')
 		print('                                                                                       ')
-		print('------------------------------------ Handerllon © -------------------------------------')
+		print('----------------------------------- Handerllon ©_© ------------------------------------')
 		print('                                                                                       ')
 		print('-------------------------------- Starting token finder --------------------------------')
 		print('Searching sensitive info on input...')
@@ -167,7 +171,8 @@ class TokenFinder():
 		session.headers.update(headers)
 
 		for url in urls:
-			print('Scanning '+ url)
+			if self.outputActivated:
+				print('Scanning '+ url)
 
 			self.processHtml(session, url)
 			js_in_url = self.get_js_files(url)

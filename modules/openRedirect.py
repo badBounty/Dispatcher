@@ -9,6 +9,10 @@ class OpenRedirect():
 	payloads = []
 	parameters = []
 	data = []
+	outputActivated = False
+
+	def activateOutput(self):
+		self.outputActivated = True
 
 	def showStartScreen(self):
 
@@ -25,7 +29,7 @@ class OpenRedirect():
 		print('------------./*/.-----------++++++++++++------+++--------++++----./*/.-----------------')
 		print('---------------------------------------------------------------------------------------')
 		print('                                                                                       ')
-		print('------------------------------------ Handerllon © -------------------------------------')
+		print('----------------------------------- Handerllon ©_© ------------------------------------')
 		print('                                                                                       ')
 		print('--------------------------- Starting open redirect scanner ----------------------------')
 		print('Scanning for open redirect on input...')
@@ -42,7 +46,6 @@ class OpenRedirect():
 
 
 	def testOpenRedirect(self,session,url):
-		print('Scanning ' + url)
 		for parameter in self.parameters:
 			for payload in self.payloads:
 				finalPayload = parameter.replace("{payload}",payload)
@@ -78,6 +81,8 @@ class OpenRedirect():
 		#print(self.payloads)
 
 		for url in urls:
+			if self.outputActivated:
+				print('Scanning ' + url)
 
 			self.testOpenRedirect(session, url)
 

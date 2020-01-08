@@ -15,6 +15,10 @@ class BucketFinder():
 	data = []
 	error_data = []
 	msTeamsActivated = False
+	outputActivated = False
+
+	def activateOutput(self):
+		self.outputActivated = True
 
 	def showStartScreen(self):
 		print('---------------------------------------------------------------------------------------')
@@ -30,7 +34,7 @@ class BucketFinder():
 		print('------------./*/.----------++++++++++++++------++++++++++++++----./*/.-----------------')
 		print('---------------------------------------------------------------------------------------')
 		print('                                                                                       ')
-		print('------------------------------------ Handerllon © -------------------------------------')
+		print('----------------------------------- Handerllon ©_© ------------------------------------')
 		print('                                                                                       ')
 		print('-------------------------- Starting vulnerable bucket finder --------------------------')
 		print('Searching buckets on input...')
@@ -225,7 +229,8 @@ class BucketFinder():
 		session.headers.update(headers)
 		
 		for url in urls:
-			print('Scanning '+ url)
+			if self.outputActivated:
+				print('Scanning '+ url)
 
 			buckets_in_html = self.get_buckets(session, url, 'html code')
 			self.check_buckets(url, 'html code', buckets_in_html)

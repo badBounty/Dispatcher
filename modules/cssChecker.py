@@ -10,6 +10,11 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 class CssChecker():
 
 	data = []
+	outputActivated = False
+
+	def activateOutput(self):
+		self.outputActivated = True
+
 
 	def showStartScreen(self):
 
@@ -26,7 +31,7 @@ class CssChecker():
 		print('------------./*/.-----------+++++++++++++------+++++++++++++-----./*/.-----------------')
 		print('---------------------------------------------------------------------------------------')
 		print('                                                                                       ')
-		print('------------------------------------ Handerllon © -------------------------------------')
+		print('----------------------------------- Handerllon ©_© ------------------------------------')
 		print('                                                                                       ')
 		print('-------------------------------- Starting css checker ---------------------------------')
 		print('Listing headers on input...')
@@ -98,7 +103,8 @@ class CssChecker():
 		session.headers.update(headers)
 
 		for url in urls:
-			print('Scanning ' + url)
+			if self.outputActivated:
+				print('Scanning ' + url)
 
 			css_found = self.get_css_files(session, url)
 

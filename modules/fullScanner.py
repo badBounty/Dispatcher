@@ -26,9 +26,9 @@ class FullScanner():
 		print('------------./*/.----------+++-----------------++++++++++++++----./*/.-----------------')
 		print('---------------------------------------------------------------------------------------')
 		print('                                                                                       ')
-		print('------------------------------------ Handerllon © -------------------------------------')
+		print('----------------------------------- Handerllon ©_© ------------------------------------')
 		print('                                                                                       ')
-		print('---------------------- Starting full scan, this may take a while -----------------------')
+		print('---------------------- Starting full scan, this may take a while ----------------------')
 		print('Searching urls...')
 
 	def showEndScreen(self):
@@ -46,6 +46,8 @@ class FullScanner():
 		self.cssChecker.output()
 
 	def run(self, urls):
+
+		self.bucketFinder.activateOutput()
 
 		self.bucketFinder.run(urls)
 		self.tokenFinder.run(urls)
