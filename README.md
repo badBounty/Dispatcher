@@ -1,6 +1,6 @@
-# Scanner
+# Dispatcher
 
-Scanner is a tool for reviewing the html code from a webpage and the javascript files within it.  
+This is a tool for reviewing the html code from a webpage and the javascript files within it.  
 
 It presents several modes:
 
@@ -15,3 +15,7 @@ It presents several modes:
 - cssChecker: Verifies if any css files present in the url have a `response.status_code != 200` (Could cause CSS Injection)
 
 Input urls must contain http or https
+
+## Usage
+
+`py dispatcher.py -m <Mode> -i <input> -t <threads (Default 3)>`
