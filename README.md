@@ -11,6 +11,7 @@
 |---|---|---|
 | -m  |  MODE  | - `bucketFinder`: Scans code in search of s3 buckets, then tries to execute ls and cp commands.|
 |||- `tokenFinder`: Searches hidden tokens in html and javascript files|
+|||- `headerFinder`: Generates a csv file with the security headers present on each url|
 |||- `cssChecker`: Checks if css files used in the page are valid (return code 200)|
 |||- `openRedirect`: Checks if the url has a open redirect vulnerability (Currently only scanning login endpoints)|
 |||- `full`: All modules at the same time|
