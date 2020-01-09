@@ -19,3 +19,11 @@ Input urls must contain http or https
 ## Usage
 
 `py dispatcher.py -m <Mode> -i <input> -t <threads (Default 3)>`
+
+### Options
+
+| Command  | Description  |
+|---|---|
+| -m  | Mode, available modes are bucketFinder, tokenFinder, cssChecker, openRedirect and full for all  |
+| -t  | Number of threads to use, default is 3  |
+| -i | Name of the input file  |
