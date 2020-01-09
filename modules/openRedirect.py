@@ -47,7 +47,7 @@ class OpenRedirect():
 
 	def testOpenRedirect(self,session,url):
 
-		if 'login' not in url:
+		if 'login' not in url or 'register' not in url:
 			return
 
 		for parameter in self.parameters:
