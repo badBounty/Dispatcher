@@ -1,3 +1,4 @@
+
 # Dispatcher
 
 This is a tool for reviewing the html code from a webpage and the javascript files within it.  
@@ -22,11 +23,12 @@ Input urls must contain http or https
 
 ### Options
 
-| Command  | Description  ||
-|---|---||
-| -m  | Mode  |BucketFinder|
-|   |   | CssChecker |
-|   |   | TokenFinder |
-|   |   | OpenRedirect |
-| -t  | Number of threads to use, default is 3  ||
-| -i | Name of the input file  ||
+| Command  | Description  |   |
+|---|---|---|
+| -m  |  MODE  | - `bucketFinder`: Scans code in search of s3 buckets, then tries to execute ls and cp commands.|
+|||- `tokenFinder`: Searches hidden tokens in html and javascript files|
+|||- `cssChecker`: Checks if css files used in the page are valid (return code 200)|
+|||- `openRedirect`: Checks if the url has a open redirect vulnerability (Currently only scanning login endpoints)|
+|||- `full`: All modules at the same time|
+| -t  | THREADS  | Number of threads to use, the default is 3  |
+| -i | INPUT  | Input file that contains urls to be scanned (with http/https)  |
