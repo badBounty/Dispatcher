@@ -22,8 +22,11 @@ Input urls must contain http or https
 
 ### Options
 
-| Command  | Description  |
-|---|---|
-| -m  | Mode, available modes are bucketFinder, tokenFinder, cssChecker, openRedirect and full for all  |
-| -t  | Number of threads to use, default is 3  |
-| -i | Name of the input file  |
+| Command  | Description  ||
+|---|---||
+| -m  | Mode  |BucketFinder|
+|   |   | CssChecker |
+|   |   | TokenFinder |
+|   |   | OpenRedirect |
+| -t  | Number of threads to use, default is 3  ||
+| -i | Name of the input file  ||
