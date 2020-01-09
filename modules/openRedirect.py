@@ -46,6 +46,10 @@ class OpenRedirect():
 
 
 	def testOpenRedirect(self,session,url):
+
+		if 'login' not in url:
+			return
+
 		for parameter in self.parameters:
 			for payload in self.payloads:
 				finalPayload = parameter.replace("{payload}",payload)
