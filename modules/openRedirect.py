@@ -52,13 +52,16 @@ class OpenRedirect():
 				
 				url_to_scan = url + finalPayload
 
-				response = session.get(url_to_scan, verify = False)
+				try:
+					response = session.get(url_to_scan, verify = False)
+				except:
+					continue
 				
-				response_list = response.url.split('/')
-				#print (response_list)
-				if response_list[2] == 'google.com':
-					print('Url ' + url_to_scan + ' was redirected')
-					print('To ' + response.url)
+				for resp in response.history:
+					resp_split = resp.url.split('/')
+					if resp_split[2] == 'google.com':
+						print (resp.status_code, resp.url)
+						data.append([url,parameter,payload,resp.url])
 		
 		return
 
