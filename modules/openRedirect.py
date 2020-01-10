@@ -44,12 +44,13 @@ class OpenRedirect():
 		df = pd.DataFrame(self.data, columns = ['Url','parameter','payload','destination'])
 		df.to_csv('output/openRedirect.csv', index = False)
 
-
+	#Testing open redirect
 	def testOpenRedirect(self,session,url):
 
 		if 'login' not in url or 'register' not in url:
 			return
 
+		#For each endpoint we try parameters and payloads
 		for parameter in self.parameters:
 			for payload in self.payloads:
 				finalPayload = parameter.replace("{payload}",payload)
@@ -61,6 +62,8 @@ class OpenRedirect():
 				except:
 					continue
 				
+				#If on the redirect history we see google.com as host
+				#The information is added for output
 				for resp in response.history:
 					resp_split = resp.url.split('/')
 					if resp_split[2] == 'google.com':

@@ -84,7 +84,8 @@ class TokenFinder():
 		#print(str(len(js_found)) + ' js files were found!')
 		return(js_found)
 
-	def processHtml(self, session, url):
+	#Searches certain keywords on site
+	def process(self, session, url):
 
 		try:
 			response = session.get(url, verify = False)
@@ -103,6 +104,8 @@ class TokenFinder():
 		keys = re.findall('key="(.+?)"', response.text)
 		usernames = re.findall('Username="(.+?)"', response.text)
 		passwords = re.findall('Password="(.+?)"', response.text)
+		access_key_ids = re.findall('access_key_id="(.+?)"', response.text)
+		secret_access_key_ids = re.findall('secret_access_key_id="(.+?)"', response.text)
 
 		if len(tokens) > 0:
 			for token in tokens:
@@ -119,49 +122,12 @@ class TokenFinder():
 		if len(passwords) > 0:
 			for password in passwords:
 				self.data.append([url, 'Password', password])
-
-		
-
-	def processJavascript(self, session, url):
-
-		if url in self.scanned_targets:
-			return []
-
-		self.scanned_targets.append(url)
-
-		try:
-			response = session.get(url, verify = False)
-		except:
-			print('Url: ' + url + ' could not be accessed')
-			self.error_data.append([url,'Invalid js file'])
-			return []
-
-		if response.status_code == 404:
-			print('Url: ' + url + ' returned 404')
-			self.error_data.append([url,'Returned 404'])
-			return []
-
-		tokens = re.findall('token="(.+?)"', response.text)
-		tokens_2 = re.findall('Token="(.+?)"', response.text)
-		keys = re.findall('key="(.+?)"', response.text)
-		usernames = re.findall('Username="(.+?)"', response.text)
-		passwords = re.findall('Password="(.+?)"', response.text)
-
-		if len(tokens) > 0:
-			for token in tokens:
-				self.data.append([url, 'Token', token])
-		if len(tokens_2) > 0:
-			for token in tokens_2:
-				self.data.append([url, 'Token',token])
-		if len(keys) > 0:
-			for key in keys:
-				self.data.append([url, 'Key', key])
-		if len(usernames) > 0:
-			for username in usernames:
-				self.data.append([url, 'Username', username])
-		if len(passwords) > 0:
-			for password in passwords:
-				self.data.append([url, 'Password', password])
+		if len(access_key_ids) > 0:
+			for key in access_key_ids:
+				self.data.append([url, 'access_key_id', key])
+		if len(secret_access_key_ids) > 0:
+			for key in secret_access_key_ids:
+				self.data.append([url, 'secret_access_key', key])
 
 	def run (self, urls):
 
@@ -174,13 +140,13 @@ class TokenFinder():
 			if self.outputActivated:
 				print('Scanning '+ url)
 
-			self.processHtml(session, url)
+			self.process(session, url)
 			js_in_url = self.get_js_files(url)
 
 			#print('Scanning js files...')
 
 			for js_endpoint in js_in_url:
-				self.processJavascript(session, js_endpoint)
+				self.process(session, js_endpoint)
 
 		self.output()
 

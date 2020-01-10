@@ -12,7 +12,7 @@ from modules.fullScanner import FullScanner
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-m', '--mode', help = "Module to be used (s3bucket, token, header, css, full), refer to README for description of each module",
+parser.add_argument('-m', '--mode', help = "Module to be used (s3bucket, token, header, css, openred, full), refer to README for description of each module",
 					required = True,
 					action = 'store')
 parser.add_argument('-i', '--input', help = "Input file that contains urls to be scanned (With HTTP/HTTPS)",
@@ -27,20 +27,23 @@ parser.add_argument('-t','--threads', help = "Number of threads for the program"
 
 args = parser.parse_args()
 
+if not os.path.exists('output'):
+	os.makedirs('output')
+
+#Read urls from input
 urls = []
 with open(args.input) as fp:
 	lines = fp.read()
 	urls = lines.split('\n')
 
-urls = filter(None, urls) # fastest
+#Filter empty spaces
+urls = filter(None, urls)
 urls = list(urls)
 
+#Dividing based on thread number
 urls = np.array_split(urls,args.threads)
 for i in range(len(urls)):
 	urls[i] = urls[i].tolist()
-
-if not os.path.exists('output'):
-	os.makedirs('output')
 
 #------------------ Bucket Finder --------------------
 if args.mode == 's3bucket':

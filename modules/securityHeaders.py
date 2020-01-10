@@ -46,6 +46,7 @@ class HeaderFinder():
 
 		df.to_csv('output/headerFinder.csv', index = False)
 
+	#Verifies headers on each url and adds data to output
 	def run(self, urls):
 
 		for url in urls:

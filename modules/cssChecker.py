@@ -84,6 +84,7 @@ class CssChecker():
 
 		return(css_found)
 
+	#Checks if css file found returns code 200
 	def scan_css(self, session, host, url):
 
 		try:

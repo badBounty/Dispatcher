@@ -3,7 +3,7 @@
 
 Dispatcher tries to find vulnerabilities not covered by regular scanners (Nessus, acunetix). This is a work in progress so any feedback is appreciated.  
 
-Available modules are listed under Options.
+Available modules are listed under Options. Oputput will be under output folder.
 
 ## Usage
 
