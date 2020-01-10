@@ -12,7 +12,7 @@ from modules.fullScanner import FullScanner
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-m', '--mode', help = "Available options are bucketFinder, tokenFinder, headerFinder, cssChecker or full for all. Refer documentation for more info",
+parser.add_argument('-m', '--mode', help = "Module to be used (), refer to README for description of each module",
 					required = True,
 					action = 'store')
 parser.add_argument('-i', '--input', help = "Input file that contains urls to be scanned (With HTTP/HTTPS)",
@@ -43,7 +43,7 @@ if not os.path.exists('output'):
 	os.makedirs('output')
 
 #------------------ Bucket Finder --------------------
-if args.mode == 'bucketFinder':
+if args.mode == 's3bucket':
 	bucketFinder = BucketFinder()
 	bucketFinder.showStartScreen()
 	bucketFinder.activateOutput()
@@ -57,7 +57,7 @@ if args.mode == 'bucketFinder':
 	bucketFinder.showEndScreen()
 
 #------------------ Token Finder --------------------
-elif args.mode == 'tokenFinder':
+elif args.mode == 'token':
 	tokenFinder = TokenFinder()
 	tokenFinder.showStartScreen()
 	tokenFinder.activateOutput()
@@ -71,7 +71,7 @@ elif args.mode == 'tokenFinder':
 	tokenFinder.showEndScreen()
 
 #------------------ Header Finder --------------------
-elif args.mode == 'headerFinder':
+elif args.mode == 'header':
 	headerFinder = HeaderFinder()
 	headerFinder.showStartScreen()
 	headerFinder.activateOutput()
@@ -85,7 +85,7 @@ elif args.mode == 'headerFinder':
 	headerFinder.showEndScreen()
 
 #------------------ Open Redirect --------------------
-elif args.mode == 'openRedirect':
+elif args.mode == 'openred':
 	openRedirect = OpenRedirect()
 	openRedirect.showStartScreen()
 	openRedirect.activateOutput()
@@ -99,7 +99,7 @@ elif args.mode == 'openRedirect':
 	openRedirect.showEndScreen()
 
 #------------------- Css Checker ---------------------
-elif args.mode == 'cssChecker':
+elif args.mode == 'css':
 	cssChecker = CssChecker()
 	cssChecker.showStartScreen()
 	cssChecker.activateOutput()
