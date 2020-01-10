@@ -12,7 +12,7 @@ from modules.fullScanner import FullScanner
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-m', '--mode', help = "Module to be used (), refer to README for description of each module",
+parser.add_argument('-m', '--mode', help = "Module to be used (s3bucket, token, header, css, full), refer to README for description of each module",
 					required = True,
 					action = 'store')
 parser.add_argument('-i', '--input', help = "Input file that contains urls to be scanned (With HTTP/HTTPS)",

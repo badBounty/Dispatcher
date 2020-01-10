@@ -1,9 +1,18 @@
 
 # Dispatcher
 
+Dispatcher tries to find vulnerabilities not covered by regular scanners (Nessus, acunetix). This is a work in progress so any feedback is appreciated.  
+
+Available modules are listed under Options.
+
 ## Usage
 
 `py dispatcher.py -m <Mode> -i <input>`
+
+## Requirements
+
+- `python 3.x`
+- `pip`
 
 ## Installation
 
