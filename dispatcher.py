@@ -36,6 +36,9 @@ with open(args.input) as fp:
 	lines = fp.read()
 	urls = lines.split('\n')
 
+if not os.path.exists('output/'+str(args.input)):
+	os.makedirs('output/'+str(args.input))
+
 #Filter empty spaces
 urls = filter(None, urls)
 urls = list(urls)
@@ -52,11 +55,11 @@ if args.mode == 's3bucket':
 	bucketFinder.activateOutput()
 	try:
 		for i in range(args.threads):
-			t = threading.Thread(target = bucketFinder.run, args = (urls[i],))
+			t = threading.Thread(target = bucketFinder.run, args = (urls[i],str(args.input),))
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
-		bucketFinder.output()
+		bucketFinder.output(str())
 	bucketFinder.showEndScreen()
 
 #------------------ Token Finder --------------------
@@ -66,7 +69,7 @@ elif args.mode == 'token':
 	tokenFinder.activateOutput()
 	try:
 		for i in range(args.threads):
-			t = threading.Thread(target = tokenFinder.run, args = (urls[i],))
+			t = threading.Thread(target = tokenFinder.run, args = (urls[i],str(args.input),))
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
@@ -80,7 +83,7 @@ elif args.mode == 'header':
 	headerFinder.activateOutput()
 	try:
 		for i in range(args.threads):
-			t = threading.Thread(target = headerFinder.run, args = (urls[i],))
+			t = threading.Thread(target = headerFinder.run, args = (urls[i],str(args.input),))
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
@@ -94,7 +97,7 @@ elif args.mode == 'openred':
 	openRedirect.activateOutput()
 	try:
 		for i in range(args.threads):
-			t = threading.Thread(target = openRedirect.run, args = (urls[i],))
+			t = threading.Thread(target = openRedirect.run, args = (urls[i],str(args.input),))
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
@@ -108,7 +111,7 @@ elif args.mode == 'css':
 	cssChecker.activateOutput()
 	try:
 		for i in range(args.threads):
-			t = threading.Thread(target = cssChecker.run, args = (urls[i],))
+			t = threading.Thread(target = cssChecker.run, args = (urls[i],str(args.input),))
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
@@ -121,7 +124,7 @@ elif args.mode == 'full':
 	fullScanner.showStartScreen()
 	try:
 		for i in range(args.threads):
-			t = threading.Thread(target = fullScanner.run, args = (urls[i],))
+			t = threading.Thread(target = fullScanner.run, args = (urls[i],str(args.input),))
 			t.start()
 			t.join()
 	except KeyboardInterrupt:

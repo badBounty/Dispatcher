@@ -45,12 +45,12 @@ class FullScanner():
 		self.openRedirect.output()
 		self.cssChecker.output()
 
-	def run(self, urls):
+	def run(self, urls, inputName):
 
 		self.bucketFinder.activateOutput()
 
-		self.bucketFinder.run(urls)
-		self.tokenFinder.run(urls)
-		self.headerFinder.run(urls)
-		self.openRedirect.run(urls)
-		self.cssChecker.run(urls)
+		self.bucketFinder.run(urls, inputName)
+		self.tokenFinder.run(urls, inputName)
+		self.headerFinder.run(urls, inputName)
+		self.openRedirect.run(urls, inputName)
+		self.cssChecker.run(urls, inputName)

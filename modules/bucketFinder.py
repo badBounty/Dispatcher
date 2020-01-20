@@ -47,9 +47,9 @@ class BucketFinder():
 
 	def output(self):
 		df = pd.DataFrame(self.data, columns = ['SourceURL','js_reference','Bucket Name','ls allowed', 'cprm allowed'])
-		df.to_csv('output/bucketFinder.csv', index = False)
+		df.to_csv('output/'+self.inputName+'/bucketFinder.csv', index = False)
 		df2 = pd.DataFrame(self.error_data, columns = ['SourceURL','js_reference','Reason'])
-		df2.to_csv('output/bucketFinderError.csv', index = False)
+		df2.to_csv('output/'+self.inputName+'/bucketFinderError.csv', index = False)
 
 	def setMsTeams(self,msTeams):
 		self.msTeamsActivated = True
@@ -221,8 +221,9 @@ class BucketFinder():
 			self.configureOutput(hostname, subname, bucket_list, ls_allowed, cprm_allowed)
 
 	#Receives an urlList
-	def run(self,urls):
+	def run(self,urls, inputName):
 
+		self.inputName = inputName
 		session = requests.Session()
 		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
 

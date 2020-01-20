@@ -43,7 +43,7 @@ class CssChecker():
 
 	def output(self):
 		df = pd.DataFrame(self.data, columns = ['SourceURL','Css_Url','Reason'])
-		df.to_csv('output/cssChecker.csv', index = False)
+		df.to_csv('output/'+self.inputName+'cssChecker.csv', index = False)
 
 	def filterInvalids(self,some_list):
 		res = []
@@ -96,7 +96,9 @@ class CssChecker():
 		if response.status_code != 200:
 			self.data.append([host, url, 'Returned ' + response.status_code])
 
-	def run(self, urls):
+	def run(self, urls, inputName):
+
+		self.inputName = inputName
 
 		session = requests.Session()
 		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}

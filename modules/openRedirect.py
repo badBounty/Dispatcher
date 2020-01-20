@@ -42,7 +42,7 @@ class OpenRedirect():
 
 	def output(self):
 		df = pd.DataFrame(self.data, columns = ['Url','parameter','payload','destination'])
-		df.to_csv('output/openRedirect.csv', index = False)
+		df.to_csv('output/'+self.inputName+'/openRedirect.csv', index = False)
 
 	#Testing open redirect
 	def testOpenRedirect(self,session,url):
@@ -72,7 +72,9 @@ class OpenRedirect():
 		
 		return
 
-	def run(self, urls):
+	def run(self,urls, inputName):
+
+		self.inputName = inputName
 
 		session = requests.Session()
 		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}

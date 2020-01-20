@@ -40,9 +40,9 @@ class TokenFinder():
 
 	def output(self):
 		df = pd.DataFrame(self.data, columns = ['SourceURL','Type','Found'])
-		df.to_csv('output/tokenFinder.csv', index = False)
+		df.to_csv('output/'+self.inputName+'/tokenFinder.csv', index = False)
 		df2 = pd.DataFrame(self.error_data, columns = ['SourceURL','Reason'])
-		df2.to_csv('output/tokenFinderError.csv', index = False)
+		df2.to_csv('output/'+self.inputName+'/tokenFinderError.csv', index = False)
 
 
 	def filterInvalids(self,some_list):
@@ -129,8 +129,9 @@ class TokenFinder():
 			for key in secret_access_key_ids:
 				self.data.append([url, 'secret_access_key', key])
 
-	def run (self, urls):
+	def run(self,urls, inputName):
 
+		self.inputName = inputName
 		session = requests.Session()
 		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
 
