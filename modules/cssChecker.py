@@ -55,34 +55,50 @@ class CssChecker():
 
 	def get_css_files(self, session, url):
 
+		# Regex used
+		regex_str = r"""
+  		(?:"|')                               # Start newline delimiter
+  		(
+    		((?:[a-zA-Z]{1,10}://|//)           # Match a scheme [a-Z]*1-10 or //
+    		[^"'/]{1,}\.                        # Match a domainname (any character + dot)
+    		[a-zA-Z]{2,}[^"']{0,})              # The domainextension and/or path
+    		|
+    		((?:/|\.\./|\./)                    # Start with /,../,./
+    		[^"'><,;| *()(%%$^/\\\[\]]          # Next character can't be...
+    		[^"'><,;|()]{1,})                   # Rest of the characters can't be
+    		|
+    		([a-zA-Z0-9_\-/]{1,}/               # Relative endpoint with /
+    		[a-zA-Z0-9_\-/]{1,}                 # Resource name
+    		\.(?:[a-zA-Z]{1,4}|action)          # Rest + extension (length 1-4 or action)
+    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
+    		|
+    		([a-zA-Z0-9_\-/]{1,}/               # REST API (no extension) with /
+    		[a-zA-Z0-9_\-/]{3,}                 # Proper REST endpoints usually have 3+ chars
+    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
+    		|
+    		([a-zA-Z0-9_\-]{1,}                 # filename
+    		\.(?:php|asp|aspx|jsp|json|
+    		     action|html|js|txt|xml)        # . + extension
+    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
+  		)
+  		(?:"|')                               # End newline delimiter
+		"""
+
+		regex = re.compile(regex_str, re.VERBOSE)
+
 		try:
-			get_response = session.get(url, verify = False)
+			response = session.get(url, verify = False)
 		except Exception:
 			return []
-			
-		get_text = get_response.text
 
-		css_found = re.findall('([^\s",\'%]+)\.css', get_text)
-		#print(css_found)
-		css_found = self.filterInvalids(css_found)
-		for i in range (len(css_found)):
-			#We add the .css that was removed at the regex
-			css_found[i] = css_found[i] + '.css'
+		all_matches = [(m.group(1), m.start(0), m.end(0)) for m in re.finditer(regex, response.text)]
+		css_endpoints = list()
+		for match in all_matches:
+			if '.css' in list(match)[0]:
+				css_endpoints.append(list(match)[0])
 
-		host = get_response.url.split('/')
-		host_protocol = host[0]
-		host_name = host[2]
-		only_hostname = host_protocol + '//' + host_name
-
-		for i in range (len(css_found)):
-			if css_found[i][:2] == '//':
-				css_found[i] = 'https:' + css_found[i]
-			elif css_found[i][:1] == '/':
-				css_found[i] = only_hostname + css_found[i]
-			elif css_found[i][:1] != 'h':
-				css_found[i] = 'https://' + css_found[i]
-
-		return(css_found)
+		print(css_endpoints)
+		return css_endpoints
 
 	#Checks if css file found returns code 200
 	def scan_css(self, session, host, url):
