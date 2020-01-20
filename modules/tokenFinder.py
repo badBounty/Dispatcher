@@ -97,7 +97,7 @@ class TokenFinder():
 			if '.js' in list(match)[0]:
 				js_endpoints.append(list(match)[0])
 
-		print(js_endpoints)
+		#print(js_endpoints)
 		return js_endpoints
 
 	#Searches certain keywords on site

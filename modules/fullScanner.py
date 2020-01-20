@@ -10,7 +10,7 @@ class FullScanner():
 	tokenFinder = TokenFinder()
 	headerFinder = HeaderFinder()
 	openRedirect = OpenRedirect()
-	cssChecker = OpenRedirect()
+	cssChecker = CssChecker()
 
 	def showStartScreen(self):
 		print('---------------------------------------------------------------------------------------')

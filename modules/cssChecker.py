@@ -97,7 +97,7 @@ class CssChecker():
 			if '.css' in list(match)[0]:
 				css_endpoints.append(list(match)[0])
 
-		print(css_endpoints)
+		#print(css_endpoints)
 		return css_endpoints
 
 	#Checks if css file found returns code 200
