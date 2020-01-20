@@ -117,6 +117,8 @@ class BucketFinder():
 		#Way 2: http<s>://bucketName.s3.amazonaws.com
 		#Way 3: //bucketName.s3.amazonaws.com
 
+		# view-source:https://cms.sky.com.br/en/card-page-cms
+
 		#---------Way I----------
 		bucketsFirstHTTPS = re.findall('"https://s3.amazonaws.com(.+?)"', response.text)
 		bucketsFirstHTTPS = self.filterInvalids(bucketsFirstHTTPS)
