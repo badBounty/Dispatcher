@@ -43,7 +43,7 @@ class CssChecker():
 
 	def output(self):
 		df = pd.DataFrame(self.data, columns = ['SourceURL','Css_Url','Reason'])
-		df.to_csv('output/'+self.inputName+'cssChecker.csv', index = False)
+		df.to_csv('output/'+self.inputName+'/cssChecker.csv', index = False)
 
 	def filterInvalids(self,some_list):
 		res = []

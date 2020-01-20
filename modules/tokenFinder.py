@@ -117,11 +117,12 @@ class TokenFinder():
 
 		tokens = re.findall('token:"(.+?)"', response.text)
 		tokens_2 = re.findall('Token:"(.+?)"', response.text)
-		keys = re.findall('key:"(.+?)"', response.text)
 		usernames = re.findall('Username:"(.+?)"', response.text)
 		passwords = re.findall('Password:"(.+?)"', response.text)
 		access_key_ids = re.findall('access_key_id:"(.+?)"', response.text)
 		secret_access_key_ids = re.findall('secret_access_key_id:"(.+?)"', response.text)
+		authorization = re.findall('authorization:"(.+?)"', response.text)
+		api_key = re.findall('api_key:"(.+?)"', response.text)
 
 		if len(tokens) > 0:
 			for token in tokens:
@@ -129,8 +130,8 @@ class TokenFinder():
 		if len(tokens_2) > 0:
 			for token in tokens_2:
 				self.data.append([url, 'Token',token])
-		if len(keys) > 0:
-			for key in keys:
+		if len(api_key) > 0:
+			for key in api_key:
 				self.data.append([url, 'Key', key])
 		if len(usernames) > 0:
 			for username in usernames:
@@ -143,6 +144,9 @@ class TokenFinder():
 				self.data.append([url, 'access_key_id', key])
 		if len(secret_access_key_ids) > 0:
 			for key in secret_access_key_ids:
+				self.data.append([url, 'secret_access_key', key])
+		if len(authorization) > 0:
+			for key in authorization:
 				self.data.append([url, 'secret_access_key', key])
 
 	def run(self,urls, inputName):
