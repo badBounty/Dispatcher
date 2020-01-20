@@ -37,7 +37,7 @@ class HeaderFinder():
 	def showEndScreen(self):
 
 		print('---------------------------------------------------------------------------------------')
-		print('Finished! Please check output/headerFinder.csv for results!')
+		print('Finished! Please check output for results!')
 
 	def output(self):
 		df = pd.DataFrame(self.data, columns = ['url','Content-Security-Policy','X-XSS-Protection',

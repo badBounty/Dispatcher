@@ -36,7 +36,7 @@ class TokenFinder():
 	def showEndScreen(self):
 
 		print('---------------------------------------------------------------------------------------')
-		print('Finished! Please check output/tokenFinder.csv for results and output/tokenFinderError.csv for errors found')
+		print('Finished! Please check output for results!')
 
 	def output(self):
 		df = pd.DataFrame(self.data, columns = ['SourceURL','Type','Found'])

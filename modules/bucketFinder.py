@@ -42,7 +42,7 @@ class BucketFinder():
 	def showEndScreen(self):
 
 		print('---------------------------------------------------------------------------------------')
-		print('Finished! Please check output/bucketFinder.csv for results and output/bucketFinderError.csv for errors found')
+		print('Finished! Please check output for results!')
 
 
 	def output(self):

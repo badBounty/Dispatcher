@@ -39,7 +39,7 @@ class CssChecker():
 	def showEndScreen(self):
 
 		print('---------------------------------------------------------------------------------------')
-		print('Finished! Please check output/cssChecker.csv for results!')
+		print('Finished! Please check output for results!')
 
 	def output(self):
 		df = pd.DataFrame(self.data, columns = ['SourceURL','Css_Url','Reason'])

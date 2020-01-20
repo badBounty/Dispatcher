@@ -37,7 +37,7 @@ class OpenRedirect():
 	def showEndScreen(self):
 
 		print('---------------------------------------------------------------------------------------')
-		print('Finished! Please check output/openRedirect.csv for results!')
+		print('Finished! Please check output for results!')
 
 
 	def output(self):

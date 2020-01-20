@@ -34,7 +34,7 @@ class FullScanner():
 	def showEndScreen(self):
 
 		print('---------------------------------------------------------------------------------------')
-		print('Finished! Please check output folder for results')
+		print('Finished! Please check output for results!')
 
 
 	def output(self):
