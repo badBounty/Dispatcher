@@ -116,8 +116,7 @@ class BucketFinder():
 		#Way 1: http<s>://s3.amazonaws.com/bucketName
 		#Way 2: http<s>://bucketName.s3.amazonaws.com
 		#Way 3: //bucketName.s3.amazonaws.com
-
-		# view-source:https://cms.sky.com.br/en/card-page-cms
+		#Way 4: https://s3-area.amazonaws.com/<bucketName>/
 
 		#---------Way I----------
 		bucketsFirstHTTPS = re.findall('"https://s3.amazonaws.com(.+?)"', response.text)
@@ -135,7 +134,11 @@ class BucketFinder():
 		bucketsThird = re.findall('\"//(.+?).s3.amazonaws.com', response.text)
 		bucketsThird = self.filterInvalids(bucketsThird)
 
-		bucket_list = bucketsFirstHTTP + bucketsSecondHTTP + bucketsFirstHTTPS + bucketsSecondHTTPS + bucketsThird
+		#---------Way IV----------
+		bucketsFourth = re.findall('amazonaws.com/(.+?)/', response.text)
+		bucketsFourth = self.filterInvalids(bucketsFourth)
+
+		bucket_list = bucketsFirstHTTP + bucketsSecondHTTP + bucketsFirstHTTPS + bucketsSecondHTTPS + bucketsThird + bucketsFourth
 		bucket_list = list(dict.fromkeys(bucket_list))
 
 		for i in range (len(bucket_list)):
