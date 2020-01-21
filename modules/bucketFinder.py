@@ -17,6 +17,35 @@ class BucketFinder():
 	msTeamsActivated = False
 	outputActivated = False
 
+	# Regex used
+	regex_str = r"""
+  		(?:"|')                               # Start newline delimiter
+  		(
+    		((?:[a-zA-Z]{1,10}://|//)           # Match a scheme [a-Z]*1-10 or //
+    		[^"'/]{1,}\.                        # Match a domainname (any character + dot)
+    		[a-zA-Z]{2,}[^"']{0,})              # The domainextension and/or path
+    		|
+    		((?:/|\.\./|\./)                    # Start with /,../,./
+    		[^"'><,;| *()(%%$^/\\\[\]]          # Next character can't be...
+    		[^"'><,;|()]{1,})                   # Rest of the characters can't be
+    		|
+    		([a-zA-Z0-9_\-/]{1,}/               # Relative endpoint with /
+    		[a-zA-Z0-9_\-/]{1,}                 # Resource name
+    		\.(?:[a-zA-Z]{1,4}|action)          # Rest + extension (length 1-4 or action)
+    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
+    		|
+    		([a-zA-Z0-9_\-/]{1,}/               # REST API (no extension) with /
+    		[a-zA-Z0-9_\-/]{3,}                 # Proper REST endpoints usually have 3+ chars
+    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
+    		|
+    		([a-zA-Z0-9_\-]{1,}                 # filename
+    		\.(?:php|asp|aspx|jsp|json|
+    		     action|html|js|txt|xml)        # . + extension
+    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
+  		)
+  		(?:"|')                               # End newline delimiter
+		"""
+
 	def activateOutput(self):
 		self.outputActivated = True
 
@@ -103,8 +132,6 @@ class BucketFinder():
 		try:
 			response = session.get(url, verify = False)
 		except:
-			#print('Url: ' + url + ' could not be accessed')
-			#self.error_data.append([host,url,'Invalid js file'])
 			return []
 		
 		if response.status_code == 404:
@@ -155,8 +182,7 @@ class BucketFinder():
 				ls_allowed_buckets.append(bucket)
 			except subprocess.CalledProcessError:
 				continue
-				#print('Bucket ' + bucket + ' has ls blocked')
-
+				
 		return ls_allowed_buckets
 
 	#--------------------- Get buckets that allow mv and rm ---------------------
@@ -169,42 +195,24 @@ class BucketFinder():
 				cprm_allowed_buckets.append(bucket)
 			except subprocess.CalledProcessError as e:
 				continue
-				#print('Bucket ' + bucket + ' has cprm blocked')
 
 		return cprm_allowed_buckets
 
+	def check_buckets(self, hostname, subname, bucket_list):
+		if len(bucket_list)>0:
+			print('The following bucket/s were found at ' + subname + ' :')
+			print(bucket_list)
+
+			#print('Checking bucket/s that allow ls...')
+			ls_allowed = self.get_ls_buckets(bucket_list)
+			#print('Checking bucket/s that allow cprm...')
+			cprm_allowed = self.get_cprm_buckets(bucket_list)
+			access_denied = list(set(bucket_list) - set(ls_allowed) - set(cprm_allowed))
+
+			self.configureOutput(hostname, subname, bucket_list, ls_allowed, cprm_allowed)
+
 	def get_js_files(self, session, url):
-
-		# Regex used
-		regex_str = r"""
-  		(?:"|')                               # Start newline delimiter
-  		(
-    		((?:[a-zA-Z]{1,10}://|//)           # Match a scheme [a-Z]*1-10 or //
-    		[^"'/]{1,}\.                        # Match a domainname (any character + dot)
-    		[a-zA-Z]{2,}[^"']{0,})              # The domainextension and/or path
-    		|
-    		((?:/|\.\./|\./)                    # Start with /,../,./
-    		[^"'><,;| *()(%%$^/\\\[\]]          # Next character can't be...
-    		[^"'><,;|()]{1,})                   # Rest of the characters can't be
-    		|
-    		([a-zA-Z0-9_\-/]{1,}/               # Relative endpoint with /
-    		[a-zA-Z0-9_\-/]{1,}                 # Resource name
-    		\.(?:[a-zA-Z]{1,4}|action)          # Rest + extension (length 1-4 or action)
-    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
-    		|
-    		([a-zA-Z0-9_\-/]{1,}/               # REST API (no extension) with /
-    		[a-zA-Z0-9_\-/]{3,}                 # Proper REST endpoints usually have 3+ chars
-    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
-    		|
-    		([a-zA-Z0-9_\-]{1,}                 # filename
-    		\.(?:php|asp|aspx|jsp|json|
-    		     action|html|js|txt|xml)        # . + extension
-    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
-  		)
-  		(?:"|')                               # End newline delimiter
-		"""
-
-		regex = re.compile(regex_str, re.VERBOSE)
+		regex = re.compile(self.regex_str, re.VERBOSE)
 
 		try:
 			response = session.get(url, verify = False)
@@ -217,28 +225,22 @@ class BucketFinder():
 			if '.js' in list(match)[0]:
 				js_endpoints.append(list(match)[0])
 
-		#print(js_endpoints)
 		return js_endpoints
 
-	def check_buckets(self, hostname, subname, bucket_list):
-		if len(bucket_list)>0:
-			print('The following bucket/s were found at ' + subname + ' :')
-			print(bucket_list)
+	def get_http_in_js(self, session, url):
+		regex = re.compile(self.regex_str, re.VERBOSE)
 
-			#print('Checking bucket/s that allow ls...')
-			ls_allowed = self.get_ls_buckets(bucket_list)
-			#print('Checking bucket/s that allow cprm...')
-			cprm_allowed = self.get_cprm_buckets(bucket_list)
-			access_denied = list(set(bucket_list) - set(ls_allowed) - set(cprm_allowed)) 
+		http_endpoints = list()
+		try:
+			response = session.get(url)
+		except Exception:
+			return http_endpoints
+		matches_in_js = [(m.group(1), m.start(0), m.end(0)) for m in re.finditer(regex, response.text)]
+		for match in matches_in_js:
+			if 'http' in list(match)[0]:
+				http_endpoints.append(list(match)[0])
 
-			#print('Buckets that allowed ls are the following:')
-			#print(ls_allowed)
-			#print('Buckets that allowed cp and rm are the following:')
-			#print(cprm_allowed)
-			#print('No permissions buckets:')
-			#print(access_denied)
-
-			self.configureOutput(hostname, subname, bucket_list, ls_allowed, cprm_allowed)
+		return http_endpoints
 
 	#Receives an urlList
 	def run(self,urls, inputName):
@@ -265,8 +267,11 @@ class BucketFinder():
 				bucket_list = self.get_buckets(session, js_endpoint, url)
 				self.check_buckets(url, js_endpoint, bucket_list)
 
+				#Search urls in js file
+				http_in_js = self.get_http_in_js(session, js_endpoint)
+				#print(http_in_js)
+				for http_endpoint in http_in_js:
+					bucket_list = self.get_buckets(session, http_endpoint, url)
+					self.check_buckets(url, http_endpoint, bucket_list)
+
 		self.output()
-
-
-		#print('-------------------------- Finished! --------------------------')
-		#print('###__Found buckets sent to output.csv, errors sent to ErrorOutput.csv__###')
