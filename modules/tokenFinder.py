@@ -9,6 +9,34 @@ class TokenFinder():
 	data = []
 	error_data = []
 	outputActivated = False
+	# Regex used
+	regex_str = r"""
+  		(?:"|')                               # Start newline delimiter
+  		(
+    		((?:[a-zA-Z]{1,10}://|//)           # Match a scheme [a-Z]*1-10 or //
+    		[^"'/]{1,}\.                        # Match a domainname (any character + dot)
+    		[a-zA-Z]{2,}[^"']{0,})              # The domainextension and/or path
+    		|
+    		((?:/|\.\./|\./)                    # Start with /,../,./
+    		[^"'><,;| *()(%%$^/\\\[\]]          # Next character can't be...
+    		[^"'><,;|()]{1,})                   # Rest of the characters can't be
+    		|
+    		([a-zA-Z0-9_\-/]{1,}/               # Relative endpoint with /
+    		[a-zA-Z0-9_\-/]{1,}                 # Resource name
+    		\.(?:[a-zA-Z]{1,4}|action)          # Rest + extension (length 1-4 or action)
+    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
+    		|
+    		([a-zA-Z0-9_\-/]{1,}/               # REST API (no extension) with /
+    		[a-zA-Z0-9_\-/]{3,}                 # Proper REST endpoints usually have 3+ chars
+    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
+    		|
+    		([a-zA-Z0-9_\-]{1,}                 # filename
+    		\.(?:php|asp|aspx|jsp|json|
+    		     action|html|js|txt|xml)        # . + extension
+    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
+  		)
+  		(?:"|')                               # End newline delimiter
+		"""
 
 	def activateOutput(self):
 		self.outputActivated = True
@@ -54,37 +82,7 @@ class TokenFinder():
 		return res
 
 	def get_js_files(self, session, url):
-
-		# Regex used
-		regex_str = r"""
-  		(?:"|')                               # Start newline delimiter
-  		(
-    		((?:[a-zA-Z]{1,10}://|//)           # Match a scheme [a-Z]*1-10 or //
-    		[^"'/]{1,}\.                        # Match a domainname (any character + dot)
-    		[a-zA-Z]{2,}[^"']{0,})              # The domainextension and/or path
-    		|
-    		((?:/|\.\./|\./)                    # Start with /,../,./
-    		[^"'><,;| *()(%%$^/\\\[\]]          # Next character can't be...
-    		[^"'><,;|()]{1,})                   # Rest of the characters can't be
-    		|
-    		([a-zA-Z0-9_\-/]{1,}/               # Relative endpoint with /
-    		[a-zA-Z0-9_\-/]{1,}                 # Resource name
-    		\.(?:[a-zA-Z]{1,4}|action)          # Rest + extension (length 1-4 or action)
-    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
-    		|
-    		([a-zA-Z0-9_\-/]{1,}/               # REST API (no extension) with /
-    		[a-zA-Z0-9_\-/]{3,}                 # Proper REST endpoints usually have 3+ chars
-    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
-    		|
-    		([a-zA-Z0-9_\-]{1,}                 # filename
-    		\.(?:php|asp|aspx|jsp|json|
-    		     action|html|js|txt|xml)        # . + extension
-    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
-  		)
-  		(?:"|')                               # End newline delimiter
-		"""
-
-		regex = re.compile(regex_str, re.VERBOSE)
+		regex = re.compile(self.regex_str, re.VERBOSE)
 
 		try:
 			response = session.get(url, verify = False)
@@ -97,8 +95,22 @@ class TokenFinder():
 			if '.js' in list(match)[0]:
 				js_endpoints.append(list(match)[0])
 
-		#print(js_endpoints)
 		return js_endpoints
+
+	def get_http_in_js(self, session, url):
+		regex = re.compile(self.regex_str, re.VERBOSE)
+
+		http_endpoints = list()
+		try:
+			response = session.get(url)
+		except Exception:
+			return http_endpoints
+		matches_in_js = [(m.group(1), m.start(0), m.end(0)) for m in re.finditer(regex, response.text)]
+		for match in matches_in_js:
+			if 'http' in list(match)[0]:
+				http_endpoints.append(list(match)[0])
+
+		return http_endpoints
 
 	#Searches certain keywords on site
 	def process(self, session, url):
@@ -106,8 +118,6 @@ class TokenFinder():
 		try:
 			response = session.get(url, verify = False)
 		except:
-			#print('Url: ' + url + ' could not be accessed')
-			#self.error_data.append([url,'Invalid js file'])
 			return []
 
 		if response.status_code == 404:
@@ -164,10 +174,14 @@ class TokenFinder():
 			self.process(session, url)
 			js_in_url = self.get_js_files(session, url)
 
-			#print('Scanning js files...')
-
 			for js_endpoint in js_in_url:
 				self.process(session, js_endpoint)
+
+				http_in_js = self.get_http_in_js(session, js_endpoint)
+				#print(http_in_js)
+				for http_endpoint in http_in_js:
+					self.process(session,http_endpoint)
+
 
 		self.output()
 
