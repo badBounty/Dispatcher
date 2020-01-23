@@ -39,3 +39,4 @@ This can be done by following these steps.
 |||- `full`: All modules at the same time|
 | -t  | THREADS  | Number of threads to use, the default is 3  |
 | -i | INPUT  | Input file that contains urls to be scanned (with http/https)  |
+| -mst | ALERT  | Microsoft teams webhook for channel notifications (Notifies buckets, css and openRedirects)  |

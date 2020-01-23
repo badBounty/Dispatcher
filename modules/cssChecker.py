@@ -12,10 +12,14 @@ class CssChecker():
 	data = []
 	error_data = []
 	outputActivated = False
+	msTeamsActivated = False
 
 	def activateOutput(self):
 		self.outputActivated = True
 
+	def activateMSTeams(self, msTeams):
+		self.msTeamsActivated = True
+		self.msTeams = msTeams
 
 	def showStartScreen(self):
 
@@ -108,10 +112,18 @@ class CssChecker():
 			response = session.get(url, verify = False)
 		except:
 			self.data.append(['Possible css injection', host, url, 'Could not access the css file'])
+			if msTeamsActivated:
+				self.msTeams.title('Possible css injection')
+				self.msTeams.text('The css file '+ url +' could not be accessed. Host url: ' + host)
+				self.msTeams.send()
 			return
 
 		if response.status_code != 200:
 			self.data.append(['Possible css injection', host, url, 'Css file did not return 200'])
+			if msTeamsActivated:
+				self.msTeams.title('Possible css injection')
+				self.msTeams.text('The css file '+ url +' did not return code 200. Host url: ' + host)
+				self.msTeams.send()
 
 	def run(self, urls):
 

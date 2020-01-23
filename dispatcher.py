@@ -129,6 +129,8 @@ elif args.mode == 'header':
 #------------------ Open Redirect --------------------
 elif args.mode == 'openred':
 	openRedirect = OpenRedirect()
+	if args.msTeams:
+		openRedirect.activateMSTeams(teamsConnection)
 	openRedirect.showStartScreen()
 	openRedirect.activateOutput()
 	try:
@@ -147,6 +149,8 @@ elif args.mode == 'openred':
 #------------------- Css Checker ---------------------
 elif args.mode == 'css':
 	cssChecker = CssChecker()
+	if args.msTeams:
+		cssChecker.activateMSTeams(teamsConnection)
 	cssChecker.showStartScreen()
 	cssChecker.activateOutput()
 	try:
@@ -165,6 +169,8 @@ elif args.mode == 'css':
 #----------------------- Full -------------------------
 elif args.mode == 'full':
 	fullScanner = FullScanner()
+	if args.msTeams:
+		fullScanner.activateMSTeams(teamsConnection)
 	fullScanner.showStartScreen()
 	try:
 		for i in range(args.threads):

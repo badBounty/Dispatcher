@@ -11,9 +11,14 @@ class OpenRedirect():
 	data = []
 	error_data = []
 	outputActivated = False
+	msTeamsActivated = False
 
 	def activateOutput(self):
 		self.outputActivated = True
+
+	def activateMSTeams(self, msTeams):
+		self.msTeamsActivated = True
+		self.msTeams = msTeams
 
 	def showStartScreen(self):
 
@@ -71,7 +76,10 @@ class OpenRedirect():
 					if resp_split[2] == 'google.com':
 						print (resp.status_code, resp.url)
 						data.append(['Open Redirect Vulnerability',url,url,'An open redirect vulnerability was found with parameter: ' + parameter + ' and payload: ' + payload])
-		
+						if self.msTeamsActivated:
+							self.msTeams.title('Open redirect vulnerability found!')
+							self.msTeams.text('Found at ' + url + 'with parameter: ' + parameter + ' and payload: ' + payload)
+							self.msTeams.send()
 		return
 
 	def run(self, urls):

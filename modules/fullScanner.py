@@ -17,6 +17,11 @@ class FullScanner():
 	openRedirect = OpenRedirect()
 	cssChecker = CssChecker()
 
+	def activateMSTeams(self, msTeams):
+		self.bucketFinder.activateMSTeams(msTeams)
+		self.openRedirect.activateMSTeams(msTeams)
+		self.cssChecker.activateMSTeams(msTeams)
+
 	def showStartScreen(self):
 		print('---------------------------------------------------------------------------------------')
 		print('---------------------------++++++++++++++-------++++++++++++-----------./*/.-----------')
