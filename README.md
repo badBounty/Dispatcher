@@ -27,7 +27,17 @@ This can be done by following these steps.
 - `aws configure`
 - Follow prompts
 
-### Options
+### For MSTeams notifications
+
+- Create new team
+- Manage team
+- Apps -> More apps -> Search "Webhook" -> Install
+- In a channel, go to *Connectors*
+- Configure Incoming Webhook
+- Create new webhook and copy the url
+- When running Dispatcher, add `-mst <URL>`
+
+## Options
 
 | Command  | Description  |   |
 |---|---|---|
