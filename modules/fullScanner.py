@@ -1,3 +1,5 @@
+import pandas as pd
+
 from modules.bucketFinder import BucketFinder
 from modules.tokenFinder import TokenFinder
 from modules.securityHeaders import HeaderFinder
@@ -5,6 +7,9 @@ from modules.openRedirect import OpenRedirect
 from modules.cssChecker import CssChecker
 
 class FullScanner():
+
+	data = []
+	error_data = []
 
 	bucketFinder = BucketFinder()
 	tokenFinder = TokenFinder()
@@ -39,18 +44,40 @@ class FullScanner():
 
 	def output(self):
 
-		self.bucketFinder.output()
-		self.tokenFinder.output()
+		#HeaderFinder output
 		self.headerFinder.output()
-		self.openRedirect.output()
-		self.cssChecker.output()
+		
+		final_data_df = pd.DataFrame(self.data, columns = ['Vulnerability','MainUrl','Reference','Description'])
+		final_error_df = pd.DataFrame(self.error_data, columns = ['Module','MainUrl','Reference','Reason'])
+		
+		#Adding bucket output
+		data_df, error_df = self.bucketFinder.output()
+		final_data_df = final_data_df.append(data_df)
+		final_error_df = final_error_df.append(error_df)
 
-	def run(self, urls, inputName):
+		#Adding token output
+		data_df, error_df = self.tokenFinder.output()
+		final_data_df = final_data_df.append(data_df)
+		final_error_df = final_error_df.append(error_df)
+		
+		#Adding openred output
+		data_df, error_df = self.openRedirect.output()
+		final_data_df = final_data_df.append(data_df)
+		final_error_df = final_error_df.append(error_df)
+		
+		#Adding css checker output
+		data_df, error_df = self.cssChecker.output()
+		final_data_df = final_data_df.append(data_df)
+		final_error_df = final_error_df.append(error_df)
+
+		return(final_data_df, final_error_df)
+
+	def run(self, urls, outputFolderName):
 
 		self.bucketFinder.activateOutput()
 
-		self.bucketFinder.run(urls, inputName)
-		self.tokenFinder.run(urls, inputName)
-		self.headerFinder.run(urls, inputName)
-		self.openRedirect.run(urls, inputName)
-		self.cssChecker.run(urls, inputName)
+		self.bucketFinder.run(urls)
+		self.tokenFinder.run(urls)
+		self.headerFinder.run(urls, outputFolderName)
+		self.openRedirect.run(urls)
+		self.cssChecker.run(urls)

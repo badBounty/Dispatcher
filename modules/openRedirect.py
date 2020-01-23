@@ -9,6 +9,7 @@ class OpenRedirect():
 	payloads = []
 	parameters = []
 	data = []
+	error_data = []
 	outputActivated = False
 
 	def activateOutput(self):
@@ -41,8 +42,9 @@ class OpenRedirect():
 
 
 	def output(self):
-		df = pd.DataFrame(self.data, columns = ['Url','parameter','payload','destination'])
-		df.to_csv('output/'+self.inputName+'/openRedirect.csv', index = False)
+		data_df = pd.DataFrame(self.data, columns = ['Vulnerability','MainUrl','Reference','Description'])
+		error_df = pd.DataFrame(self.error_data, columns = ['Module','MainUrl','Reference','Reason'])
+		return(data_df, error_df)
 
 	#Testing open redirect
 	def testOpenRedirect(self,session,url):
@@ -68,13 +70,11 @@ class OpenRedirect():
 					resp_split = resp.url.split('/')
 					if resp_split[2] == 'google.com':
 						print (resp.status_code, resp.url)
-						data.append([url,parameter,payload,resp.url])
+						data.append(['Open Redirect Vulnerability',url,url,'An open redirect vulnerability was found with parameter: ' + parameter + ' and payload: ' + payload])
 		
 		return
 
-	def run(self,urls, inputName):
-
-		self.inputName = inputName
+	def run(self, urls):
 
 		session = requests.Session()
 		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
@@ -97,6 +97,4 @@ class OpenRedirect():
 				print('Scanning ' + url)
 
 			self.testOpenRedirect(session, url)
-
-		self.output()
 

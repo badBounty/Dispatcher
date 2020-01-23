@@ -75,10 +75,9 @@ class BucketFinder():
 
 
 	def output(self):
-		df = pd.DataFrame(self.data, columns = ['SourceURL','js_reference','Bucket Name','ls allowed', 'cprm allowed'])
-		df.to_csv('output/'+self.inputName+'/bucketFinder.csv', index = False)
-		df2 = pd.DataFrame(self.error_data, columns = ['SourceURL','js_reference','Reason'])
-		df2.to_csv('output/'+self.inputName+'/bucketFinderError.csv', index = False)
+		data_df = pd.DataFrame(self.data, columns = ['Vulnerability','MainUrl','Reference','Description'])
+		error_df = pd.DataFrame(self.error_data, columns = ['Module','MainUrl','Reference','Reason'])
+		return(data_df, error_df)
 
 	def setMsTeams(self,msTeams):
 		self.msTeamsActivated = True
@@ -102,26 +101,24 @@ class BucketFinder():
 			if bucket in cprm_allowed:
 				cprm = True
 
-			#Microsoft teams output
-			if self.msTeamsActivated:
-				if ls == True and cprm == True:
-					self.msTeams.title('Bucket found!')
-					self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
-							js_endpoint+' with ls and cprm allowed')
-					self.msTeams.send()
-				elif ls == True:
-					self.msTeams.title('Bucket found!')
-					self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
-							js_endpoint+' with ls allowed')
-					self.msTeams.send()
-				elif cprm == True:
-					self.msTeams.title('Bucket found!')
-					self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
-							js_endpoint+' with cprm allowed')
-					self.msTeams.send()
-
-			#Adding to data for exporting
-			self.data.append([url, js_endpoint, bucket, ls, cprm])
+			if ls == True and cprm == True:
+				self.data.append(['Misconfigured S3 bucket', url, js_endpoint, 'Bucket '+ bucket + ' has copy, remove and ls available for authenticated users'])
+				#self.msTeams.title('Bucket found!')
+				#self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
+				#		js_endpoint+' with ls and cprm allowed')
+				#self.msTeams.send()
+			elif ls == True:
+				self.data.append(['Misconfigured S3 bucket', url, js_endpoint, 'Bucket '+ bucket + ' has ls available for authenticated users'])
+				#self.msTeams.title('Bucket found!')
+				#self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
+				#		js_endpoint+' with ls allowed')
+				#self.msTeams.send()
+			elif cprm == True:
+				self.data.append(['Misconfigured S3 bucket', url, js_endpoint, 'Bucket '+ bucket + ' has copy and remove available for authenticated users'])
+				#self.msTeams.title('Bucket found!')
+				#self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
+				#		js_endpoint+' with cprm allowed')
+				#self.msTeams.send()
 
 	def get_buckets(self, session, url, host):
 
@@ -136,7 +133,7 @@ class BucketFinder():
 		
 		if response.status_code == 404:
 			print('Url: ' + url + ' returned 404')
-			self.error_data.append([host,url,'Returned 404'])
+			self.error_data.append(['s3bucket',host,url,'Returned 404'])
 			return []
 
 		#Buckets can come in different ways
@@ -182,7 +179,7 @@ class BucketFinder():
 				ls_allowed_buckets.append(bucket)
 			except subprocess.CalledProcessError:
 				continue
-				
+
 		return ls_allowed_buckets
 
 	#--------------------- Get buckets that allow mv and rm ---------------------
@@ -243,9 +240,8 @@ class BucketFinder():
 		return http_endpoints
 
 	#Receives an urlList
-	def run(self,urls, inputName):
+	def run(self, urls):
 
-		self.inputName = inputName
 		session = requests.Session()
 		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
 
@@ -255,7 +251,7 @@ class BucketFinder():
 			if self.outputActivated:
 				print('Scanning '+ url)
 
-			buckets_in_html = self.get_buckets(session, url, 'html code')
+			buckets_in_html = self.get_buckets(session, url, url)
 			self.check_buckets(url, 'html code', buckets_in_html)
 
 			js_in_url = self.get_js_files(session, url)
@@ -273,5 +269,3 @@ class BucketFinder():
 				for http_endpoint in http_in_js:
 					bucket_list = self.get_buckets(session, http_endpoint, url)
 					self.check_buckets(url, http_endpoint, bucket_list)
-
-		self.output()

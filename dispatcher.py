@@ -2,6 +2,7 @@ import pymsteams
 import os
 import argparse
 import numpy as np
+import pandas as pd
 import threading
 from modules.bucketFinder import BucketFinder
 from modules.tokenFinder import TokenFinder
@@ -27,17 +28,21 @@ parser.add_argument('-t','--threads', help = "Number of threads for the program"
 
 args = parser.parse_args()
 
+# Create output folder
 if not os.path.exists('output'):
 	os.makedirs('output')
+
+#Create output/InputName Folder
+inputFileName = str(args.input).split('/')
+outputFolderName = inputFileName[len(inputFileName)-1].replace('.txt','')
+if not os.path.exists('output/'+ outputFolderName):
+	os.makedirs('output/'+ outputFolderName)
 
 #Read urls from input
 urls = []
 with open(args.input) as fp:
 	lines = fp.read()
 	urls = lines.split('\n')
-
-if not os.path.exists('output/'+str(args.input)):
-	os.makedirs('output/'+str(args.input))
 
 #Filter empty spaces
 urls = filter(None, urls)
@@ -48,6 +53,17 @@ urls = np.array_split(urls,args.threads)
 for i in range(len(urls)):
 	urls[i] = urls[i].tolist()
 
+# Generating output
+def generateOutput():
+	main_df.to_csv('output/'+ outputFolderName +'/output.csv', index = False)
+	main_error_df.to_csv('output/'+ outputFolderName +'/error.csv', index = False)
+
+
+
+#Create a dataframe data can be appended to it
+main_df = pd.DataFrame(columns = ['Vulnerability','MainUrl','Reference','Description'])
+main_error_df = pd.DataFrame(columns = ['Module','MainUrl','Reference','Reason'])
+
 #------------------ Bucket Finder --------------------
 if args.mode == 's3bucket':
 	bucketFinder = BucketFinder()
@@ -55,11 +71,15 @@ if args.mode == 's3bucket':
 	bucketFinder.activateOutput()
 	try:
 		for i in range(args.threads):
-			t = threading.Thread(target = bucketFinder.run, args = (urls[i],str(args.input),))
+			t = threading.Thread(target = bucketFinder.run, args = (urls[i],))
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
-		bucketFinder.output(str())
+		pass
+	data_df, error_df = bucketFinder.output()
+	main_df = main_df.append(data_df)
+	main_errpr_df = main_error_df.append(error_df)
+	generateOutput()
 	bucketFinder.showEndScreen()
 
 #------------------ Token Finder --------------------
@@ -69,11 +89,15 @@ elif args.mode == 'token':
 	tokenFinder.activateOutput()
 	try:
 		for i in range(args.threads):
-			t = threading.Thread(target = tokenFinder.run, args = (urls[i],str(args.input),))
+			t = threading.Thread(target = tokenFinder.run, args = (urls[i],))
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
-		tokenFinder.output()
+		pass
+	data_df, error_df = tokenFinder.output()
+	main_df = main_df.append(data_df)
+	main_errpr_df = main_error_df.append(error_df)
+	generateOutput()
 	tokenFinder.showEndScreen()
 
 #------------------ Header Finder --------------------
@@ -83,11 +107,16 @@ elif args.mode == 'header':
 	headerFinder.activateOutput()
 	try:
 		for i in range(args.threads):
-			t = threading.Thread(target = headerFinder.run, args = (urls[i],str(args.input),))
+			t = threading.Thread(target = headerFinder.run, args = (urls[i],outputFolderName))
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
+		#pass
 		headerFinder.output()
+	#data_df, error_df = headerFinder.output()
+	#main_df = main_df.append(data_df)
+	#main_errpr_df = main_error_df.append(error_df)
+	#generateOutput()
 	headerFinder.showEndScreen()
 
 #------------------ Open Redirect --------------------
@@ -97,11 +126,15 @@ elif args.mode == 'openred':
 	openRedirect.activateOutput()
 	try:
 		for i in range(args.threads):
-			t = threading.Thread(target = openRedirect.run, args = (urls[i],str(args.input),))
+			t = threading.Thread(target = openRedirect.run, args = (urls[i],))
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
-		openRedirect.output()
+		pass
+	data_df, error_df = openRedirect.output()
+	main_df = main_df.append(data_df)
+	main_errpr_df = main_error_df.append(error_df)
+	generateOutput()
 	openRedirect.showEndScreen()
 
 #------------------- Css Checker ---------------------
@@ -111,11 +144,15 @@ elif args.mode == 'css':
 	cssChecker.activateOutput()
 	try:
 		for i in range(args.threads):
-			t = threading.Thread(target = cssChecker.run, args = (urls[i],str(args.input),))
+			t = threading.Thread(target = cssChecker.run, args = (urls[i],))
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
-		cssChecker.output()
+		pass
+	data_df, error_df = cssChecker.output()
+	main_df = main_df.append(data_df)
+	main_errpr_df = main_error_df.append(error_df)
+	generateOutput()
 	cssChecker.showEndScreen()
 
 #----------------------- Full -------------------------
@@ -124,9 +161,13 @@ elif args.mode == 'full':
 	fullScanner.showStartScreen()
 	try:
 		for i in range(args.threads):
-			t = threading.Thread(target = fullScanner.run, args = (urls[i],str(args.input),))
+			t = threading.Thread(target = fullScanner.run, args = (urls[i],outputFolderName))
 			t.start()
 			t.join()
 	except KeyboardInterrupt:
-		fullScanner.output()
+		pass
+	data_df, error_df = fullScanner.output()
+	main_df = main_df.append(data_df)
+	main_errpr_df = main_error_df.append(error_df)
+	generateOutput()
 	fullScanner.showEndScreen()

@@ -67,10 +67,9 @@ class TokenFinder():
 		print('Finished! Please check output for results!')
 
 	def output(self):
-		df = pd.DataFrame(self.data, columns = ['SourceURL','Type','Found'])
-		df.to_csv('output/'+self.inputName+'/tokenFinder.csv', index = False)
-		df2 = pd.DataFrame(self.error_data, columns = ['SourceURL','Reason'])
-		df2.to_csv('output/'+self.inputName+'/tokenFinderError.csv', index = False)
+		data_df = pd.DataFrame(self.data, columns = ['Vulnerability','MainUrl','Reference','Description'])
+		error_df = pd.DataFrame(self.error_data, columns = ['Module','MainUrl','Reference','Reason'])
+		return(data_df, error_df)
 
 
 	def filterInvalids(self,some_list):
@@ -113,7 +112,7 @@ class TokenFinder():
 		return http_endpoints
 
 	#Searches certain keywords on site
-	def process(self, session, url):
+	def process(self, session, host, url):
 
 		try:
 			response = session.get(url, verify = False)
@@ -122,7 +121,7 @@ class TokenFinder():
 
 		if response.status_code == 404:
 			print('Url: ' + url + ' returned 404')
-			self.error_data.append([url,'Returned 404'])
+			self.error_data.append(['token', host, url, 'Returned 404'])
 			return []
 
 		tokens = re.findall('token:"(.+?)"', response.text)
@@ -136,32 +135,31 @@ class TokenFinder():
 
 		if len(tokens) > 0:
 			for token in tokens:
-				self.data.append([url, 'Token', token])
+				self.data.append(['Information disclosure', host , url , 'The following token was fonund: ' + token])
 		if len(tokens_2) > 0:
 			for token in tokens_2:
-				self.data.append([url, 'Token',token])
+				self.data.append(['Information disclosure', host , url , 'The following token was fonund: ' + token])
 		if len(api_key) > 0:
 			for key in api_key:
-				self.data.append([url, 'Key', key])
+				self.data.append(['Information disclosure', host , url , 'The following key was fonund: ' + key])
 		if len(usernames) > 0:
 			for username in usernames:
-				self.data.append([url, 'Username', username])
+				self.data.append(['Information disclosure', host , url , 'The following username was fonund: ' + username])
 		if len(passwords) > 0:
 			for password in passwords:
-				self.data.append([url, 'Password', password])
+				self.data.append(['Information disclosure', host , url , 'The following password was fonund: ' + password])
 		if len(access_key_ids) > 0:
 			for key in access_key_ids:
-				self.data.append([url, 'access_key_id', key])
+				self.data.append(['Information disclosure', host , url , 'The following access_key_id was fonund: ' + key])
 		if len(secret_access_key_ids) > 0:
 			for key in secret_access_key_ids:
-				self.data.append([url, 'secret_access_key', key])
+				self.data.append(['Information disclosure', host , url , 'The following secret_access_key_id was fonund: ' + key])
 		if len(authorization) > 0:
 			for key in authorization:
-				self.data.append([url, 'secret_access_key', key])
+				self.data.append(['Information disclosure', host , url , 'The following auth_token was fonund: ' + key])
 
-	def run(self,urls, inputName):
+	def run(self, urls):
 
-		self.inputName = inputName
 		session = requests.Session()
 		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
 
@@ -171,16 +169,16 @@ class TokenFinder():
 			if self.outputActivated:
 				print('Scanning '+ url)
 
-			self.process(session, url)
+			self.process(session, url, url)
 			js_in_url = self.get_js_files(session, url)
 
 			for js_endpoint in js_in_url:
-				self.process(session, js_endpoint)
+				self.process(session, url, js_endpoint)
 
 				http_in_js = self.get_http_in_js(session, js_endpoint)
 				#print(http_in_js)
 				for http_endpoint in http_in_js:
-					self.process(session,http_endpoint)
+					self.process(session, js_endpoint, http_endpoint)
 
 
 		self.output()

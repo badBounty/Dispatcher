@@ -10,6 +10,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 class CssChecker():
 
 	data = []
+	error_data = []
 	outputActivated = False
 
 	def activateOutput(self):
@@ -42,8 +43,9 @@ class CssChecker():
 		print('Finished! Please check output for results!')
 
 	def output(self):
-		df = pd.DataFrame(self.data, columns = ['SourceURL','Css_Url','Reason'])
-		df.to_csv('output/'+self.inputName+'/cssChecker.csv', index = False)
+		data_df = pd.DataFrame(self.data, columns = ['Vulnerability','MainUrl','Reference','Description'])
+		error_df = pd.DataFrame(self.error_data, columns = ['Module','MainUrl','Reference','Reason'])
+		return(data_df, error_df)
 
 	def filterInvalids(self,some_list):
 		res = []
@@ -97,7 +99,6 @@ class CssChecker():
 			if '.css' in list(match)[0]:
 				css_endpoints.append(list(match)[0])
 
-		#print(css_endpoints)
 		return css_endpoints
 
 	#Checks if css file found returns code 200
@@ -106,15 +107,13 @@ class CssChecker():
 		try:
 			response = session.get(url, verify = False)
 		except:
-			self.data.append([host, url, 'Could not access'])
+			self.data.append(['Possible css injection', host, url, 'Could not access the css file'])
 			return
 
 		if response.status_code != 200:
-			self.data.append([host, url, 'Returned ' + response.status_code])
+			self.data.append(['Possible css injection', host, url, 'Css file did not return 200'])
 
-	def run(self, urls, inputName):
-
-		self.inputName = inputName
+	def run(self, urls):
 
 		session = requests.Session()
 		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
@@ -129,6 +128,3 @@ class CssChecker():
 
 			for css in css_found:
 				self.scan_css(session, url, css)
-
-		self.output()
-
