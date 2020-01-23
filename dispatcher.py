@@ -58,8 +58,6 @@ def generateOutput():
 	main_df.to_csv('output/'+ outputFolderName +'/output.csv', index = False)
 	main_error_df.to_csv('output/'+ outputFolderName +'/error.csv', index = False)
 
-
-
 #Create a dataframe data can be appended to it
 main_df = pd.DataFrame(columns = ['Vulnerability','MainUrl','Reference','Description'])
 main_error_df = pd.DataFrame(columns = ['Module','MainUrl','Reference','Reason'])

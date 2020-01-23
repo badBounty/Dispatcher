@@ -191,6 +191,7 @@ class BucketFinder():
 				subprocess.check_output('aws s3 rm s3://' + bucket + '/test.txt', shell = True)
 				cprm_allowed_buckets.append(bucket)
 			except subprocess.CalledProcessError as e:
+				print(e)
 				continue
 
 		return cprm_allowed_buckets
