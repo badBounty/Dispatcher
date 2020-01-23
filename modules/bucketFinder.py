@@ -79,7 +79,7 @@ class BucketFinder():
 		error_df = pd.DataFrame(self.error_data, columns = ['Module','MainUrl','Reference','Reason'])
 		return(data_df, error_df)
 
-	def setMsTeams(self,msTeams):
+	def activateMSTeams(self, msTeams):
 		self.msTeamsActivated = True
 		self.msTeams = msTeams
 
@@ -103,22 +103,25 @@ class BucketFinder():
 
 			if ls == True and cprm == True:
 				self.data.append(['Misconfigured S3 bucket', url, js_endpoint, 'Bucket '+ bucket + ' has copy, remove and ls available for authenticated users'])
-				#self.msTeams.title('Bucket found!')
-				#self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
-				#		js_endpoint+' with ls and cprm allowed')
-				#self.msTeams.send()
+				if self.msTeamsActivated:
+					self.msTeams.title('Bucket found!')
+					self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
+							js_endpoint+' with ls and cprm allowed')
+					self.msTeams.send()
 			elif ls == True:
 				self.data.append(['Misconfigured S3 bucket', url, js_endpoint, 'Bucket '+ bucket + ' has ls available for authenticated users'])
-				#self.msTeams.title('Bucket found!')
-				#self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
-				#		js_endpoint+' with ls allowed')
-				#self.msTeams.send()
+				if self.msTeamsActivated:
+					self.msTeams.title('Bucket found!')
+					self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
+							js_endpoint+' with ls allowed')
+					self.msTeams.send()
 			elif cprm == True:
 				self.data.append(['Misconfigured S3 bucket', url, js_endpoint, 'Bucket '+ bucket + ' has copy and remove available for authenticated users'])
-				#self.msTeams.title('Bucket found!')
-				#self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
-				#		js_endpoint+' with cprm allowed')
-				#self.msTeams.send()
+				if self.msTeamsActivated:
+					self.msTeams.title('Bucket found!')
+					self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
+							js_endpoint+' with cprm allowed')
+					self.msTeams.send()
 
 	def get_buckets(self, session, url, host):
 
@@ -191,7 +194,6 @@ class BucketFinder():
 				subprocess.check_output('aws s3 rm s3://' + bucket + '/test.txt', shell = True)
 				cprm_allowed_buckets.append(bucket)
 			except subprocess.CalledProcessError as e:
-				print(e)
 				continue
 
 		return cprm_allowed_buckets

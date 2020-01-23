@@ -26,6 +26,10 @@ parser.add_argument('-t','--threads', help = "Number of threads for the program"
 					default = 3,
 					type = int)
 
+parser.add_argument('-mst','--msTeams', help = "MsTeams webhook",
+					required = False,
+					action = 'store')
+
 args = parser.parse_args()
 
 # Create output folder
@@ -62,9 +66,14 @@ def generateOutput():
 main_df = pd.DataFrame(columns = ['Vulnerability','MainUrl','Reference','Description'])
 main_error_df = pd.DataFrame(columns = ['Module','MainUrl','Reference','Reason'])
 
+if args.msTeams:
+	teamsConnection = pymsteams.connectorcard(str(args.msTeams))
+
 #------------------ Bucket Finder --------------------
 if args.mode == 's3bucket':
 	bucketFinder = BucketFinder()
+	if args.msTeams:
+		bucketFinder.activateMSTeams(teamsConnection)
 	bucketFinder.showStartScreen()
 	bucketFinder.activateOutput()
 	try:
