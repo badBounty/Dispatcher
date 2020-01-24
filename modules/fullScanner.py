@@ -50,7 +50,7 @@ class FullScanner():
 	def output(self, outputFolderName):
 
 		#HeaderFinder output
-		self.headerFinder.output(outputFolderName)
+		self.headerFinder.output()
 		
 		final_data_df = pd.DataFrame(self.data, columns = ['Vulnerability','MainUrl','Reference','Description'])
 		final_error_df = pd.DataFrame(self.error_data, columns = ['Module','MainUrl','Reference','Reason'])
