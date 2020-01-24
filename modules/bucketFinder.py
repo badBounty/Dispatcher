@@ -146,15 +146,15 @@ class BucketFinder():
 		#Way 4: https://s3-area.amazonaws.com/<bucketName>/
 
 		#---------Way I----------
-		bucketsFirstHTTPS = re.findall('"https://s3.amazonaws.com(.+?)"', response.text)
+		bucketsFirstHTTPS = re.findall('"https://s3.amazonaws.com([^\"/,]+)"', response.text)
 		bucketsFirstHTTPS = self.filterInvalids(bucketsFirstHTTPS)
-		bucketsFirstHTTP = re.findall('"http://s3.amazonaws.com(.+?)"', response.text)
+		bucketsFirstHTTP = re.findall('"http://s3.amazonaws.com([^\"/,]+)"', response.text)
 		bucketsFirstHTTP = self.filterInvalids(bucketsFirstHTTP)
 
 		#---------Way II----------
-		bucketsSecondHTTPS = re.findall('"https://(.+?).s3.amazonaws.com', response.text)
+		bucketsSecondHTTPS = re.findall('https://([^\"/,]+).s3.amazonaws.com', response.text)
 		bucketsSecondHTTPS = self.filterInvalids(bucketsSecondHTTPS)
-		bucketsSecondHTTP = re.findall('"http://(.+?).s3.amazonaws.com', response.text)
+		bucketsSecondHTTP = re.findall('https://([^\"/,]+).s3.amazonaws.com', response.text)
 		bucketsSecondHTTP = self.filterInvalids(bucketsSecondHTTP)
 
 		#---------Way III---------
@@ -213,7 +213,6 @@ class BucketFinder():
 
 	def get_js_files(self, session, url):
 		regex = re.compile(self.regex_str, re.VERBOSE)
-
 		try:
 			response = session.get(url, verify = False)
 		except Exception:

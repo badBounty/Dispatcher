@@ -54,9 +54,9 @@ urls = list(urls)
 urls = list(dict.fromkeys(urls))
 
 #Dividing based on thread number
-urls = np.array_split(urls,args.threads)
-for i in range(len(urls)):
-	urls[i] = urls[i].tolist()
+#urls = np.array_split(urls,args.threads)
+#for i in range(len(urls)):
+#	urls[i] = urls[i].tolist()
 
 # Generating output
 def generateOutput():
@@ -77,13 +77,8 @@ if args.mode == 's3bucket':
 		bucketFinder.activateMSTeams(teamsConnection)
 	bucketFinder.showStartScreen()
 	bucketFinder.activateOutput()
-	try:
-		for i in range(args.threads):
-			t = threading.Thread(target = bucketFinder.run, args = (urls[i],))
-			t.start()
-			t.join()
-	except KeyboardInterrupt:
-		pass
+	bucketFinder.run(urls)
+	#
 	data_df, error_df = bucketFinder.output()
 	main_df = main_df.append(data_df)
 	main_errpr_df = main_error_df.append(error_df)
@@ -95,13 +90,7 @@ elif args.mode == 'token':
 	tokenFinder = TokenFinder()
 	tokenFinder.showStartScreen()
 	tokenFinder.activateOutput()
-	try:
-		for i in range(args.threads):
-			t = threading.Thread(target = tokenFinder.run, args = (urls[i],))
-			t.start()
-			t.join()
-	except KeyboardInterrupt:
-		pass
+	tokenFinder.run(urls)
 	data_df, error_df = tokenFinder.output()
 	main_df = main_df.append(data_df)
 	main_errpr_df = main_error_df.append(error_df)
@@ -113,14 +102,7 @@ elif args.mode == 'header':
 	headerFinder = HeaderFinder()
 	headerFinder.showStartScreen()
 	headerFinder.activateOutput()
-	try:
-		for i in range(args.threads):
-			t = threading.Thread(target = headerFinder.run, args = (urls[i],outputFolderName))
-			t.start()
-			t.join()
-	except KeyboardInterrupt:
-		#pass
-		headerFinder.output()
+	headerFinder.run(urls, outputFolderName)
 	#data_df, error_df = headerFinder.output()
 	#main_df = main_df.append(data_df)
 	#main_errpr_df = main_error_df.append(error_df)
@@ -134,13 +116,7 @@ elif args.mode == 'openred':
 		openRedirect.activateMSTeams(teamsConnection)
 	openRedirect.showStartScreen()
 	openRedirect.activateOutput()
-	try:
-		for i in range(args.threads):
-			t = threading.Thread(target = openRedirect.run, args = (urls[i],))
-			t.start()
-			t.join()
-	except KeyboardInterrupt:
-		pass
+	openRedirect.run(urls)
 	data_df, error_df = openRedirect.output()
 	main_df = main_df.append(data_df)
 	main_errpr_df = main_error_df.append(error_df)
@@ -154,13 +130,7 @@ elif args.mode == 'css':
 		cssChecker.activateMSTeams(teamsConnection)
 	cssChecker.showStartScreen()
 	cssChecker.activateOutput()
-	try:
-		for i in range(args.threads):
-			t = threading.Thread(target = cssChecker.run, args = (urls[i],))
-			t.start()
-			t.join()
-	except KeyboardInterrupt:
-		pass
+	cssChecker.run(urls)
 	data_df, error_df = cssChecker.output()
 	main_df = main_df.append(data_df)
 	main_errpr_df = main_error_df.append(error_df)
@@ -173,13 +143,7 @@ elif args.mode == 'full':
 	if args.msTeams:
 		fullScanner.activateMSTeams(teamsConnection)
 	fullScanner.showStartScreen()
-	try:
-		for i in range(args.threads):
-			t = threading.Thread(target = fullScanner.run, args = (urls[i],outputFolderName))
-			t.start()
-			t.join()
-	except KeyboardInterrupt:
-		pass
+	fullScanner.run(urls, outputFolderName)
 	data_df, error_df = fullScanner.output(outputFolderName)
 	main_df = main_df.append(data_df)
 	main_errpr_df = main_error_df.append(error_df)

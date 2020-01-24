@@ -8,8 +8,6 @@ class OpenRedirect():
 
 	def __init__(self):
 		self.scanned_targets = []
-		#self.payloads = []
-		#self.parameters = []
 
 		self.data = []
 		self.error_data = []
@@ -97,7 +95,7 @@ class OpenRedirect():
 					resp_split = resp.url.split('/')
 					if resp_split[2] == 'google.com':
 						print (resp.status_code, resp.url)
-						data.append(['Open Redirect Vulnerability',url,url,'An open redirect vulnerability was found with parameter: ' + parameter + ' and payload: ' + payload])
+						self.data.append(['Open Redirect Vulnerability',url,url,'An open redirect vulnerability was found with parameter: ' + parameter + ' and payload: ' + payload])
 						if self.msTeamsActivated:
 							self.msTeams.title('Open redirect vulnerability found!')
 							self.msTeams.text('Found at ' + url + 'with parameter: ' + parameter + ' and payload: ' + payload)

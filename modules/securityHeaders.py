@@ -56,7 +56,7 @@ class HeaderFinder():
 		try:
 			if self.outputActivated:
 				print('Scanning ' + url)
-				response = self.session.get(url, verify = False)
+			response = self.session.get(url, verify = False)
 		except requests.exceptions.MissingSchema:
 			print('Missing schema error on ' + url)
 			return
