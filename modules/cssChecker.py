@@ -108,22 +108,28 @@ class CssChecker():
 	#Checks if css file found returns code 200
 	def scan_css(self, session, host, url):
 
+		#We split url and host to check, if vuln is found, if host domain != url domain
+		url_split = url.split('/')
+		host_split = host.split('/')
+
 		try:
 			response = session.get(url, verify = False)
 		except:
-			self.data.append(['Possible css injection', host, url, 'Could not access the css file'])
-			if msTeamsActivated:
-				self.msTeams.title('Possible css injection')
-				self.msTeams.text('The css file '+ url +' could not be accessed. Host url: ' + host)
-				self.msTeams.send()
+			if url_split[2] != host_split[2]:
+				self.data.append(['Possible css injection', host, url, 'Could not access the css file'])
+				if msTeamsActivated:
+					self.msTeams.title('Possible css injection')
+					self.msTeams.text('The css file '+ url +' could not be accessed. Host url: ' + host)
+					self.msTeams.send()
 			return
 
 		if response.status_code != 200:
-			self.data.append(['Possible css injection', host, url, 'Css file did not return 200'])
-			if msTeamsActivated:
-				self.msTeams.title('Possible css injection')
-				self.msTeams.text('The css file '+ url +' did not return code 200. Host url: ' + host)
-				self.msTeams.send()
+			if url_split[2] != host_split[2]:
+				self.data.append(['Possible css injection', host, url, 'Css file did not return 200'])
+				if msTeamsActivated:
+					self.msTeams.title('Possible css injection')
+					self.msTeams.text('The css file '+ url +' did not return code 200. Host url: ' + host)
+					self.msTeams.send()
 
 	def run(self, urls):
 
