@@ -47,10 +47,10 @@ class FullScanner():
 		print('Finished! Please check output for results!')
 
 
-	def output(self):
+	def output(self, outputFolderName):
 
 		#HeaderFinder output
-		self.headerFinder.output()
+		self.headerFinder.output(outputFolderName)
 		
 		final_data_df = pd.DataFrame(self.data, columns = ['Vulnerability','MainUrl','Reference','Description'])
 		final_error_df = pd.DataFrame(self.error_data, columns = ['Module','MainUrl','Reference','Reason'])

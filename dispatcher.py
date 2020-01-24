@@ -179,7 +179,7 @@ elif args.mode == 'full':
 			t.join()
 	except KeyboardInterrupt:
 		pass
-	data_df, error_df = fullScanner.output()
+	data_df, error_df = fullScanner.output(outputFolderName)
 	main_df = main_df.append(data_df)
 	main_errpr_df = main_error_df.append(error_df)
 	generateOutput()
