@@ -66,7 +66,10 @@ if args.mode == 's3bucket':
 		bucketFinder.activateMSTeams(teamsConnection)
 	bucketFinder.showStartScreen()
 	bucketFinder.activateOutput()
-	bucketFinder.run(urls)
+	try:
+		bucketFinder.run(urls)
+	except KeyboardInterrupt:
+		pass
 	#
 	data_df, error_df = bucketFinder.output()
 	main_df = main_df.append(data_df)
@@ -79,7 +82,10 @@ elif args.mode == 'token':
 	tokenFinder = TokenFinder()
 	tokenFinder.showStartScreen()
 	tokenFinder.activateOutput()
-	tokenFinder.run(urls)
+	try:
+		tokenFinder.run(urls)
+	except KeyboardInterrupt:
+		pass
 	#
 	data_df, error_df = tokenFinder.output()
 	main_df = main_df.append(data_df)
@@ -92,11 +98,15 @@ elif args.mode == 'header':
 	headerFinder = HeaderFinder()
 	headerFinder.showStartScreen()
 	headerFinder.activateOutput()
-	headerFinder.run(urls, outputFolderName)
+	try:
+		headerFinder.run(urls, outputFolderName)
+	except KeyboardInterrupt:
+		pass
 	#data_df, error_df = headerFinder.output()
 	#main_df = main_df.append(data_df)
 	#main_errpr_df = main_error_df.append(error_df)
 	#generateOutput()
+	headerFinder.output()
 	headerFinder.showEndScreen()
 
 #------------------ Open Redirect --------------------
@@ -106,7 +116,10 @@ elif args.mode == 'openred':
 		openRedirect.activateMSTeams(teamsConnection)
 	openRedirect.showStartScreen()
 	openRedirect.activateOutput()
-	openRedirect.run(urls)
+	try:
+		openRedirect.run(urls)
+	except KeyboardInterrupt:
+		pass
 	#
 	data_df, error_df = openRedirect.output()
 	main_df = main_df.append(data_df)
@@ -121,7 +134,10 @@ elif args.mode == 'css':
 		cssChecker.activateMSTeams(teamsConnection)
 	cssChecker.showStartScreen()
 	cssChecker.activateOutput()
-	cssChecker.run(urls)
+	try:
+		cssChecker.run(urls)
+	except KeyboardInterrupt:
+		pass
 	#
 	data_df, error_df = cssChecker.output()
 	main_df = main_df.append(data_df)
@@ -135,7 +151,10 @@ elif args.mode == 'full':
 	if args.msTeams:
 		fullScanner.activateMSTeams(teamsConnection)
 	fullScanner.showStartScreen()
-	fullScanner.run(urls, outputFolderName)
+	try:
+		fullScanner.run(urls, outputFolderName)
+	except KeyboardInterrupt:
+		pass
 	#
 	data_df, error_df = fullScanner.output(outputFolderName)
 	main_df = main_df.append(data_df)
