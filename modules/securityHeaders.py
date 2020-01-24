@@ -10,6 +10,8 @@ class HeaderFinder():
 
 	scanned_targets = []
 
+	inputName = ''
+
 	data = []
 	outputActivated = False
 
