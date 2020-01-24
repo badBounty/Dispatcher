@@ -102,7 +102,8 @@ class CssChecker():
 		all_matches = [(m.group(1), m.start(0), m.end(0)) for m in re.finditer(regex, response.text)]
 		css_endpoints = list()
 		for match in all_matches:
-			if '.css' in list(match)[0]:
+			if '.css' in list(match)[0] and 'http' in list(match)[0]:
+				#print(list(match)[0])
 				css_endpoints.append(list(match)[0])
 
 		return css_endpoints
@@ -121,6 +122,10 @@ class CssChecker():
 
 		try:
 			response = session.get(url, verify = False)
+		except requests.exceptions.MissingSchema:
+			if self.outputActivated:
+				print('Missing schema error on ' + url)
+			return
 		except:
 			if url_split[2] != host_split[2]:
 				self.data.append(['Possible css injection', host, url, 'Could not access the css file'])
