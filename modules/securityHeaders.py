@@ -8,6 +8,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class HeaderFinder():
 
+	scanned_targets = []
+
 	data = []
 	outputActivated = False
 
@@ -52,6 +54,12 @@ class HeaderFinder():
 		self.inputName = inputName
 
 		for url in urls:
+
+			if url in self.scanned_targets:
+				continue
+
+			self.scanned_targets.append(url)
+
 			try:
 				if self.outputActivated:
 					print('Scanning ' + url)

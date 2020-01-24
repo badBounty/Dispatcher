@@ -6,6 +6,7 @@ import pandas as pd
 class TokenFinder():
 
 	scanned_targets = []
+
 	data = []
 	error_data = []
 	outputActivated = False
@@ -113,6 +114,11 @@ class TokenFinder():
 
 	#Searches certain keywords on site
 	def process(self, session, host, url):
+
+		if url in self.scanned_targets:
+			return
+
+		self.scanned_targets.append(url)
 
 		try:
 			response = session.get(url, verify = False)

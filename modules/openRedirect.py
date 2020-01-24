@@ -6,6 +6,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class OpenRedirect():
 
+	scanned_targets = []
+
 	payloads = []
 	parameters = []
 	data = []
@@ -53,6 +55,11 @@ class OpenRedirect():
 
 	#Testing open redirect
 	def testOpenRedirect(self,session,url):
+
+		if url in self.scanned_targets:
+			return
+
+		self.scanned_targets.append(url)
 
 		if 'login' not in url or 'register' not in url:
 			return

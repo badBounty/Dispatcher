@@ -9,6 +9,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class CssChecker():
 
+	scanned_targets = []
+
 	data = []
 	error_data = []
 	outputActivated = False
@@ -107,6 +109,11 @@ class CssChecker():
 
 	#Checks if css file found returns code 200
 	def scan_css(self, session, host, url):
+
+		if url in self.scanned_targets:
+			return
+
+		self.scanned_targets.append(url)
 
 		#We split url and host to check, if vuln is found, if host domain != url domain
 		url_split = url.split('/')
