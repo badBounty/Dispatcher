@@ -124,7 +124,7 @@ class CssChecker():
 		except:
 			if url_split[2] != host_split[2]:
 				self.data.append(['Possible css injection', host, url, 'Could not access the css file'])
-				if msTeamsActivated:
+				if self.msTeamsActivated:
 					self.msTeams.title('Possible css injection')
 					self.msTeams.text('The css file '+ url +' could not be accessed. Host url: ' + host)
 					self.msTeams.send()
@@ -133,7 +133,7 @@ class CssChecker():
 		if response.status_code != 200:
 			if url_split[2] != host_split[2]:
 				self.data.append(['Possible css injection', host, url, 'Css file did not return 200'])
-				if msTeamsActivated:
+				if self.msTeamsActivated:
 					self.msTeams.title('Possible css injection')
 					self.msTeams.text('The css file '+ url +' did not return code 200. Host url: ' + host)
 					self.msTeams.send()

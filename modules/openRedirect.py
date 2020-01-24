@@ -6,14 +6,29 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class OpenRedirect():
 
-	scanned_targets = []
+	def __init__(self):
+		self.scanned_targets = []
+		#self.payloads = []
+		#self.parameters = []
 
-	payloads = []
-	parameters = []
-	data = []
-	error_data = []
-	outputActivated = False
-	msTeamsActivated = False
+		self.data = []
+		self.error_data = []
+
+		self.outputActivated = False
+		self.msTeamsActivated = False
+
+		self.session = requests.Session()
+		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
+
+		self.session.headers.update(headers)
+
+		with open('extra/openRedirect_parameters.txt') as fp:
+			lines = fp.read()
+			self.parameters = lines.split('\n')
+
+		with open('extra/openRedirect_payloads.txt') as fp:
+			lines = fp.read()
+			self.payloads = lines.split('\n')
 
 	def activateOutput(self):
 		self.outputActivated = True
@@ -54,7 +69,7 @@ class OpenRedirect():
 		return(data_df, error_df)
 
 	#Testing open redirect
-	def testOpenRedirect(self,session,url):
+	def testOpenRedirect(self, url):
 
 		if url in self.scanned_targets:
 			return
@@ -72,7 +87,7 @@ class OpenRedirect():
 				url_to_scan = url + finalPayload
 
 				try:
-					response = session.get(url_to_scan, verify = False)
+					response = self.session.get(url_to_scan, verify = False)
 				except:
 					continue
 				
@@ -91,25 +106,9 @@ class OpenRedirect():
 
 	def run(self, urls):
 
-		session = requests.Session()
-		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
-
-		session.headers.update(headers)
-
-		with open('extra/openRedirect_parameters.txt') as fp:
-			lines = fp.read()
-			self.parameters = lines.split('\n')
-
-		with open('extra/openRedirect_payloads.txt') as fp:
-			lines = fp.read()
-			self.payloads = lines.split('\n')
-
-		#print(self.parameters)
-		#print(self.payloads)
-
 		for url in urls:
 			if self.outputActivated:
 				print('Scanning ' + url)
 
-			self.testOpenRedirect(session, url)
+			self.testOpenRedirect(url)
 

@@ -51,6 +51,7 @@ with open(args.input) as fp:
 #Filter empty spaces
 urls = filter(None, urls)
 urls = list(urls)
+urls = list(dict.fromkeys(urls))
 
 #Dividing based on thread number
 urls = np.array_split(urls,args.threads)
