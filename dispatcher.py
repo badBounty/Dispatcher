@@ -20,12 +20,6 @@ parser.add_argument('-i', '--input', help = "Input file that contains urls to be
 					required = True,
 					action = 'store')
 
-parser.add_argument('-t','--threads', help = "Number of threads for the program",
-					required = False,
-					action = 'store',
-					default = 3,
-					type = int)
-
 parser.add_argument('-mst','--msTeams', help = "MsTeams webhook",
 					required = False,
 					action = 'store')
@@ -52,11 +46,6 @@ with open(args.input) as fp:
 urls = filter(None, urls)
 urls = list(urls)
 urls = list(dict.fromkeys(urls))
-
-#Dividing based on thread number
-#urls = np.array_split(urls,args.threads)
-#for i in range(len(urls)):
-#	urls[i] = urls[i].tolist()
 
 # Generating output
 def generateOutput():
@@ -91,6 +80,7 @@ elif args.mode == 'token':
 	tokenFinder.showStartScreen()
 	tokenFinder.activateOutput()
 	tokenFinder.run(urls)
+	#
 	data_df, error_df = tokenFinder.output()
 	main_df = main_df.append(data_df)
 	main_errpr_df = main_error_df.append(error_df)
@@ -117,6 +107,7 @@ elif args.mode == 'openred':
 	openRedirect.showStartScreen()
 	openRedirect.activateOutput()
 	openRedirect.run(urls)
+	#
 	data_df, error_df = openRedirect.output()
 	main_df = main_df.append(data_df)
 	main_errpr_df = main_error_df.append(error_df)
@@ -131,6 +122,7 @@ elif args.mode == 'css':
 	cssChecker.showStartScreen()
 	cssChecker.activateOutput()
 	cssChecker.run(urls)
+	#
 	data_df, error_df = cssChecker.output()
 	main_df = main_df.append(data_df)
 	main_errpr_df = main_error_df.append(error_df)
@@ -144,6 +136,7 @@ elif args.mode == 'full':
 		fullScanner.activateMSTeams(teamsConnection)
 	fullScanner.showStartScreen()
 	fullScanner.run(urls, outputFolderName)
+	#
 	data_df, error_df = fullScanner.output(outputFolderName)
 	main_df = main_df.append(data_df)
 	main_errpr_df = main_error_df.append(error_df)
