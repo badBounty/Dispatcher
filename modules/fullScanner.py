@@ -91,6 +91,7 @@ class FullScanner():
 			response = self.session.get(url, verify = False)
 			if response.status_code == 404:
 				print('Url: ' + url + ' returned 404')
+				self.error_data.append(['full',url,url,'Returned 404'])
 				continue
 			print('Scanning ' + url + ' with s3bucket module')
 			self.bucketFinder.process(url)

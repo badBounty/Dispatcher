@@ -111,6 +111,14 @@ class CssChecker():
 
 	def process(self, url):
 
+		response = self.session.get(url, verify = False)
+
+		if response.status_code == 404:
+			if self.outputActivated:
+				print('Url: ' + url + ' returned 404')
+				self.error_data.append(['css',url,url,'Returned 404'])
+			return
+
 		css_found = self.helper.get_css_in_url(self.session, url)
 
 		for css in css_found:

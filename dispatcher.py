@@ -73,7 +73,7 @@ if args.mode == 's3bucket':
 	#
 	data_df, error_df = bucketFinder.output()
 	main_df = main_df.append(data_df)
-	main_errpr_df = main_error_df.append(error_df)
+	main_error_df = main_error_df.append(error_df)
 	generateOutput()
 	bucketFinder.showEndScreen()
 
@@ -89,7 +89,7 @@ elif args.mode == 'token':
 	#
 	data_df, error_df = tokenFinder.output()
 	main_df = main_df.append(data_df)
-	main_errpr_df = main_error_df.append(error_df)
+	main_error_df = main_error_df.append(error_df)
 	generateOutput()
 	tokenFinder.showEndScreen()
 
@@ -123,7 +123,7 @@ elif args.mode == 'openred':
 	#
 	data_df, error_df = openRedirect.output()
 	main_df = main_df.append(data_df)
-	main_errpr_df = main_error_df.append(error_df)
+	main_error_df = main_error_df.append(error_df)
 	generateOutput()
 	openRedirect.showEndScreen()
 
@@ -141,7 +141,7 @@ elif args.mode == 'css':
 	#
 	data_df, error_df = cssChecker.output()
 	main_df = main_df.append(data_df)
-	main_errpr_df = main_error_df.append(error_df)
+	main_error_df = main_error_df.append(error_df)
 	generateOutput()
 	cssChecker.showEndScreen()
 
@@ -158,6 +158,6 @@ elif args.mode == 'full':
 	#
 	data_df, error_df = fullScanner.output()
 	main_df = main_df.append(data_df)
-	main_errpr_df = main_error_df.append(error_df)
+	main_error_df = main_error_df.append(error_df)
 	generateOutput()
 	fullScanner.showEndScreen()

@@ -74,7 +74,7 @@ class OpenRedirect():
 
 		self.scanned_targets.append(url)
 
-		if 'login' not in url or 'register' not in url:
+		if 'login' not in url:
 			return
 
 		#For each endpoint we try parameters and payloads
@@ -88,6 +88,12 @@ class OpenRedirect():
 					response = session.get(url_to_scan, verify = False)
 				except:
 					continue
+
+				if response.status_code == 404:
+					if self.outputActivated:
+						print('Url: ' + url + ' returned 404')
+						self.error_data.append(['openred',url,url,'Returned 404'])
+				return
 				
 				#If on the redirect history we see google.com as host
 				#The information is added for output
@@ -114,5 +120,5 @@ class OpenRedirect():
 			if self.outputActivated:
 				print('Scanning ' + url)
 
-			self.testOpenRedirect(url)
+			self.process(url)
 
