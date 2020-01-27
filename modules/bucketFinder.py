@@ -167,6 +167,8 @@ class BucketFinder():
 		ls_allowed_buckets = []
 		does_not_exist_buckets = []
 		for bucket in bucket_list:
+			if (any(x.isupper() for x in bucket)):
+				continue
 			try:
 				output = subprocess.check_output('aws s3 ls s3://' + bucket, shell = True, stderr = subprocess.STDOUT)
 				#print(output)
