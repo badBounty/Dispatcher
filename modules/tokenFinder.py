@@ -91,10 +91,14 @@ class TokenFinder():
 		secret_access_key_ids = re.findall('secret_access_key_id:"(.+?)"', response.text)
 		authorization = re.findall('authorization:"(.+?)"', response.text)
 		api_key = re.findall('api_key:"(.+?)"', response.text)
+		licence_key = re.findall('licence_key:"(.+?)"', response.text)
 
 		if len(tokens) > 0:
 			for token in tokens:
 				self.data.append(['Information disclosure', host , url , 'The following token was fonund: ' + token])
+		if len(licence_key) > 0:
+			for key in licence_key:
+				self.data.append(['Information disclosure', host , url , 'The following licence_key was fonund: ' + key])
 		if len(tokens_2) > 0:
 			for token in tokens_2:
 				self.data.append(['Information disclosure', host , url , 'The following token was fonund: ' + token])
