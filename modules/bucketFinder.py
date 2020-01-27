@@ -67,7 +67,7 @@ class BucketFinder():
 		res = []
 		#------ Filter invalid matches
 		for item in some_list:
-			if all(char not in item for char in ['\\','=','>','<','[',']','{','}',';','(',')']):
+			if all(char not in item for char in ['\\','=','>','<','[',']','{','}',';','(',')','_']):
 				res.append(item)
 		return res
 
