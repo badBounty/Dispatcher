@@ -73,8 +73,6 @@ class TokenFinder():
 		except:
 			return []
 
-		print(url)
-
 		if response.status_code == 404:
 			print('Url: ' + url + ' returned 404')
 			self.error_data.append(['token', host, url, 'Returned 404'])
