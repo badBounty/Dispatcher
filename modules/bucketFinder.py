@@ -7,44 +7,20 @@ import time
 import os
 import pandas as pd
 
+from extra.helper import Helper
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class BucketFinder():
 
-	scanned_targets = []
-	data = []
-	error_data = []
-	msTeamsActivated = False
-	outputActivated = False
+	def __init__(self):
+		self.scanned_targets = []
+		self.data = []
+		self.error_data = []
+		self.msTeamsActivated = False
+		self.outputActivated = False
+		self.helper = Helper()
 
-	# Regex used
-	regex_str = r"""
-  		(?:"|')                               # Start newline delimiter
-  		(
-    		((?:[a-zA-Z]{1,10}://|//)           # Match a scheme [a-Z]*1-10 or //
-    		[^"'/]{1,}\.                        # Match a domainname (any character + dot)
-    		[a-zA-Z]{2,}[^"']{0,})              # The domainextension and/or path
-    		|
-    		((?:/|\.\./|\./)                    # Start with /,../,./
-    		[^"'><,;| *()(%%$^/\\\[\]]          # Next character can't be...
-    		[^"'><,;|()]{1,})                   # Rest of the characters can't be
-    		|
-    		([a-zA-Z0-9_\-/]{1,}/               # Relative endpoint with /
-    		[a-zA-Z0-9_\-/]{1,}                 # Resource name
-    		\.(?:[a-zA-Z]{1,4}|action)          # Rest + extension (length 1-4 or action)
-    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
-    		|
-    		([a-zA-Z0-9_\-/]{1,}/               # REST API (no extension) with /
-    		[a-zA-Z0-9_\-/]{3,}                 # Proper REST endpoints usually have 3+ chars
-    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
-    		|
-    		([a-zA-Z0-9_\-]{1,}                 # filename
-    		\.(?:php|asp|aspx|jsp|json|
-    		     action|html|js|txt|xml)        # . + extension
-    		(?:[\?|#][^"|']{0,}|))              # ? or # mark with parameters
-  		)
-  		(?:"|')                               # End newline delimiter
-		"""
 
 	def activateOutput(self):
 		self.outputActivated = True
@@ -129,8 +105,9 @@ class BucketFinder():
 			return []
 
 		self.scanned_targets.append(url)
+
 		try:
-			response = session.get(url, verify = False)
+			response = session.get(url, verify = False, timeout = 3)
 		except:
 			return []
 		
@@ -211,36 +188,6 @@ class BucketFinder():
 
 			self.configureOutput(hostname, subname, bucket_list, ls_allowed, cprm_allowed)
 
-	def get_js_files(self, session, url):
-		regex = re.compile(self.regex_str, re.VERBOSE)
-		try:
-			response = session.get(url, verify = False)
-		except Exception:
-			return []
-
-		all_matches = [(m.group(1), m.start(0), m.end(0)) for m in re.finditer(regex, response.text)]
-		js_endpoints = list()
-		for match in all_matches:
-			if '.js' in list(match)[0]:
-				js_endpoints.append(list(match)[0])
-
-		return js_endpoints
-
-	def get_http_in_js(self, session, url):
-		regex = re.compile(self.regex_str, re.VERBOSE)
-
-		http_endpoints = list()
-		try:
-			response = session.get(url)
-		except Exception:
-			return http_endpoints
-		matches_in_js = [(m.group(1), m.start(0), m.end(0)) for m in re.finditer(regex, response.text)]
-		for match in matches_in_js:
-			if 'http' in list(match)[0]:
-				http_endpoints.append(list(match)[0])
-
-		return http_endpoints
-
 	#Receives an urlList
 	def run(self, urls):
 
@@ -256,9 +203,7 @@ class BucketFinder():
 			buckets_in_html = self.get_buckets(session, url, url)
 			self.check_buckets(url, 'html code', buckets_in_html)
 
-			js_in_url = self.get_js_files(session, url)
-
-			#print(js_in_url)
+			js_in_url = self.helper.get_js_in_url(session, url)
 			
 			for js_endpoint in js_in_url:
 				# Searching for buckets
@@ -266,8 +211,8 @@ class BucketFinder():
 				self.check_buckets(url, js_endpoint, bucket_list)
 
 				#Search urls in js file
-				http_in_js = self.get_http_in_js(session, js_endpoint)
-				#print(http_in_js)
+				http_in_js = self.helper.get_http_in_js(session, url)
+
 				for http_endpoint in http_in_js:
 					bucket_list = self.get_buckets(session, http_endpoint, url)
 					self.check_buckets(url, http_endpoint, bucket_list)
