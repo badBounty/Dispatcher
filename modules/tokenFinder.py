@@ -16,6 +16,11 @@ class TokenFinder():
 
 		self.helper = Helper()
 
+		self.session = requests.Session()
+		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
+
+		self.session.headers.update(headers)
+
 	def activateOutput(self):
 		self.outputActivated = True
 
@@ -61,7 +66,7 @@ class TokenFinder():
 		return http_endpoints
 
 	#Searches certain keywords on site
-	def process(self, session, host, url):
+	def tokenProcess(self, session, host, url):
 
 		if url in self.scanned_targets:
 			return
@@ -112,28 +117,26 @@ class TokenFinder():
 			for key in authorization:
 				self.data.append(['Information disclosure', host , url , 'The following auth_token was fonund: ' + key])
 
+	def process(self, url):
+
+		self.tokenProcess(self.session, url, url)
+		js_in_url = self.helper.get_js_in_url(self.session, url)
+
+		for js_endpoint in js_in_url:
+			self.tokenProcess(self.session, url, js_endpoint)
+
+			http_in_js = self.helper.get_http_in_js(self.session, js_endpoint)
+			#print(http_in_js)
+			for http_endpoint in http_in_js:
+				self.tokenProcess(self.session, js_endpoint, http_endpoint)
+
+
 	def run(self, urls):
 
-		session = requests.Session()
-		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
-
-		session.headers.update(headers)
-
 		for url in urls:
-			if self.outputActivated:
-				print('Scanning '+ url)
+			print('Scanning '+ url)
 
-			self.process(session, url, url)
-			js_in_url = self.helper.get_js_in_url(session, url)
-
-			for js_endpoint in js_in_url:
-				self.process(session, url, js_endpoint)
-
-				http_in_js = self.helper.get_http_in_js(session, js_endpoint)
-				#print(http_in_js)
-				for http_endpoint in http_in_js:
-					self.process(session, js_endpoint, http_endpoint)
-
+			self.process(url)
 
 		self.output()
 

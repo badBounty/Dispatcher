@@ -1,4 +1,5 @@
 import pandas as pd
+import requests
 
 from modules.bucketFinder import BucketFinder
 from modules.tokenFinder import TokenFinder
@@ -8,14 +9,19 @@ from modules.cssChecker import CssChecker
 
 class FullScanner():
 
-	data = []
-	error_data = []
+	def __init__(self, outputFolderName):
+		self.data = []
+		self.error_data = []
 
-	bucketFinder = BucketFinder()
-	tokenFinder = TokenFinder()
-	headerFinder = HeaderFinder()
-	openRedirect = OpenRedirect()
-	cssChecker = CssChecker()
+		self.bucketFinder = BucketFinder()
+		self.tokenFinder = TokenFinder()
+		self.headerFinder = HeaderFinder(outputFolderName)
+		self.openRedirect = OpenRedirect()
+		self.cssChecker = CssChecker()
+
+		self.session = requests.Session()
+		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
+		self.session.headers.update(headers)
 
 	def activateMSTeams(self, msTeams):
 		self.bucketFinder.activateMSTeams(msTeams)
@@ -47,7 +53,7 @@ class FullScanner():
 		print('Finished! Please check output for results!')
 
 
-	def output(self, outputFolderName):
+	def output(self):
 
 		#HeaderFinder output
 		self.headerFinder.output()
@@ -77,12 +83,22 @@ class FullScanner():
 
 		return(final_data_df, final_error_df)
 
-	def run(self, urls, outputFolderName):
+	def run(self, urls):
 
 		self.bucketFinder.activateOutput()
 
-		self.bucketFinder.run(urls)
-		self.tokenFinder.run(urls)
-		self.headerFinder.run(urls, outputFolderName)
-		self.openRedirect.run(urls)
-		self.cssChecker.run(urls)
+		for url in urls:
+			response = self.session.get(url, verify = False)
+			if response.status_code == 404:
+				print('Url: ' + url + ' returned 404')
+				continue
+			print('Scanning ' + url + ' with s3bucket module')
+			self.bucketFinder.process(url)
+			print('Scanning ' + url + ' with token module')
+			self.tokenFinder.process(url)
+			print('Scanning ' + url + ' with header module')
+			self.headerFinder.process(url)
+			print('Scanning ' + url + ' with openred module')
+			self.openRedirect.process(url)
+			print('Scanning ' + url + ' with css module')
+			self.cssChecker.process(url)

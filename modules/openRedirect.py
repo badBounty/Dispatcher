@@ -67,7 +67,7 @@ class OpenRedirect():
 		return(data_df, error_df)
 
 	#Testing open redirect
-	def testOpenRedirect(self, url):
+	def testOpenRedirect(self, session, url):
 
 		if url in self.scanned_targets:
 			return
@@ -85,7 +85,7 @@ class OpenRedirect():
 				url_to_scan = url + finalPayload
 
 				try:
-					response = self.session.get(url_to_scan, verify = False)
+					response = session.get(url_to_scan, verify = False)
 				except:
 					continue
 				
@@ -96,11 +96,17 @@ class OpenRedirect():
 					if resp_split[2] == 'google.com':
 						print (resp.status_code, resp.url)
 						self.data.append(['Open Redirect Vulnerability',url,url,'An open redirect vulnerability was found with parameter: ' + parameter + ' and payload: ' + payload])
+						print('Possible open redirect vulnerability on: ' + url)
 						if self.msTeamsActivated:
 							self.msTeams.title('Open redirect vulnerability found!')
 							self.msTeams.text('Found at ' + url + 'with parameter: ' + parameter + ' and payload: ' + payload)
 							self.msTeams.send()
 		return
+
+
+	def process(self, url):
+
+		self.testOpenRedirect(self.session, url)
 
 	def run(self, urls):
 

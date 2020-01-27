@@ -8,13 +8,16 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class HeaderFinder():
 
-	def __init__(self):
+	def __init__(self, inputName):
 		self.scanned_targets = []
-		self.inputName = ''
+		self.inputName = inputName
 		self.data = []
 		self.outputActivated = False
 
 		self.session = requests.Session()
+		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
+
+		self.session.headers.update(headers)
 
 	def activateOutput(self):
 		self.outputActivated = True
@@ -51,12 +54,12 @@ class HeaderFinder():
 
 		df.to_csv('output/'+self.inputName+'/headerFinder.csv', index = False)
 
-	def scan_target(self, url):
+	def scan_target(self, session, url):
 
 		try:
 			if self.outputActivated:
 				print('Scanning ' + url)
-			response = self.session.get(url, verify = False)
+			response = session.get(url, verify = False)
 		except requests.exceptions.MissingSchema:
 			print('Missing schema error on ' + url)
 			return
@@ -92,19 +95,20 @@ class HeaderFinder():
 		    		strict_transport_security, access_control_allow_policy])
 
 
-	#Verifies headers on each url and adds data to output
-	def run(self, urls, inputName):
+	def process(self, url):
 
-		self.inputName = inputName
+		if url in self.scanned_targets:
+			return
+
+		self.scanned_targets.append(url)
+
+		self.scan_target(self.session, url)
+
+	#Verifies headers on each url and adds data to output
+	def run(self, urls):
 
 		for url in urls:
 
-			if url in self.scanned_targets:
-				continue
-
-			self.scanned_targets.append(url)
-
-			self.scan_target(url)
-
+			self.process(url)
 
 		self.output()

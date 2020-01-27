@@ -95,11 +95,11 @@ elif args.mode == 'token':
 
 #------------------ Header Finder --------------------
 elif args.mode == 'header':
-	headerFinder = HeaderFinder()
+	headerFinder = HeaderFinder(outputFolderName)
 	headerFinder.showStartScreen()
 	headerFinder.activateOutput()
 	try:
-		headerFinder.run(urls, outputFolderName)
+		headerFinder.run(urls)
 	except KeyboardInterrupt:
 		pass
 	#data_df, error_df = headerFinder.output()
@@ -147,16 +147,16 @@ elif args.mode == 'css':
 
 #----------------------- Full -------------------------
 elif args.mode == 'full':
-	fullScanner = FullScanner()
+	fullScanner = FullScanner(outputFolderName)
 	if args.msTeams:
 		fullScanner.activateMSTeams(teamsConnection)
 	fullScanner.showStartScreen()
 	try:
-		fullScanner.run(urls, outputFolderName)
+		fullScanner.run(urls)
 	except KeyboardInterrupt:
 		pass
 	#
-	data_df, error_df = fullScanner.output(outputFolderName)
+	data_df, error_df = fullScanner.output()
 	main_df = main_df.append(data_df)
 	main_errpr_df = main_error_df.append(error_df)
 	generateOutput()

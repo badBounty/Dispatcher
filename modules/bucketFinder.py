@@ -21,6 +21,10 @@ class BucketFinder():
 		self.outputActivated = False
 		self.helper = Helper()
 
+		self.session = requests.Session()
+		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
+		self.session.headers.update(headers)
+
 
 	def activateOutput(self):
 		self.outputActivated = True
@@ -206,35 +210,29 @@ class BucketFinder():
 
 			self.configureOutput(hostname, subname, bucket_list, ls_allowed, cprm_allowed, does_not_exist)
 
-	def process(self, session, url):
+	def process(self, url):
 
-		buckets_in_html = self.get_buckets(session, url, url)
+		buckets_in_html = self.get_buckets(self.session, url, url)
 		self.check_buckets(url, 'html code', buckets_in_html)
 
-		js_in_url = self.helper.get_js_in_url(session, url)
+		js_in_url = self.helper.get_js_in_url(self.session, url)
 			
 		for js_endpoint in js_in_url:
 			# Searching for buckets
-			bucket_list = self.get_buckets(session, js_endpoint, url)
+			bucket_list = self.get_buckets(self.session, js_endpoint, url)
 			self.check_buckets(url, js_endpoint, bucket_list)
 
 			#Search urls in js file
-			http_in_js = self.helper.get_http_in_js(session, url)
+			http_in_js = self.helper.get_http_in_js(self.session, url)
 
 			for http_endpoint in http_in_js:
-				bucket_list = self.get_buckets(session, http_endpoint, url)
+				bucket_list = self.get_buckets(self.session, http_endpoint, url)
 				self.check_buckets(url, http_endpoint, bucket_list)
 
 	#Receives an urlList
 	def run(self, urls):
-
-		session = requests.Session()
-		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
-
-		session.headers.update(headers)
 		
 		for url in urls:
-			if self.outputActivated:
-				print('Scanning '+ url)
+			print('Scanning '+ url)
 
-			self.process(session, url)
+			self.process(url)

@@ -21,6 +21,11 @@ class CssChecker():
 
 		self.helper = Helper()
 
+		self.session = requests.Session()
+		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
+
+		self.session.headers.update(headers)
+
 
 	def activateOutput(self):
 		self.outputActivated = True
@@ -88,6 +93,7 @@ class CssChecker():
 		except:
 			if url_split[2] != host_split[2]:
 				self.data.append(['Possible css injection', host, url, 'Could not access the css file'])
+				print('Possible css injection on: ' + url)
 				if self.msTeamsActivated:
 					self.msTeams.title('Possible css injection')
 					self.msTeams.text('The css file '+ url +' could not be accessed. Host url: ' + host)
@@ -97,23 +103,24 @@ class CssChecker():
 		if response.status_code != 200:
 			if url_split[2] != host_split[2]:
 				self.data.append(['Possible css injection', host, url, 'Css file did not return 200'])
+				print('Possible css injection on: ' + url)
 				if self.msTeamsActivated:
 					self.msTeams.title('Possible css injection')
 					self.msTeams.text('The css file '+ url +' did not return code 200. Host url: ' + host)
 					self.msTeams.send()
 
+	def process(self, url):
+
+		css_found = self.helper.get_css_in_url(self.session, url)
+
+		for css in css_found:
+			self.scan_css(self.session, url, css)
+
+
 	def run(self, urls):
-
-		session = requests.Session()
-		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
-
-		session.headers.update(headers)
 
 		for url in urls:
 			if self.outputActivated:
 				print('Scanning ' + url)
 
-			css_found = self.helper.get_css_in_url(session, url)
-
-			for css in css_found:
-				self.scan_css(session, url, css)
+			self.process(url)
