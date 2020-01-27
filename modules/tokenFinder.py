@@ -91,7 +91,7 @@ class TokenFinder():
 		secret_access_key_ids = re.findall('secret_access_key_id:"(.+?)"', response.text)
 		authorization = re.findall('authorization:"(.+?)"', response.text)
 		api_key = re.findall('api_key:"(.+?)"', response.text)
-		licence_key = re.findall('licence_key:"(.+?)"', response.text)
+		licence_key = re.findall('license_key:"(.+?)"', response.text)
 
 		if len(tokens) > 0:
 			for token in tokens:
