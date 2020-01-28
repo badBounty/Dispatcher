@@ -79,6 +79,7 @@ class OpenRedirect():
 
 		#For each endpoint we try parameters and payloads
 		for parameter in self.parameters:
+			print('Reached')
 			for payload in self.payloads:
 				finalPayload = parameter.replace("{payload}",payload)
 				
@@ -93,7 +94,7 @@ class OpenRedirect():
 					if self.outputActivated:
 						print('Url: ' + url + ' returned 404')
 						self.error_data.append(['openred',url,url,'Returned 404'])
-				return
+					continue
 				
 				#If on the redirect history we see google.com as host
 				#The information is added for output

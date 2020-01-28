@@ -4,16 +4,18 @@ import argparse
 import numpy as np
 import pandas as pd
 import threading
+
 from modules.bucketFinder import BucketFinder
 from modules.tokenFinder import TokenFinder
 from modules.securityHeaders import HeaderFinder
 from modules.openRedirect import OpenRedirect
 from modules.cssChecker import CssChecker
 from modules.fullScanner import FullScanner
+from modules.endpointFinder import EndpointFinder
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-m', '--mode', help = "Module to be used (s3bucket, token, header, css, openred, full), refer to README for description of each module",
+parser.add_argument('-m', '--mode', help = "Module to be used (s3bucket, token, header, css, openred, endpoint, full), refer to README for description of each module",
 					required = True,
 					action = 'store')
 parser.add_argument('-i', '--input', help = "Input file that contains urls to be scanned (With HTTP/HTTPS)",
@@ -144,6 +146,24 @@ elif args.mode == 'css':
 	main_error_df = main_error_df.append(error_df)
 	generateOutput()
 	cssChecker.showEndScreen()
+
+#------------------- Endpoint Finder ---------------------
+elif args.mode == 'endpoint':
+	endpointFinder = EndpointFinder()
+	if args.msTeams:
+		endpointFinder.activateMSTeams(teamsConnection)
+	endpointFinder.showStartScreen()
+	endpointFinder.activateOutput()
+	try:
+		endpointFinder.run(urls)
+	except KeyboardInterrupt:
+		pass
+	#
+	data_df, error_df = endpointFinder.output()
+	main_df = main_df.append(data_df)
+	main_error_df = main_error_df.append(error_df)
+	generateOutput()
+	endpointFinder.showEndScreen()
 
 #----------------------- Full -------------------------
 elif args.mode == 'full':
