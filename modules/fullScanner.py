@@ -18,6 +18,7 @@ class FullScanner():
 		self.headerFinder = HeaderFinder(outputFolderName)
 		self.openRedirect = OpenRedirect()
 		self.cssChecker = CssChecker()
+		self.endpointFinder = EndpointFinder()
 
 		self.session = requests.Session()
 		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
@@ -27,6 +28,7 @@ class FullScanner():
 		self.bucketFinder.activateMSTeams(msTeams)
 		self.openRedirect.activateMSTeams(msTeams)
 		self.cssChecker.activateMSTeams(msTeams)
+		self.endpointFinder.activateMSTeams(msTeams)
 
 	def showStartScreen(self):
 		print('---------------------------------------------------------------------------------------')
@@ -81,6 +83,11 @@ class FullScanner():
 		final_data_df = final_data_df.append(data_df)
 		final_error_df = final_error_df.append(error_df)
 
+		#Adding endpoint finder output
+		data_df, error_df = self.endpointFinder.output()
+		final_data_df = final_data_df.append(data_df)
+		final_error_df = final_error_df.append(error_df)
+
 		return(final_data_df, final_error_df)
 
 	def run(self, urls):
@@ -103,3 +110,5 @@ class FullScanner():
 			self.openRedirect.process(url)
 			print('Scanning ' + url + ' with css module')
 			self.cssChecker.process(url)
+			print('Scanning ' + url + ' with endpoint module')
+			self.endpointFinder.process(url)

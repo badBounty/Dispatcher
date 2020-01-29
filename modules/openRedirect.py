@@ -79,7 +79,7 @@ class OpenRedirect():
 
 		#For each endpoint we try parameters and payloads
 		for parameter in self.parameters:
-			print('Reached')
+			#print('Reached')
 			for payload in self.payloads:
 				finalPayload = parameter.replace("{payload}",payload)
 				

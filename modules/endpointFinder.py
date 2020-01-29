@@ -1,6 +1,7 @@
 import requests
 import urllib3
 import pandas as pd
+import time
 
 from modules.openRedirect import OpenRedirect
 
@@ -18,6 +19,8 @@ class EndpointFinder():
 
 		self.outputActivated = False
 		self.msTeamsActivated = False
+
+		self.invalid_codes = [404,301,302,403,503]
 
 		self.session = requests.Session()
 		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
@@ -38,14 +41,14 @@ class EndpointFinder():
 		print('---------------------------------------------------------------------------------------')
 		print('---------------------------++++++++++++++------++++++++++++++----------./*/.-----------')
 		print('--------------------./*/.--++++++++++++++------++++++++++++++--------------------------')
-		print('---------------------------++++----------------+++--------------./*/.------------------')
-		print('---./*/.-------------------++++----------------+++-------------------------------------')
+		print('---------------------------++++----------------++++-------------./*/.------------------')
+		print('---./*/.-------------------++++----------------++++------------------------------------')
 		print('---------------------------++++++++++++++------+++++++++++-----------------------------')
 		print('------------./*/.----------++++++++++++++------+++++++++++--------------./*/.----------')
-		print('---------------------------++++----------------+++-------------------------------------')
-		print('---------------------------++++----------------+++-------------------------------------')
-		print('---------------------------++++++++++++++------+++-----------------------------./*/.---')
-		print('------------./*/.----------++++++++++++++------+++---------------./*/.-----------------')
+		print('---------------------------++++----------------++++------------------------------------')
+		print('---------------------------++++----------------++++------------------------------------')
+		print('---------------------------++++++++++++++------++++----------------------------./*/.---')
+		print('------------./*/.----------++++++++++++++------++++--------------./*/.-----------------')
 		print('---------------------------------------------------------------------------------------')
 		print('                                                                                       ')
 		print('----------------------------------- Handerllon ©_© ------------------------------------')
@@ -70,8 +73,8 @@ class EndpointFinder():
 	def scanEndpoint(self, url, endpoint):
 
 		try:
-			normal_response = self.session.get(url, verify = False, timeout = 3)
-		except requests.exceptions.ConnectTimeout:
+			normal_response = self.session.get(url, verify = False, timeout = 3, allow_redirects = False)
+		except requests.exceptions.Timeout:
 			return
 		except Exception as e:
 			print(e)
@@ -80,7 +83,7 @@ class EndpointFinder():
 		try:
 			#Wont allow redirects
 			endpoint_response = self.session.get(url+endpoint, verify = False, timeout = 3, allow_redirects = False)
-		except requests.exceptions.ConnectTimeout:
+		except requests.exceptions.Timeout:
 			return
 		except Exception as e:
 			print(e)
@@ -89,8 +92,9 @@ class EndpointFinder():
 		#print(endpoint_response.status_code)
 
 		#Endpoint append returns 404 or 301 (redirect)
-		if endpoint_response.status_code == 404 or endpoint_response.status_code == 301 or endpoint_response.status_code == 503:
-			return
+		for code in self.invalid_codes:
+			if endpoint_response.status_code == code:
+				return
 
 		response_len = len(normal_response.text)
 		end_response_len = len(endpoint_response.text)
@@ -101,10 +105,11 @@ class EndpointFinder():
 			return
 		else:
 			print('Endpoint ' + endpoint + ' was found on ' + url)
+			#print(endpoint_response.status_code)
 			self.data.append(['Endpoint found',url,url,'Endpoint ' + url+endpoint + ' was found, it should be checked'])
-			if endpoint == '/login':
-				print('Login found!, testing open redirect')
-				self.openRedirect.process(url+endpoint)
+			#if endpoint == '/login':
+			#	print('Login found!, testing open redirect')
+			#	self.openRedirect.process(url+endpoint)
 			return
 
 
@@ -120,6 +125,7 @@ class EndpointFinder():
 			url = url[:-1]
 
 		for endpoint in self.endpoints:
+			time.sleep(.5)
 			#print('Testing endpoint: '+endpoint)
 			self.scanEndpoint(url, endpoint)
 
