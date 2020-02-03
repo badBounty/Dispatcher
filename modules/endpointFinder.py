@@ -73,7 +73,7 @@ class EndpointFinder():
 	def scanEndpoint(self, url, endpoint):
 
 		try:
-			normal_response = self.session.get(url, verify = False, timeout = 3)#, allow_redirects = False)
+			normal_response = self.session.get(url, verify = False, timeout = 3, allow_redirects = False)
 		except requests.exceptions.Timeout:
 			return
 		except Exception as e:
@@ -89,10 +89,10 @@ class EndpointFinder():
 			print(e)
 			return
 
-		#print(endpoint_response.status_code)
-		#for code in self.invalid_codes:
-		#	if normal_response.status_code == code:
-		#		return
+		################## Keep this?? ###################
+		for code in self.invalid_codes:
+			if normal_response.status_code == code:
+				return
 
 		#Endpoint append returns 404 or 301 (redirect)
 		for code in self.invalid_codes:
