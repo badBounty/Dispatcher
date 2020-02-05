@@ -20,7 +20,7 @@ class EndpointFinder():
 		self.outputActivated = False
 		self.msTeamsActivated = False
 
-		self.invalid_codes = [404,301,302,403,503]
+		self.invalid_codes = [301,302,400,403,404,503]
 
 		self.session = requests.Session()
 		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
