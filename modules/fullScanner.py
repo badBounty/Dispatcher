@@ -103,7 +103,8 @@ class FullScanner():
 				self.error_data.append(['full',url,url,'Timeout'])
 				continue
 			except Exception as e:
-				print (e)
+				print('Url: ' + url + ' Had error' + e)
+				self.error_data.append(['full',url,url,'Error'+e])
 				continue
 
 			if response.status_code == 404:
