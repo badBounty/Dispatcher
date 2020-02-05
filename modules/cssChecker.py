@@ -111,7 +111,11 @@ class CssChecker():
 
 	def process(self, url):
 
-		response = self.session.get(url, verify = False)
+		try:
+			response = self.session.get(url, verify = False)
+		except requests.exceptions.ConnectionError:
+			print('Connection error at '+ url)
+			return
 
 		if response.status_code == 404:
 			if self.outputActivated:
