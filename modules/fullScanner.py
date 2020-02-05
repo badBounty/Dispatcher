@@ -96,6 +96,7 @@ class FullScanner():
 		self.bucketFinder.activateOutput()
 
 		for url in urls:
+			print(url)
 			try:
 				response = self.session.get(url, verify = False)
 			except requests.exceptions.ConnectionError:
