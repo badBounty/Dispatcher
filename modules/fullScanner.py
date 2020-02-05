@@ -96,10 +96,10 @@ class FullScanner():
 		self.bucketFinder.activateOutput()
 
 		for url in urls:
-			#print(url)
 			try:
-				response = self.session.get(url, verify = False)
+				response = self.session.get(url, verify = False, timeout = 3)
 			except requests.exceptions.ConnectionError:
+				print('Url: ' + url + ' Timed out')
 				self.error_data.append(['full',url,url,'Timeout'])
 				continue
 			except Exception as e:
