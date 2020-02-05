@@ -6,6 +6,7 @@ from modules.tokenFinder import TokenFinder
 from modules.securityHeaders import HeaderFinder
 from modules.openRedirect import OpenRedirect
 from modules.cssChecker import CssChecker
+from modules.endpointFinder import EndpointFinder
 
 class FullScanner():
 
@@ -95,7 +96,15 @@ class FullScanner():
 		self.bucketFinder.activateOutput()
 
 		for url in urls:
-			response = self.session.get(url, verify = False)
+			try:
+				response = self.session.get(url, verify = False)
+			except requests.exceptions.ConnectionError:
+				self.error_data.append(['full',url,url,'Timeout'])
+				continue
+			except Exception as e:
+				print (e)
+				continue
+
 			if response.status_code == 404:
 				print('Url: ' + url + ' returned 404')
 				self.error_data.append(['full',url,url,'Returned 404'])
