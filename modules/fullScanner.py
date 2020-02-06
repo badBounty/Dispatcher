@@ -97,14 +97,18 @@ class FullScanner():
 
 		for url in urls:
 			try:
-				response = self.session.get(url, verify = False, timeout = 3)
+				response = self.session.get(url, verify = False, timeout = 4)
 			except requests.exceptions.ConnectionError:
 				print('Url: ' + url + ' Timed out')
 				self.error_data.append(['full',url,url,'Timeout'])
 				continue
+			except requests.exeptions.ReadTimeout:
+				print('Url: ' + url + ' ReadTimed out')
+				self.error_data.append(['full',url,url,'Read Timeout'])
+				continue
 			except Exception as e:
-				print('Url: ' + url + ' Had error' + e)
-				self.error_data.append(['full',url,url,'Error'+e])
+				print('Url: ' + url + ' Had error' + str(e))
+				self.error_data.append(['full',url,url,'Error' + str(e)])
 				continue
 
 			if response.status_code == 404:
