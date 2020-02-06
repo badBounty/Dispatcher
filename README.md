@@ -46,6 +46,7 @@ This can be done by following these steps.
 |||- `header`: Generates a csv file with the security headers present on each url|
 |||- `css`: Checks if css files used in the page are valid (return code 200)|
 |||- `openred`: Checks if the url has a open redirect vulnerability (Currently only scanning login endpoints)|
+|||- `endpoint`: Verifies if the endpoints present at `extra/endpointFinder_endpoints.txt` exist|
 |||- `full`: All modules at the same time|
 | -i | INPUT  | Input file that contains urls to be scanned (with http/https)  |
 | -mst | ALERT  | Microsoft teams webhook for channel notifications (Notifies buckets, css and openRedirects)  |
