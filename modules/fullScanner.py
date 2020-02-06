@@ -102,7 +102,7 @@ class FullScanner():
 				print('Url: ' + url + ' Timed out')
 				self.error_data.append(['full',url,url,'Timeout'])
 				continue
-			except requests.exeptions.ReadTimeout:
+			except requests.exceptions.ReadTimeout:
 				print('Url: ' + url + ' ReadTimed out')
 				self.error_data.append(['full',url,url,'Read Timeout'])
 				continue
