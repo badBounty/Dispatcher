@@ -72,8 +72,21 @@ class EndpointFinder():
 
 	def scanEndpoint(self, url, endpoint):
 
+		if url[-1] == '/':
+			error_endpoint = 'thismustbea404error'
+		else:
+			error_endpoint = '/thismustbea404error'
+
 		try:
 			normal_response = self.session.get(url, verify = False, timeout = 3, allow_redirects = False)
+		except requests.exceptions.Timeout:
+			return
+		except Exception as e:
+			print(e)
+			return
+
+		try:
+			error_response = self.session.get(url+error_endpoint, verify = False, timeout = 3, allow_redirects = False)
 		except requests.exceptions.Timeout:
 			return
 		except Exception as e:
@@ -102,9 +115,12 @@ class EndpointFinder():
 		response_len = len(normal_response.text)
 		end_response_len = len(endpoint_response.text)
 		endpoint_len = len(endpoint)
+		error_response_len = len(error_response.text)
 		#Verifying response length
 		#Cases where endpoint does not modify anything or only adds the endpoint len will return
 		if(response_len - endpoint_len <= end_response_len <= response_len + endpoint_len):
+			return
+		elif(error_response_len - endpoint_len <= end_response_len <= error_response_len + endpoint_len):
 			return
 		else:
 			print('Endpoint ' + endpoint + ' was found on ' + url)
