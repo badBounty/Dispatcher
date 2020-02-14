@@ -11,7 +11,7 @@ from extra.helper import Helper
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-class firebaseFunder():
+class FirebaseFinder():
 
 	def __init__(self):
 		self.scanned_targets = []
@@ -31,16 +31,16 @@ class firebaseFunder():
 
 	def showStartScreen(self):
 		print('---------------------------------------------------------------------------------------')
-		print('---------------------------++++++++++++++------++++++++++++------------./*/.-----------')
-		print('--------------------./*/.--++++++++++++++------+++++++++++++---------------------------')
-		print('---------------------------+++-----------------+++--------+++---./*/.------------------')
-		print('---./*/.-------------------+++-----------------+++--------+++--------------------------')
-		print('---------------------------+++++++++-----------+++++++++++++---------------------------')
-		print('------------./*/.----------+++++++++-----------+++++++++++++------------./*/.----------')
-		print('---------------------------+++-----------------+++--------+++--------------------------')
-		print('---------------------------+++-----------------+++--------+++--------------------------')
-		print('---------------------------+++-----------------+++++++++++++-------------------./*/.---')
-		print('------------./*/.----------+++-----------------++++++++++++------./*/.-----------------')
+		print('---------------------------++++++++++++++----+++++++++++++-------------./*/.-----------')
+		print('--------------------./*/.--++++++++++++++----++++++++++++++----------------------------')
+		print('---------------------------+++---------------+++--------++++----./*/.------------------')
+		print('---./*/.-------------------+++---------------+++--------++++---------------------------')
+		print('---------------------------+++++++++---------++++++++++++++----------------------------')
+		print('------------./*/.----------+++++++++---------++++++++++++++-------------./*/.----------')
+		print('---------------------------+++---------------+++--------++++---------------------------')
+		print('---------------------------+++---------------+++--------++++---------------------------')
+		print('---------------------------+++---------------++++++++++++++--------------------./*/.---')
+		print('------------./*/.----------+++---------------+++++++++++++-------./*/.-----------------')
 		print('---------------------------------------------------------------------------------------')
 		print('                                                                                       ')
 		print('----------------------------------- Handerllon ©_© ------------------------------------')
@@ -71,18 +71,18 @@ class firebaseFunder():
 				res.append(item)
 		return res
 
-	def check_firebase(url, endpoint, firebases):
+	def check_firebase(self, url, endpoint, firebases):
 
-		for firebase in firebase:
+		for firebase in firebases:
 			try:
 				firebase_response = self.session.get(firebase, verify = False, timeout = 3)
 			except Exception as e:
-				print e
+				print (e)
 				continue
 
 			if firebase_response.status_code == 200:
 				print('Open firebase found!')
-				self.data.append(['Open firebase', url, js_endpoint, 'There was an open firebase found at ' + firebase])
+				self.data.append(['Open firebase', url, endpoint, 'There was an open firebase found at ' + firebase])
 
 		return
 
@@ -102,7 +102,7 @@ class firebaseFunder():
 		
 		if response.status_code == 404:
 			print('Url: ' + url + ' returned 404')
-			self.error_data.append(['s3bucket',host,url,'Returned 404'])
+			self.error_data.append(['firebase',host,url,'Returned 404'])
 			return []
 
 		#Firebases come in the form
@@ -110,9 +110,9 @@ class firebaseFunder():
 
 		#---------Way I----------
 		firebaseHTTPS = re.findall('"https://([^\"/,]+).firebaseio.com"', response.text)
-		firebaseHTTPS = self.filterInvalids(bucketsFirstHTTPS)
+		firebaseHTTPS = self.filterInvalids(firebaseHTTPS)
 		firebaseHTTP = re.findall('"http://([^\"/,]+).firebaseio.com"', response.text)
-		firebaseHTTP = self.filterInvalids(bucketsFirstHTTP)
+		firebaseHTTP = self.filterInvalids(firebaseHTTP)
 
 
 		firebase_list = firebaseHTTPS + firebaseHTTP
@@ -121,26 +121,12 @@ class firebaseFunder():
 		for i in range (len(firebase_list)):
 			firebase_list[i] = 'http://' + firebase_list[i] + '.firebaseio.com/.json'
 
-		return bucket_list
+		return firebase_list
 
-	def process(self, url):
+	def process(self, url, endpoint):
 
-		firebases = self.get_firebases(self.session, url, url)
-		#self.check_firebase(url, 'html code', firebases)
-
-		js_in_url = self.helper.get_js_in_url(self.session, url)
-			
-		for js_endpoint in js_in_url:
-			# Searching for buckets
-			firebases = self.get_firebases(self.session, js_endpoint, url)
-			#self.check_firebase(url, js_endpoint, firebases)
-
-			#Search urls in js file
-			http_in_js = self.helper.get_http_in_js(self.session, url)
-
-			for http_endpoint in http_in_js:
-				firebases = self.get_firebases(self.session, http_endpoint, url)
-				#self.check_firebase(url, http_endpoint, firebases)
+		firebases = self.get_firebases(self.session, endpoint, url)
+		self.check_firebase(url, url, firebases)
 
 	#Receives an urlList
 	def run(self, urls):
@@ -148,4 +134,20 @@ class firebaseFunder():
 		for url in urls:
 			print('Scanning '+ url)
 
-			self.process(url)
+			firebases = self.get_firebases(self.session, url, url)
+			self.check_firebase(url, 'html code', firebases)
+
+			js_in_url = self.helper.get_js_in_url(self.session, url)
+			print(js_in_url)
+			
+			for js_endpoint in js_in_url:
+				# Searching for buckets
+				firebases = self.get_firebases(self.session, js_endpoint, url)
+				self.check_firebase(url, js_endpoint, firebases)
+
+				#Search urls in js file
+				http_in_js = self.helper.get_http_in_js(self.session, url)
+
+				for http_endpoint in http_in_js:
+					firebases = self.get_firebases(self.session, http_endpoint, url)
+					self.check_firebase(url, http_endpoint, firebases)

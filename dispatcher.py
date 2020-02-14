@@ -12,6 +12,7 @@ from modules.openRedirect import OpenRedirect
 from modules.cssChecker import CssChecker
 from modules.fullScanner import FullScanner
 from modules.endpointFinder import EndpointFinder
+from modules.firebaseFinder import FirebaseFinder
 
 parser = argparse.ArgumentParser()
 
@@ -164,6 +165,23 @@ elif args.mode == 'endpoint':
 	main_error_df = main_error_df.append(error_df)
 	generateOutput()
 	endpointFinder.showEndScreen()
+
+#------------------ Header Finder --------------------
+elif args.mode == 'firebase':
+	firebaseFinder = FirebaseFinder()
+	firebaseFinder.showStartScreen()
+	firebaseFinder.activateOutput()
+	try:
+		firebaseFinder.run(urls)
+	except KeyboardInterrupt:
+		pass
+	#data_df, error_df = headerFinder.output()
+	#main_df = main_df.append(data_df)
+	#main_errpr_df = main_error_df.append(error_df)
+	#generateOutput()
+	firebaseFinder.output()
+	firebaseFinder.showEndScreen()
+
 
 #----------------------- Full -------------------------
 elif args.mode == 'full':

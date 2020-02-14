@@ -121,26 +121,26 @@ class TokenFinder():
 			for key in authorization:
 				self.data.append(['Information disclosure', host , url , 'The following auth_token was fonund: ' + key])
 
-	def process(self, url):
+	def process(self, url, endpoint):
 
-		self.tokenProcess(self.session, url, url)
-		js_in_url = self.helper.get_js_in_url(self.session, url)
-		#print(js_in_url)
-		for js_endpoint in js_in_url:
-			self.tokenProcess(self.session, url, js_endpoint)
-
-			http_in_js = self.helper.get_http_in_js(self.session, js_endpoint)
-			#print(http_in_js)
-			for http_endpoint in http_in_js:
-				self.tokenProcess(self.session, js_endpoint, http_endpoint)
-
+		self.tokenProcess(self.session, url, endpoint)
 
 	def run(self, urls):
 
 		for url in urls:
 			print('Scanning '+ url)
 
-			self.process(url)
+			self.tokenProcess(self.session, url, url)
+			js_in_url = self.helper.get_js_in_url(self.session, url)
+			#print(js_in_url)
+			for js_endpoint in js_in_url:
+				self.tokenProcess(self.session, url, js_endpoint)
+
+				http_in_js = self.helper.get_http_in_js(self.session, js_endpoint)
+				#print(http_in_js)
+				for http_endpoint in http_in_js:
+					self.tokenProcess(self.session, js_endpoint, http_endpoint)
+
 
 		self.output()
 

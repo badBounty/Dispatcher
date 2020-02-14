@@ -109,24 +109,9 @@ class CssChecker():
 					self.msTeams.text('The css file '+ url +' did not return code 200. Host url: ' + host)
 					self.msTeams.send()
 
-	def process(self, url):
+	def process(self, url, css):
 
-		try:
-			response = self.session.get(url, verify = False)
-		except requests.exceptions.ConnectionError:
-			print('Connection error at '+ url)
-			return
-
-		if response.status_code == 404:
-			if self.outputActivated:
-				print('Url: ' + url + ' returned 404')
-				self.error_data.append(['css',url,url,'Returned 404'])
-			return
-
-		css_found = self.helper.get_css_in_url(self.session, url)
-
-		for css in css_found:
-			self.scan_css(self.session, url, css)
+		self.scan_css(self.session, url, css)
 
 
 	def run(self, urls):
@@ -135,4 +120,20 @@ class CssChecker():
 			if self.outputActivated:
 				print('Scanning ' + url)
 
-			self.process(url)
+			try:
+				response = self.session.get(url, verify = False)
+			except requests.exceptions.ConnectionError:
+				print('Connection error at '+ url)
+				continue
+
+			if response.status_code == 404:
+				if self.outputActivated:
+					print('Url: ' + url + ' returned 404')
+					self.error_data.append(['css',url,url,'Returned 404'])
+					continue
+
+			css_found = self.helper.get_css_in_url(self.session, url)
+			print(css_found)
+
+			for css in css_found:
+				self.scan_css(self.session, url, css)

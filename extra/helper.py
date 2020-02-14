@@ -81,3 +81,27 @@ class Helper():
 				css_endpoints.append(list(match)[0])
 
 		return css_endpoints
+
+	def verifyURL(self, session, origin_url, url_to_verify, error_data, from_module):
+
+		try:
+			response = session.get(url_to_verify, verify = False, timeout = 4)
+		except requests.exceptions.ConnectionError:
+			print('Url: ' + url_to_verify + ' Timed out')
+			error_data.append([from_module,origin_url,url_to_verify,'Timeout'])
+			return False
+		except requests.exceptions.ReadTimeout:
+			print('Url: ' + url_to_verify + ' ReadTimed out')
+			error_data.append([from_module,origin_url,url_to_verify,'Read Timeout'])
+			return False
+		except Exception as e:
+			print('Url: ' + url_to_verify + ' Had error' + str(e))
+			error_data.append([from_module,origin_url,url_to_verify,'Error' + str(e)])
+			return False
+
+		if response.status_code == 404:
+			print('Url: ' + url_to_verify + ' returned 404')
+			error_data.append([from_module,origin_url,url_to_verify,'Returned 404'])
+			return False
+		else:
+			return True

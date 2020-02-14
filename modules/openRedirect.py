@@ -111,7 +111,7 @@ class OpenRedirect():
 		return
 
 
-	def process(self, url):
+	def process(self, url, host):
 
 		self.testOpenRedirect(self.session, url)
 
@@ -121,5 +121,5 @@ class OpenRedirect():
 			if self.outputActivated:
 				print('Scanning ' + url)
 
-			self.process(url)
+			self.process(url, url)
 

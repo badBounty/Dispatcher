@@ -210,24 +210,10 @@ class BucketFinder():
 
 			self.configureOutput(hostname, subname, bucket_list, ls_allowed, cprm_allowed, does_not_exist)
 
-	def process(self, url):
+	def process(self, url, endpoint):
 
-		buckets_in_html = self.get_buckets(self.session, url, url)
-		self.check_buckets(url, 'html code', buckets_in_html)
-
-		js_in_url = self.helper.get_js_in_url(self.session, url)
-			
-		for js_endpoint in js_in_url:
-			# Searching for buckets
-			bucket_list = self.get_buckets(self.session, js_endpoint, url)
-			self.check_buckets(url, js_endpoint, bucket_list)
-
-			#Search urls in js file
-			http_in_js = self.helper.get_http_in_js(self.session, url)
-
-			for http_endpoint in http_in_js:
-				bucket_list = self.get_buckets(self.session, http_endpoint, url)
-				self.check_buckets(url, http_endpoint, bucket_list)
+		bucket_list = self.get_buckets(self.session, endpoint, url)
+		self.check_buckets(url, endpoint, bucket_list)
 
 	#Receives an urlList
 	def run(self, urls):
@@ -235,4 +221,19 @@ class BucketFinder():
 		for url in urls:
 			print('Scanning '+ url)
 
-			self.process(url)
+			buckets_in_html = self.get_buckets(self.session, url, url)
+			self.check_buckets(url, 'html code', buckets_in_html)
+
+			js_in_url = self.helper.get_js_in_url(self.session, url)
+			
+			for js_endpoint in js_in_url:
+				# Searching for buckets
+				bucket_list = self.get_buckets(self.session, js_endpoint, url)
+				self.check_buckets(url, js_endpoint, bucket_list)
+
+				#Search urls in js file
+				http_in_js = self.helper.get_http_in_js(self.session, url)
+
+				for http_endpoint in http_in_js:
+					bucket_list = self.get_buckets(self.session, http_endpoint, url)
+					self.check_buckets(url, http_endpoint, bucket_list)
