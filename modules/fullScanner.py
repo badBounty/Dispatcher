@@ -107,15 +107,17 @@ class FullScanner():
 
 		#Start by iterating over urls
 		for url in urls:
+			output = []
+			print('----------------------------------------------------')
 			print('Scanning '+ url)
 			if not self.helper.verifyURL(self.session, url, url, self.error_data, 'full'):
 				continue
 
-			self.bucketFinder.process(url, url)
-			self.firebaseFinder.process(url, url)
-			self.headerFinder.process(url)
-			self.openRedirect.process(url, url)
-			self.endpointFinder.process(url)
+			output.append(self.bucketFinder.process(url, url))
+			output.append(self.firebaseFinder.process(url, url))
+			output.append(self.headerFinder.process(url))
+			output.append(self.openRedirect.process(url, url))
+			output.append(self.endpointFinder.process(url))
 
 			#We get js files from the url
 			js_in_url = self.helper.get_js_in_url(self.session, url)
@@ -127,9 +129,9 @@ class FullScanner():
 			for js_endpoint in js_in_url:
 				if not self.helper.verifyURL(self.session, url, js_endpoint, self.error_data, 'full'):
 					continue
-				self.bucketFinder.process(url, js_endpoint)
-				self.firebaseFinder.process(url, js_endpoint)
-				self.tokenFinder.process(url, js_endpoint)
+				output.append(self.bucketFinder.process(url, js_endpoint))
+				output.append(self.firebaseFinder.process(url, js_endpoint))
+				output.append(self.tokenFinder.process(url, js_endpoint))
 
 				#Search urls in js file
 				urls_in_js = self.helper.get_http_in_js(self.session, url)
@@ -138,12 +140,18 @@ class FullScanner():
 				for sub_url in urls_in_js:
 					if not self.helper.verifyURL(self.session, url, js_endpoint, self.error_data, 'full'):
 						continue
-					self.bucketFinder.process(url, sub_url)
-					self.firebaseFinder.process(url, sub_url)
-					self.tokenFinder.process(url, sub_url)
+					output.append(self.bucketFinder.process(url, sub_url))
+					output.append(self.firebaseFinder.process(url, sub_url))
+					output.append(self.tokenFinder.process(url, sub_url))
 
 			for css_endpoint in css_in_url:
-				self.cssChecker.process(url, css_endpoint)
+				output.append(self.cssChecker.process(url, css_endpoint))
+
+			output = filter(None, output)
+			output = [item for sublist in output for item in sublist]
+			output = list(dict.fromkeys(output))
+			for item in output:
+				print(item)
 
 
 

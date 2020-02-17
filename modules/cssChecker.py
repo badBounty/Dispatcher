@@ -80,6 +80,8 @@ class CssChecker():
 
 		self.scanned_targets.append(url)
 
+		output = []
+
 		#We split url and host to check, if vuln is found, if host domain != url domain
 		url_split = url.split('/')
 		host_split = host.split('/')
@@ -89,7 +91,7 @@ class CssChecker():
 		except requests.exceptions.MissingSchema:
 			if self.outputActivated:
 				print('Missing schema error on ' + url)
-			return
+			return output
 		except:
 			if url_split[2] != host_split[2]:
 				self.data.append(['Possible css injection', host, url, 'Could not access the css file'])
@@ -97,13 +99,14 @@ class CssChecker():
 				if self.msTeamsActivated:
 					self.msTeams.title('Possible css injection')
 					self.msTeams.text('The css file '+ url +' could not be accessed. Host url: ' + host)
+					output('The css file '+ url +' could not be accessed. Host url: ' + host)
 					self.msTeams.send()
-			return
+			return output
 
 		if response.status_code != 200:
 			if url_split[2] != host_split[2]:
 				self.data.append(['Possible css injection', host, url, 'Css file did not return 200'])
-				print('Possible css injection on: ' + url)
+				print('CssChecker found possible injection: ' + url)
 				if self.msTeamsActivated:
 					self.msTeams.title('Possible css injection')
 					self.msTeams.text('The css file '+ url +' did not return code 200. Host url: ' + host)
@@ -111,29 +114,30 @@ class CssChecker():
 
 	def process(self, url, css):
 
-		self.scan_css(self.session, url, css)
+		output = []
+		output.append(self.scan_css(self.session, url, css))
 
+		output = filter(None, output)
+		output = [item for sublist in output for item in sublist]
+		return output
 
 	def run(self, urls):
 
 		for url in urls:
-			if self.outputActivated:
-				print('Scanning ' + url)
+			output = []
+			print('----------------------------------------------------')
+			print('Scanning ' + url)
 
-			try:
-				response = self.session.get(url, verify = False)
-			except requests.exceptions.ConnectionError:
-				print('Connection error at '+ url)
+			if not self.helper.verifyURL(self.session, url, url, self.error_data, 'cssChecker'):
 				continue
 
-			if response.status_code == 404:
-				if self.outputActivated:
-					print('Url: ' + url + ' returned 404')
-					self.error_data.append(['css',url,url,'Returned 404'])
-					continue
-
 			css_found = self.helper.get_css_in_url(self.session, url)
-			print(css_found)
 
 			for css in css_found:
-				self.scan_css(self.session, url, css)
+				output.append(self.scan_css(self.session, url, css))
+
+			output = filter(None, output)
+			output = [item for sublist in output for item in sublist]
+			output = list(dict.fromkeys(output))
+			for item in output:
+				print(item)

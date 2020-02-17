@@ -75,6 +75,7 @@ class BucketFinder():
 		return res
 
 	def configureOutput(self, url, js_endpoint, bucket_list, ls_allowed, cprm_allowed, does_not_exist):
+		output = []
 		#------ Adding info for output
 		for bucket in bucket_list:
 			ls = False
@@ -89,6 +90,7 @@ class BucketFinder():
 
 			if ls == True and cprm == True:
 				self.data.append(['Misconfigured S3 bucket', url, js_endpoint, 'Bucket '+ bucket + ' has copy, remove and ls available for authenticated users'])
+				output.append('BucketFinder found bucket ' + bucket + ' with ls and cprm allowed')
 				if self.msTeamsActivated:
 					self.msTeams.title('Bucket found!')
 					self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
@@ -96,6 +98,7 @@ class BucketFinder():
 					self.msTeams.send()
 			elif ls == True:
 				self.data.append(['Misconfigured S3 bucket', url, js_endpoint, 'Bucket '+ bucket + ' has ls available for authenticated users'])
+				output.append('BucketFinder found bucket ' + bucket + ' with ls allowed')
 				if self.msTeamsActivated:
 					self.msTeams.title('Bucket found!')
 					self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
@@ -103,6 +106,7 @@ class BucketFinder():
 					self.msTeams.send()
 			elif cprm == True:
 				self.data.append(['Misconfigured S3 bucket', url, js_endpoint, 'Bucket '+ bucket + ' has copy and remove available for authenticated users'])
+				output.append('BucketFinder found bucket ' + bucket + ' with cprm allowed')
 				if self.msTeamsActivated:
 					self.msTeams.title('Bucket found!')
 					self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
@@ -110,11 +114,13 @@ class BucketFinder():
 					self.msTeams.send()
 			elif not_exist == True:
 				self.data.append(['Misconfigured S3 bucket', url, js_endpoint, 'Bucket '+ bucket + ' does not exist but resources are being loaded from it, bucket takeover possible'])
+				output.append('BucketFinder found bucket ' + bucket + ' that is not claimed')
 				if self.msTeamsActivated:
 					self.msTeams.title('Bucket found!')
 					self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
 							js_endpoint+' with does not exist error')
 					self.msTeams.send()
+		return output
 
 	def get_buckets(self, session, url, host):
 
@@ -123,10 +129,7 @@ class BucketFinder():
 
 		self.scanned_targets.append(url)
 
-		try:
-			response = session.get(url, verify = False, timeout = 3)
-		except:
-			return []
+		response = session.get(url, verify = False, timeout = 3)
 
 		#Buckets can come in different ways
 		#Way 1: http<s>://s3.amazonaws.com/bucketName
@@ -203,8 +206,8 @@ class BucketFinder():
 
 	def check_buckets(self, hostname, subname, bucket_list):
 		if len(bucket_list)>0:
-			print('The following bucket/s were found at ' + subname + ' :')
-			print(bucket_list)
+			#print('The following bucket/s were found at ' + subname + ' :')
+			#print(bucket_list)
 
 			#print('Checking bucket/s that allow ls...')
 			ls_allowed, does_not_exist = self.get_ls_buckets(bucket_list)
@@ -212,34 +215,52 @@ class BucketFinder():
 			cprm_allowed = self.get_cprm_buckets(bucket_list)
 			access_denied = list(set(bucket_list) - set(ls_allowed) - set(cprm_allowed) - set(does_not_exist))
 
-			self.configureOutput(hostname, subname, bucket_list, ls_allowed, cprm_allowed, does_not_exist)
+			output = self.configureOutput(hostname, subname, bucket_list, ls_allowed, cprm_allowed, does_not_exist)
+			return output
 
 	def process(self, url, endpoint):
 
+		output = []
 		bucket_list = self.get_buckets(self.session, endpoint, url)
-		self.check_buckets(url, endpoint, bucket_list)
+		output.append(self.check_buckets(url, endpoint, bucket_list))
+
+		output = filter(None, output)
+		output = [item for sublist in output for item in sublist]
+		return output
 
 	#Receives an urlList
 	def run(self, urls):
 		
 		for url in urls:
+			output = []
+			print('----------------------------------------------------')
 			print('Scanning '+ url)
-			if not self.helper.verifyURL(self.session, url, url, self.error_data, 'full'):
+			if not self.helper.verifyURL(self.session, url, url, self.error_data, 's3bucket'):
 				continue
 
 			buckets_in_html = self.get_buckets(self.session, url, url)
-			self.check_buckets(url, 'html code', buckets_in_html)
+			output.append(self.check_buckets(url, 'html code', buckets_in_html))
 
 			js_in_url = self.helper.get_js_in_url(self.session, url)
 			
 			for js_endpoint in js_in_url:
+				if not self.helper.verifyURL(self.session, url, url, self.error_data, 's3bucket'):
+					continue
 				# Searching for buckets
 				bucket_list = self.get_buckets(self.session, js_endpoint, url)
-				self.check_buckets(url, js_endpoint, bucket_list)
+				output.append(self.check_buckets(url, js_endpoint, bucket_list))
 
 				#Search urls in js file
 				http_in_js = self.helper.get_http_in_js(self.session, url)
 
 				for http_endpoint in http_in_js:
+					if not self.helper.verifyURL(self.session, url, url, self.error_data, 's3bucket'):
+						continue
 					bucket_list = self.get_buckets(self.session, http_endpoint, url)
-					self.check_buckets(url, http_endpoint, bucket_list)
+					output.append(self.check_buckets(url, http_endpoint, bucket_list))
+
+			output = filter(None, output)
+			output = [item for sublist in output for item in sublist]
+			output = list(dict.fromkeys(output))
+			for item in output:
+				print(item)

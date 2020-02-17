@@ -68,20 +68,22 @@ class TokenFinder():
 	#Searches certain keywords on site
 	def tokenProcess(self, session, host, url):
 
+		output = []
+
 		if url in self.scanned_targets:
-			return
+			return output
 
 		self.scanned_targets.append(url)
 
 		try:
 			response = session.get(url, verify = False)
 		except:
-			return []
+			return output
 
 		if response.status_code == 404:
 			print('Url: ' + url + ' returned 404')
 			self.error_data.append(['token', host, url, 'Returned 404'])
-			return []
+			return output
 
 		tokens = re.findall('token:"(.+?)"', response.text)
 		tokens_2 = re.findall('Token:"(.+?)"', response.text)
@@ -94,53 +96,76 @@ class TokenFinder():
 		licence_key = re.findall('license_key:"(.+?)"', response.text)
 
 		if len(tokens) > 0:
-			for token in tokens:
-				self.data.append(['Information disclosure', host , url , 'The following token was fonund: ' + token])
+			for value in tokens:
+				self.data.append(['Information disclosure', host , url , 'The following token was found: ' + value])
+				output.append('Token finder found token: ' + value + 'at ' + url)
 		if len(licence_key) > 0:
-			for key in licence_key:
-				self.data.append(['Information disclosure', host , url , 'The following licence_key was fonund: ' + key])
+			for value in licence_key:
+				self.data.append(['Information disclosure', host , url , 'The following licence_key was found: ' + value])
+				output.append('Token finder found license_key: ' + value + 'at ' + url)
 		if len(tokens_2) > 0:
-			for token in tokens_2:
-				self.data.append(['Information disclosure', host , url , 'The following token was fonund: ' + token])
+			for value in tokens_2:
+				self.data.append(['Information disclosure', host , url , 'The following token was found: ' + value])
+				output.append('Token finder found token: ' + value + 'at ' + url)
 		if len(api_key) > 0:
-			for key in api_key:
-				self.data.append(['Information disclosure', host , url , 'The following key was fonund: ' + key])
+			for value in api_key:
+				self.data.append(['Information disclosure', host , url , 'The following key was found: ' + value])
+				output.append('Token finder found api_key: ' + value + 'at ' + url)
 		if len(usernames) > 0:
-			for username in usernames:
-				self.data.append(['Information disclosure', host , url , 'The following username was fonund: ' + username])
+			for value in usernames:
+				self.data.append(['Information disclosure', host , url , 'The following username was found: ' + value])
+				output.append('Token finder found username: ' + value + 'at ' + url)
 		if len(passwords) > 0:
-			for password in passwords:
-				self.data.append(['Information disclosure', host , url , 'The following password was fonund: ' + password])
+			for value in passwords:
+				self.data.append(['Information disclosure', host , url , 'The following password was found: ' + value])
+				output.append('Token finder found password: ' + value + 'at ' + url)
 		if len(access_key_ids) > 0:
-			for key in access_key_ids:
-				self.data.append(['Information disclosure', host , url , 'The following access_key_id was fonund: ' + key])
+			for value in access_key_ids:
+				self.data.append(['Information disclosure', host , url , 'The following access_key_id was found: ' + value])
+				output.append('Token finder found access_key_id: ' + value + 'at ' + url)
 		if len(secret_access_key_ids) > 0:
-			for key in secret_access_key_ids:
-				self.data.append(['Information disclosure', host , url , 'The following secret_access_key_id was fonund: ' + key])
+			for value in secret_access_key_ids:
+				self.data.append(['Information disclosure', host , url , 'The following secret_access_key_id was found: ' + value])
+				output.append('Token finder found secret_access_key_id: ' + value + 'at ' + url)
 		if len(authorization) > 0:
-			for key in authorization:
-				self.data.append(['Information disclosure', host , url , 'The following auth_token was fonund: ' + key])
+			for value in authorization:
+				self.data.append(['Information disclosure', host , url , 'The following auth_token was found: ' + value])
+				output.append('Token finder found auth token: ' + value + 'at ' + url)
+
+		return output
 
 	def process(self, url, endpoint):
 
-		self.tokenProcess(self.session, url, endpoint)
+		output = []
+		output.append(self.tokenProcess(self.session, url, endpoint))
+		output = filter(None, output)
+		output = [item for sublist in output for item in sublist]
+		return output
 
 	def run(self, urls):
 
 		for url in urls:
+			output = []
+			print('----------------------------------------------------')
 			print('Scanning '+ url)
+			if not self.helper.verifyURL(self.session, url, url, self.error_data, 'full'):
+				continue
 
 			js_in_url = self.helper.get_js_in_url(self.session, url)
 			#print(js_in_url)
 			for js_endpoint in js_in_url:
-				self.tokenProcess(self.session, url, js_endpoint)
+				output.append(self.tokenProcess(self.session, url, js_endpoint))
 
 				http_in_js = self.helper.get_http_in_js(self.session, js_endpoint)
 				#print(http_in_js)
 				for http_endpoint in http_in_js:
-					self.tokenProcess(self.session, js_endpoint, http_endpoint)
+					output.append(self.tokenProcess(self.session, js_endpoint, http_endpoint))
 
+			output = filter(None, output)
+			output = [item for sublist in output for item in sublist]
+			output = list(dict.fromkeys(output))
+			for item in output:
+				print(item)
 
-		self.output()
 
 

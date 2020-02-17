@@ -46,7 +46,9 @@ if args.url:
 	print(args.url)
 	urls.append(args.url)
 	inputFileName = args.url.split('/')
-	outputFolderName = inputFileName[2]
+	inputFileName = inputFileName[2]
+	inputFileName = inputFileName.replace(':','.')
+	outputFolderName = inputFileName
 else:
 	#Read urls from input
 	with open(args.input) as fp:
@@ -62,7 +64,7 @@ if not args.output:
 	if not os.path.exists('output/'+ outputFolderName):
 		os.makedirs('output/'+ outputFolderName)
 
-#Filter empty spaces
+#Filter empty spaces and duplicates
 urls = filter(None, urls)
 urls = list(urls)
 urls = list(dict.fromkeys(urls))

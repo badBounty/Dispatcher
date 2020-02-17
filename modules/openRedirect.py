@@ -77,6 +77,8 @@ class OpenRedirect():
 		if 'login' not in url:
 			return
 
+		output = []
+
 		#For each endpoint we try parameters and payloads
 		for parameter in self.parameters:
 			#print('Reached')
@@ -103,23 +105,36 @@ class OpenRedirect():
 					if resp_split[2] == 'google.com':
 						print (resp.status_code, resp.url)
 						self.data.append(['Open Redirect Vulnerability',url,url,'An open redirect vulnerability was found with parameter: ' + parameter + ' and payload: ' + payload])
-						print('Possible open redirect vulnerability on: ' + url)
+						output.append('OpenRedirectFinder found possible open redirect vulnerability on: ' + url + 'with parameter: ' + parameter + ' and payload: ' + payload)
 						if self.msTeamsActivated:
 							self.msTeams.title('Open redirect vulnerability found!')
 							self.msTeams.text('Found at ' + url + 'with parameter: ' + parameter + ' and payload: ' + payload)
 							self.msTeams.send()
-		return
+		return output
 
 
 	def process(self, url, host):
 
-		self.testOpenRedirect(self.session, url)
+		output = []
+		output.append(self.testOpenRedirect(self.session, url))
+		output = filter(None, output)
+		output = [item for sublist in output for item in sublist]
+		return output
 
 	def run(self, urls):
 
 		for url in urls:
-			if self.outputActivated:
-				print('Scanning ' + url)
+			output = []
+			print('----------------------------------------------------')
+			print('Scanning ' + url)
+			if not self.helper.verifyURL(self.session, url, url, self.error_data, 'full'):
+				continue
 
-			self.process(url, url)
+			output.append(self.process(url, url))
+
+			output = filter(None, output)
+			output = [item for sublist in output for item in sublist]
+			output = list(dict.fromkeys(output))
+			for item in output:
+				print(item)
 

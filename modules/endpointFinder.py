@@ -4,6 +4,7 @@ import pandas as pd
 import time
 
 from modules.openRedirect import OpenRedirect
+from extra.helper import Helper
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -13,6 +14,7 @@ class EndpointFinder():
 		self.scanned_targets = []
 
 		self.openRedirect = OpenRedirect()
+		self.helper = Helper()
 
 		self.data = []
 		self.error_data = []
@@ -72,32 +74,34 @@ class EndpointFinder():
 
 	def scanEndpoint(self, url, endpoint):
 
+		output = []
+
 		try:
 			normal_response = self.session.get(url, verify = False, timeout = 3, allow_redirects = False)
 		except requests.exceptions.Timeout:
-			return
+			return output
 		except Exception as e:
 			print(e)
-			return
+			return output
 
 		try:
 			#Wont allow redirects
 			endpoint_response = self.session.get(url+endpoint, verify = False, timeout = 3, allow_redirects = False)
 		except requests.exceptions.Timeout:
-			return
+			return output
 		except Exception as e:
 			print(e)
-			return
+			return output
 
 		################## Keep this?? ###################
 		for code in self.invalid_codes:
 			if normal_response.status_code == code:
-				return
+				return output
 
 		#Endpoint append returns 404 or 301 (redirect)
 		for code in self.invalid_codes:
 			if endpoint_response.status_code == code:
-				return
+				return output
 
 		response_len = len(normal_response.text)
 		end_response_len = len(endpoint_response.text)
@@ -105,15 +109,14 @@ class EndpointFinder():
 		#Verifying response length
 		#Cases where endpoint does not modify anything or only adds the endpoint len will return
 		if(response_len - endpoint_len <= end_response_len <= response_len + endpoint_len):
-			return
+			return output
 		else:
-			print('Endpoint ' + endpoint + ' was found on ' + url)
-			#print(endpoint_response.status_code)
 			self.data.append(['Endpoint found',url,url,'Endpoint ' + url+endpoint + ' was found, it should be checked'])
+			output.append('EndpointFinder found: '+ url + endpoint)
 			#if endpoint == '/login':
 			#	print('Login found!, testing open redirect')
 			#	self.openRedirect.process(url+endpoint)
-			return
+			return output
 
 
 
@@ -123,31 +126,35 @@ class EndpointFinder():
 			return
 		self.scanned_targets.append(url)
 
+		output = []
+
 		#Backspace verify
 		if url[-1] == '/':
 			url = url[:-1]
 
 		for endpoint in self.endpoints:
 			time.sleep(.5)
-			#print('Testing endpoint: '+endpoint)
-			self.scanEndpoint(url, endpoint)
+			output.append(self.scanEndpoint(url, endpoint))
+
+		output = filter(None, output)
+		output = [item for sublist in output for item in sublist]
+		return output
 
 	#Receives an urlList
 	def run(self, urls):
 		
 		for url in urls:
+			output = []
+			print('----------------------------------------------------')
 			print('Scanning '+ url)
 
-			#404 check before process
-			try:
-				response = self.session.get(url, verify = False)
-			except Exception as e:
-				print(e)
+			if not self.helper.verifyURL(self.session, url, url, self.error_data, 'endpointFinder'):
 				continue
 
-			if response.status_code == 404:
-				print('Url: ' + url + ' returned 404')
-				self.error_data.append(['endpoint',url,url,'Returned 404'])
-				continue
+			output.append(self.process(url))
 
-			self.process(url)
+			output = filter(None, output)
+			output = [item for sublist in output for item in sublist]
+			output = list(dict.fromkeys(output))
+			for item in output:
+				print(item)

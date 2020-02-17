@@ -73,6 +73,7 @@ class FirebaseFinder():
 
 	def check_firebase(self, url, endpoint, firebases):
 
+		output = []
 		for firebase in firebases:
 			try:
 				firebase_response = self.session.get(firebase, verify = False, timeout = 3)
@@ -81,10 +82,11 @@ class FirebaseFinder():
 				continue
 
 			if firebase_response.status_code == 200:
+				output.append('FirebaseFinder found open firebase: ' + firebase)
 				print('Open firebase found!')
 				self.data.append(['Open firebase', url, endpoint, 'There was an open firebase found at ' + firebase])
 
-		return
+		return output
 
 	def get_firebases(self, session, url, host):
 
@@ -125,29 +127,44 @@ class FirebaseFinder():
 
 	def process(self, url, endpoint):
 
+		output = []
 		firebases = self.get_firebases(self.session, endpoint, url)
-		self.check_firebase(url, url, firebases)
+		output.append(self.check_firebase(url, url, firebases))
+
+		output = filter(None, output)
+		output = [item for sublist in output for item in sublist]
+		return output
 
 	#Receives an urlList
 	def run(self, urls):
 		
 		for url in urls:
+			output = []
+			print('----------------------------------------------------')
 			print('Scanning '+ url)
 
+			if not self.helper.verifyURL(self.session, url, url, self.error_data, 'firebaseFinder'):
+				continue
+
 			firebases = self.get_firebases(self.session, url, url)
-			self.check_firebase(url, 'html code', firebases)
+			output.append(self.check_firebase(url, 'html code', firebases))
 
 			js_in_url = self.helper.get_js_in_url(self.session, url)
-			print(js_in_url)
 			
 			for js_endpoint in js_in_url:
 				# Searching for buckets
 				firebases = self.get_firebases(self.session, js_endpoint, url)
-				self.check_firebase(url, js_endpoint, firebases)
+				output.append(self.check_firebase(url, js_endpoint, firebases))
 
 				#Search urls in js file
 				http_in_js = self.helper.get_http_in_js(self.session, url)
 
 				for http_endpoint in http_in_js:
 					firebases = self.get_firebases(self.session, http_endpoint, url)
-					self.check_firebase(url, http_endpoint, firebases)
+					output.append(self.check_firebase(url, http_endpoint, firebases))
+
+			output = filter(None, output)
+			output = [item for sublist in output for item in sublist]
+			output = list(dict.fromkeys(output))
+			for item in output:
+				print(item)
