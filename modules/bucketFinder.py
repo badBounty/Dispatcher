@@ -128,13 +128,6 @@ class BucketFinder():
 		except:
 			return []
 
-		#print(url)
-		
-		if response.status_code == 404:
-			print('Url: ' + url + ' returned 404')
-			self.error_data.append(['s3bucket',host,url,'Returned 404'])
-			return []
-
 		#Buckets can come in different ways
 		#Way 1: http<s>://s3.amazonaws.com/bucketName
 		#Way 2: http<s>://bucketName.s3.amazonaws.com
@@ -231,6 +224,8 @@ class BucketFinder():
 		
 		for url in urls:
 			print('Scanning '+ url)
+			if not self.helper.verifyURL(self.session, url, url, self.error_data, 'full'):
+				continue
 
 			buckets_in_html = self.get_buckets(self.session, url, url)
 			self.check_buckets(url, 'html code', buckets_in_html)
