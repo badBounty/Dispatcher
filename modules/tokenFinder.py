@@ -130,7 +130,6 @@ class TokenFinder():
 		for url in urls:
 			print('Scanning '+ url)
 
-			self.tokenProcess(self.session, url, url)
 			js_in_url = self.helper.get_js_in_url(self.session, url)
 			#print(js_in_url)
 			for js_endpoint in js_in_url:

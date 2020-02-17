@@ -113,7 +113,6 @@ class FullScanner():
 
 			self.bucketFinder.process(url, url)
 			self.firebaseFinder.process(url, url)
-			self.tokenFinder.process(url, url)
 			self.headerFinder.process(url)
 			self.openRedirect.process(url, url)
 			self.endpointFinder.process(url)
