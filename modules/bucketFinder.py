@@ -244,7 +244,7 @@ class BucketFinder():
 			js_in_url = self.helper.get_js_in_url(self.session, url)
 			
 			for js_endpoint in js_in_url:
-				if not self.helper.verifyURL(self.session, url, url, self.error_data, 's3bucket'):
+				if not self.helper.verifyURL(self.session, url, js_endpoint, self.error_data, 's3bucket'):
 					continue
 				# Searching for buckets
 				bucket_list = self.get_buckets(self.session, js_endpoint, url)
@@ -254,7 +254,7 @@ class BucketFinder():
 				http_in_js = self.helper.get_http_in_js(self.session, url)
 
 				for http_endpoint in http_in_js:
-					if not self.helper.verifyURL(self.session, url, url, self.error_data, 's3bucket'):
+					if not self.helper.verifyURL(self.session, url, http_endpoint, self.error_data, 's3bucket'):
 						continue
 					bucket_list = self.get_buckets(self.session, http_endpoint, url)
 					output.append(self.check_buckets(url, http_endpoint, bucket_list))

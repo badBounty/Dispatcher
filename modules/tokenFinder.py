@@ -154,11 +154,15 @@ class TokenFinder():
 			js_in_url = self.helper.get_js_in_url(self.session, url)
 			#print(js_in_url)
 			for js_endpoint in js_in_url:
+				if not self.helper.verifyURL(self.session, url, js_endpoint, self.error_data, 'full'):
+					continue
 				output.append(self.tokenProcess(self.session, url, js_endpoint))
 
 				http_in_js = self.helper.get_http_in_js(self.session, js_endpoint)
 				#print(http_in_js)
 				for http_endpoint in http_in_js:
+					if not self.helper.verifyURL(self.session, url, http_endpoint, self.error_data, 'full'):
+						continue
 					output.append(self.tokenProcess(self.session, js_endpoint, http_endpoint))
 
 			output = filter(None, output)

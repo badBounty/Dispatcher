@@ -95,17 +95,7 @@ class FirebaseFinder():
 
 		self.scanned_targets.append(url)
 
-		try:
-			response = session.get(url, verify = False, timeout = 3)
-		except:
-			return []
-
-		#print(url)
-		
-		if response.status_code == 404:
-			print('Url: ' + url + ' returned 404')
-			self.error_data.append(['firebase',host,url,'Returned 404'])
-			return []
+		response = session.get(url, verify = False, timeout = 3)
 
 		#Firebases come in the form
 		#https://*.firebaseio.com
@@ -152,6 +142,8 @@ class FirebaseFinder():
 			js_in_url = self.helper.get_js_in_url(self.session, url)
 			
 			for js_endpoint in js_in_url:
+				if not self.helper.verifyURL(self.session, url, js_endpoint, self.error_data, 'firebaseFinder'):
+					continue
 				# Searching for buckets
 				firebases = self.get_firebases(self.session, js_endpoint, url)
 				output.append(self.check_firebase(url, js_endpoint, firebases))
@@ -160,6 +152,8 @@ class FirebaseFinder():
 				http_in_js = self.helper.get_http_in_js(self.session, url)
 
 				for http_endpoint in http_in_js:
+					if not self.helper.verifyURL(self.session, url, http_endpoint, self.error_data, 'firebaseFinder'):
+						continue
 					firebases = self.get_firebases(self.session, http_endpoint, url)
 					output.append(self.check_firebase(url, http_endpoint, firebases))
 
