@@ -48,4 +48,6 @@ This can be done by following these steps.
 |||- `openred`: Checks if the url has a open redirect vulnerability (Currently only scanning login endpoints)|
 |||- `full`: All modules at the same time|
 | -i | INPUT  | Input file that contains urls to be scanned (with http/https)  |
+| -u | Single url input  | Single url input, must contain http or https|
+| -o | Output folder  | Output folder ex: C:\Users\Name\Desktop\Folder  |
 | -mst | ALERT  | Microsoft teams webhook for channel notifications (Notifies buckets, css and openRedirects)  |
