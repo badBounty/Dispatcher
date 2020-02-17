@@ -29,6 +29,10 @@ parser.add_argument('-mst','--msTeams', help = "MsTeams webhook",
 parser.add_argument('-u', '--url', help = "Single url",
 					required = False,
 					action = 'store')
+parser.add_argument('-o', '--output', help = "Output path (Optional)",
+					required = False,
+					action = 'store')
+
 
 args = parser.parse_args()
 
@@ -37,25 +41,26 @@ if not args.input and not args.url:
 	parser.print_help()
 	sys.exit(0)
 
-# Create output folder
-if not os.path.exists('output'):
-	os.makedirs('output')
-
-#Create output/InputName Folder
-inputFileName = str(args.input).split('/')
-outputFolderName = inputFileName[len(inputFileName)-1].replace('.txt','')
-if not os.path.exists('output/'+ outputFolderName):
-	os.makedirs('output/'+ outputFolderName)
-
 urls = list()
 if args.url:
 	print(args.url)
 	urls.append(args.url)
+	inputFileName = args.url.split('/')
+	outputFolderName = inputFileName[2]
 else:
 	#Read urls from input
 	with open(args.input) as fp:
 		lines = fp.read()
 		urls = lines.split('\n')
+		inputFileName = str(args.input).split('/')
+		outputFolderName = inputFileName[len(inputFileName)-1].replace('.txt','')
+
+if not args.output:
+	# Create output folder
+	if not os.path.exists('output'):
+		os.makedirs('output')
+	if not os.path.exists('output/'+ outputFolderName):
+		os.makedirs('output/'+ outputFolderName)
 
 #Filter empty spaces
 urls = filter(None, urls)
@@ -64,8 +69,12 @@ urls = list(dict.fromkeys(urls))
 
 # Generating output
 def generateOutput():
-	main_df.to_csv('output/'+ outputFolderName +'/output.csv', index = False)
-	main_error_df.to_csv('output/'+ outputFolderName +'/error.csv', index = False)
+	if not args.output:
+		main_df.to_csv('output/'+ outputFolderName +'/'+outputFolderName+'_output.csv', index = False)
+		main_error_df.to_csv('output/'+ outputFolderName +'/'+outputFolderName+'_error.csv', index = False)
+	else:
+		main_df.to_csv(args.output +'/'+outputFolderName+'_output.csv', index = False)
+		main_error_df.to_csv(args.output +'/'+outputFolderName+'_error.csv', index = False)
 
 #Create a dataframe data can be appended to it
 main_df = pd.DataFrame(columns = ['Vulnerability','MainUrl','Reference','Description'])
