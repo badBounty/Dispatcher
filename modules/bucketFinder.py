@@ -25,6 +25,9 @@ class BucketFinder():
 		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
 		self.session.headers.update(headers)
 
+		self.regions = ['us-east-2','us-east-1','us-west-1','us-west-2','ap-east-1','ap-south-1','ap-northeast-3','ap-northeast-2','ap-southeast-1','ap-southeast-2','ap-northeast-1','ca-central-1','cn-north-1','cn-northwest-1','eu-central-1',
+		'eu-west-1','eu-west-2','eu-west-3','eu-north-1','me-south-1','sa-east-1','us-gov-east-1','us-gov-west-1']
+
 
 	def activateOutput(self):
 		self.outputActivated = True
@@ -155,8 +158,16 @@ class BucketFinder():
 		bucketsThird = self.filterInvalids(bucketsThird)
 
 		#---------Way IV----------
-		bucketsFourth = re.findall('amazonaws.com/(.+?)/', response.text)
-		bucketsFourth = self.filterInvalids(bucketsFourth)
+		#bucketsFourth = re.findall('s3.amazonaws.com/(.+?)/', response.text)
+		#bucketsFourth = self.filterInvalids(bucketsFourth)
+
+		bucketsFourth = list()
+		wayIV = re.findall('https://([^\"/,]+).s3.amazonaws.com/([^\"/,]+)/',response.text)
+		for bucket in wayIV:
+			#In this case the match are tuples, not lists
+			bucket = list(bucket)
+			if any(x in self.regions for x in bucket[0]):
+				bucketsFourth.append(bucket[1])
 
 		bucket_list = bucketsFirstHTTP + bucketsSecondHTTP + bucketsFirstHTTPS + bucketsSecondHTTPS + bucketsThird + bucketsFourth
 		bucket_list = list(dict.fromkeys(bucket_list))
