@@ -1,3 +1,4 @@
 *.csv
 input.txt
 input2.txt
+__pycache__
