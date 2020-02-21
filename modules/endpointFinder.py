@@ -114,7 +114,7 @@ class EndpointFinder():
 			self.data.append(['Endpoint found',url,url,'Endpoint ' + url+endpoint + ' was found, it should be checked'])
 			output.append('EndpointFinder found: '+ url + endpoint)
 			if endpoint == '/login':
-				output.append(self.openRedirect.process(url+endpoint))
+				output.append(self.openRedirect.process(url+endpoint, url))
 			else:
 				self.data.append(['Endpoint found',url,url,'Endpoint ' + url+endpoint + ' was found, it should be checked'])
 				output.append('EndpointFinder found: '+ url + endpoint)
