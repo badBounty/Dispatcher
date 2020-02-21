@@ -137,6 +137,7 @@ class FullScanner():
 				urls_in_js = self.helper.get_http_in_js(self.session, url)
 				#We run the tool that interacts with sub_urls
 				#print('Scanning sub_urls found in '+ js_endpoint + ' from ' + url)
+				print(urls_in_js)
 				for sub_url in urls_in_js:
 					if not self.helper.verifyURL(self.session, url, js_endpoint, self.error_data, 'full'):
 						continue

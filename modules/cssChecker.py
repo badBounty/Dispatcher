@@ -86,6 +86,9 @@ class CssChecker():
 		url_split = url.split('/')
 		host_split = host.split('/')
 
+		if url[-1] == '\\' or url[-1] == '/':
+			url = url[:-1]
+
 		try:
 			response = session.get(url, verify = False)
 		except requests.exceptions.MissingSchema:
@@ -94,7 +97,7 @@ class CssChecker():
 			return output
 		except:
 			if url_split[2] != host_split[2]:
-				self.data.append(['Possible css injection', host, url, 'Could not access the css file'])
+				self.data.append(['Possible css injection', ' ' + host, ' ' + url, 'Could not access the css file'])
 				print('Possible css injection on: ' + url)
 				if self.msTeamsActivated:
 					self.msTeams.title('Possible css injection')
@@ -105,7 +108,7 @@ class CssChecker():
 
 		if response.status_code != 200:
 			if url_split[2] != host_split[2]:
-				self.data.append(['Possible css injection', host, url, 'Css file did not return 200'])
+				self.data.append(['Possible css injection', host, url, ' Css file did not return 200'])
 				print('CssChecker found possible injection: ' + url)
 				if self.msTeamsActivated:
 					self.msTeams.title('Possible css injection')
@@ -132,6 +135,7 @@ class CssChecker():
 				continue
 
 			css_found = self.helper.get_css_in_url(self.session, url)
+			#print(css_found)
 
 			for css in css_found:
 				output.append(self.scan_css(self.session, url, css))

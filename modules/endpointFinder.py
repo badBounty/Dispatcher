@@ -113,12 +113,12 @@ class EndpointFinder():
 		else:
 			self.data.append(['Endpoint found',url,url,'Endpoint ' + url+endpoint + ' was found, it should be checked'])
 			output.append('EndpointFinder found: '+ url + endpoint)
-			#if endpoint == '/login':
-			#	print('Login found!, testing open redirect')
-			#	self.openRedirect.process(url+endpoint)
+			if endpoint == '/login':
+				output.append(self.openRedirect.process(url+endpoint))
+			else:
+				self.data.append(['Endpoint found',url,url,'Endpoint ' + url+endpoint + ' was found, it should be checked'])
+				output.append('EndpointFinder found: '+ url + endpoint)
 			return output
-
-
 
 	def process(self, url):
 

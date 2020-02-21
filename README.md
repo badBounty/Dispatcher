@@ -46,6 +46,8 @@ This can be done by following these steps.
 |||- `header`: Generates a csv file with the security headers present on each url|
 |||- `css`: Checks if css files used in the page are valid (return code 200)|
 |||- `openred`: Checks if the url has a open redirect vulnerability (Currently only scanning login endpoints)|
+|||- `endpoint`: Checks common endpoints that could lead to vulnerabilities (solr injection for example)|
+|||- `firebase`: Searches for firebases and check whether /.json is available for unauthenticated access|
 |||- `full`: All modules at the same time|
 | -i | INPUT  | Input file that contains urls to be scanned (with http/https)  |
 | -u | Single url input  | Single url input, must contain http or https|

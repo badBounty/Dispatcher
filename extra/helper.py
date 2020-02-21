@@ -105,3 +105,15 @@ class Helper():
 			return False
 		else:
 			return True
+
+	def checkScope(self, url_list, scope):
+
+		if scope == 'None':
+			return url_list
+		else:
+			tmp = list()
+			for url in url_list:
+				if scope in url:
+					tmp.append(url)
+
+		return tmp
