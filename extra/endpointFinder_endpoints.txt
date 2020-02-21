@@ -11,3 +11,4 @@
 /proc/self/cwd/index.php
 /login
 /solr/db/select
+/actuator/env
