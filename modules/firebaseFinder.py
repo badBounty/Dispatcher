@@ -95,7 +95,14 @@ class FirebaseFinder():
 
 		self.scanned_targets.append(url)
 
-		response = session.get(url, verify = False, timeout = 3)
+		try:
+			response = session.get(url, verify = False, timeout = 3)
+		except requests.exceptions.ConnectionError:
+			return []
+		except requests.exceptions.ReadTimeout:
+			return []
+		except Exception as e:
+			return []
 
 		#Firebases come in the form
 		#https://*.firebaseio.com

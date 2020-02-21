@@ -12,9 +12,11 @@ from extra.helper import Helper
 
 class FullScanner():
 
-	def __init__(self, outputFolderName):
+	def __init__(self, outputFolderName, scope):
 		self.data = []
 		self.error_data = []
+
+		self.scope = scope
 
 		self.bucketFinder = BucketFinder()
 		self.tokenFinder = TokenFinder()
@@ -134,10 +136,12 @@ class FullScanner():
 				output.append(self.tokenFinder.process(url, js_endpoint))
 
 				#Search urls in js file
-				urls_in_js = self.helper.get_http_in_js(self.session, url)
+				urls_in_js = self.helper.get_http_in_js(self.session, js_endpoint)
 				#We run the tool that interacts with sub_urls
 				#print('Scanning sub_urls found in '+ js_endpoint + ' from ' + url)
-				print(urls_in_js)
+				urls_in_js = self.helper.checkScope(urls_in_js, self.scope)
+				#print(js_endpoint)
+				#print(urls_in_js)
 				for sub_url in urls_in_js:
 					if not self.helper.verifyURL(self.session, url, js_endpoint, self.error_data, 'full'):
 						continue

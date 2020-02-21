@@ -33,6 +33,11 @@ parser.add_argument('-o', '--output', help = "Output path (Optional)",
 					required = False,
 					action = 'store')
 
+parser.add_argument('-s', '--scope', help = "Scope for the search, ex = 'yahoo'",
+					required = False,
+					action = 'store',
+					default = 'None')
+
 
 args = parser.parse_args()
 
@@ -208,7 +213,7 @@ elif args.mode == 'firebase':
 
 #----------------------- Full -------------------------
 elif args.mode == 'full':
-	fullScanner = FullScanner(outputFolderName)
+	fullScanner = FullScanner(outputFolderName, args.scope)
 	if args.msTeams:
 		fullScanner.activateMSTeams(teamsConnection)
 	fullScanner.showStartScreen()

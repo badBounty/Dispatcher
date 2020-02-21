@@ -128,8 +128,14 @@ class BucketFinder():
 			return []
 
 		self.scanned_targets.append(url)
-
-		response = session.get(url, verify = False, timeout = 3)
+		try:
+			response = session.get(url, verify = False, timeout = 3)
+		except requests.exceptions.ConnectionError:
+			return []
+		except requests.exceptions.ReadTimeout:
+			return []
+		except Exception as e:
+			return []
 
 		#Buckets can come in different ways
 		#Way 1: http<s>://s3.amazonaws.com/bucketName

@@ -85,7 +85,7 @@ class Helper():
 	def verifyURL(self, session, origin_url, url_to_verify, error_data, from_module):
 
 		try:
-			response = session.get(url_to_verify, verify = False, timeout = 4)
+			response = session.get(url_to_verify, verify = False, timeout = 3)
 		except requests.exceptions.ConnectionError:
 			print('Url: ' + url_to_verify + ' Timed out')
 			error_data.append([from_module,origin_url,url_to_verify,'Timeout'])
@@ -113,7 +113,9 @@ class Helper():
 		else:
 			tmp = list()
 			for url in url_list:
-				if scope in url:
+				split_url = url.split('/')
+				#The hostname will be position 2
+				if scope in split_url[2]:
 					tmp.append(url)
 
 		return tmp
