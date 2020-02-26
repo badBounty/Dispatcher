@@ -85,17 +85,24 @@ class TokenFinder():
 			self.error_data.append(['token', host, url, 'Returned 404'])
 			return output
 
-		#tokens = re.findall('token:"(.+?)"', response.text)
-		#tokens_2 = re.findall('Token:"(.+?)"', response.text)
-		usernames = re.findall('Username:"(.+?)"', response.text)
-		passwords = re.findall('Password:"(.+?)"', response.text)
+		#Generic tokens
+		tokens = re.findall('token:"(.+?)"', response.text)
+		tokens_2 = re.findall('Token:"(.+?)"', response.text)
+
+		#Usernames and passwords
+		#usernames = re.findall('Username:"(.+?)"', response.text)
+		#passwords = re.findall('Password:"(.+?)"', response.text)
+
+		#Specific tokens
 		access_key_ids = re.findall('access_key_id:"(.+?)"', response.text)
 		secret_access_key_ids = re.findall('secret_access_key_id:"(.+?)"', response.text)
 		authorization = re.findall('authorization:"(.+?)"', response.text)
 		api_key = re.findall('api_key:"(.+?)"', response.text)
 		licence_key = re.findall('license_key:"(.+?)"', response.text)
+		access_token = re.findall('access_token:"(.+?)"', response.text)
 
-		'''
+
+		#Generic tokens
 		if len(tokens) > 0:
 			for value in tokens:
 				self.data.append(['Information disclosure', host , url , 'The following token was found: ' + value])
@@ -103,16 +110,9 @@ class TokenFinder():
 		if len(tokens_2) > 0:
 			for value in tokens_2:
 				self.data.append(['Information disclosure', host , url , 'The following token was found: ' + value])
-				output.append('Token finder found token: ' + value + 'at ' + url)
+
 		'''
-		if len(licence_key) > 0:
-			for value in licence_key:
-				self.data.append(['Information disclosure', host , url , 'The following licence_key was found: ' + value])
-				output.append('Token finder found license_key: ' + value + 'at ' + url)
-		if len(api_key) > 0:
-			for value in api_key:
-				self.data.append(['Information disclosure', host , url , 'The following key was found: ' + value])
-				output.append('Token finder found api_key: ' + value + 'at ' + url)
+		#Usernames and passwords
 		if len(usernames) > 0:
 			for value in usernames:
 				self.data.append(['Information disclosure', host , url , 'The following username was found: ' + value])
@@ -121,6 +121,17 @@ class TokenFinder():
 			for value in passwords:
 				self.data.append(['Information disclosure', host , url , 'The following password was found: ' + value])
 				output.append('Token finder found password: ' + value + 'at ' + url)
+		'''
+
+		#Specific tokens
+		if len(licence_key) > 0:
+			for value in licence_key:
+				self.data.append(['Information disclosure', host , url , 'The following licence_key was found: ' + value])
+				output.append('Token finder found license_key: ' + value + 'at ' + url)
+		if len(api_key) > 0:
+			for value in api_key:
+				self.data.append(['Information disclosure', host , url , 'The following key was found: ' + value])
+				output.append('Token finder found api_key: ' + value + 'at ' + url)
 		if len(access_key_ids) > 0:
 			for value in access_key_ids:
 				self.data.append(['Information disclosure', host , url , 'The following access_key_id was found: ' + value])
@@ -133,6 +144,10 @@ class TokenFinder():
 			for value in authorization:
 				self.data.append(['Information disclosure', host , url , 'The following auth_token was found: ' + value])
 				output.append('Token finder found auth token: ' + value + 'at ' + url)
+		if len(access_token) > 0:
+			for value in access_token:
+				self.data.append(['Information disclosure', host , url , 'The following access_token was found: ' + value])
+				output.append('Token finder found access token: ' + value + 'at ' + url)
 
 		return output
 
