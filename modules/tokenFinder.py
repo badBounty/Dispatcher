@@ -85,8 +85,8 @@ class TokenFinder():
 			self.error_data.append(['token', host, url, 'Returned 404'])
 			return output
 
-		tokens = re.findall('token:"(.+?)"', response.text)
-		tokens_2 = re.findall('Token:"(.+?)"', response.text)
+		#tokens = re.findall('token:"(.+?)"', response.text)
+		#tokens_2 = re.findall('Token:"(.+?)"', response.text)
 		usernames = re.findall('Username:"(.+?)"', response.text)
 		passwords = re.findall('Password:"(.+?)"', response.text)
 		access_key_ids = re.findall('access_key_id:"(.+?)"', response.text)
@@ -95,18 +95,20 @@ class TokenFinder():
 		api_key = re.findall('api_key:"(.+?)"', response.text)
 		licence_key = re.findall('license_key:"(.+?)"', response.text)
 
+		'''
 		if len(tokens) > 0:
 			for value in tokens:
 				self.data.append(['Information disclosure', host , url , 'The following token was found: ' + value])
 				output.append('Token finder found token: ' + value + 'at ' + url)
-		if len(licence_key) > 0:
-			for value in licence_key:
-				self.data.append(['Information disclosure', host , url , 'The following licence_key was found: ' + value])
-				output.append('Token finder found license_key: ' + value + 'at ' + url)
 		if len(tokens_2) > 0:
 			for value in tokens_2:
 				self.data.append(['Information disclosure', host , url , 'The following token was found: ' + value])
 				output.append('Token finder found token: ' + value + 'at ' + url)
+		'''
+		if len(licence_key) > 0:
+			for value in licence_key:
+				self.data.append(['Information disclosure', host , url , 'The following licence_key was found: ' + value])
+				output.append('Token finder found license_key: ' + value + 'at ' + url)
 		if len(api_key) > 0:
 			for value in api_key:
 				self.data.append(['Information disclosure', host , url , 'The following key was found: ' + value])
