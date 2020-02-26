@@ -100,16 +100,20 @@ class TokenFinder():
 		api_key = re.findall('api_key:"(.+?)"', response.text)
 		licence_key = re.findall('license_key:"(.+?)"', response.text)
 		access_token = re.findall('access_token:"(.+?)"', response.text)
+		access_token2 = re.findall('access-token:"(.+?)"', response.text)
 
 
 		#Generic tokens
 		if len(tokens) > 0:
 			for value in tokens:
-				self.data.append(['Information disclosure', host , url , 'The following token was found: ' + value])
-				output.append('Token finder found token: ' + value + 'at ' + url)
+				if self.helper.sufficientStringEntropy(value):
+					self.data.append(['Information disclosure', host , url , 'The following token was found: ' + value])
+					output.append('Token finder found token: ' + value + 'at ' + url)
 		if len(tokens_2) > 0:
 			for value in tokens_2:
-				self.data.append(['Information disclosure', host , url , 'The following token was found: ' + value])
+				if self.helper.sufficientStringEntropy(value):
+					self.data.append(['Information disclosure', host , url , 'The following token was found: ' + value])
+					output.append('Token finder found token: ' + value + 'at ' + url)
 
 		'''
 		#Usernames and passwords
@@ -126,16 +130,19 @@ class TokenFinder():
 		#Specific tokens
 		if len(licence_key) > 0:
 			for value in licence_key:
-				self.data.append(['Information disclosure', host , url , 'The following licence_key was found: ' + value])
-				output.append('Token finder found license_key: ' + value + 'at ' + url)
+				if self.helper.sufficientStringEntropy(value):
+					self.data.append(['Information disclosure', host , url , 'The following licence_key was found: ' + value])
+					output.append('Token finder found license_key: ' + value + 'at ' + url)
 		if len(api_key) > 0:
 			for value in api_key:
-				self.data.append(['Information disclosure', host , url , 'The following key was found: ' + value])
-				output.append('Token finder found api_key: ' + value + 'at ' + url)
+				if self.helper.sufficientStringEntropy(value):
+					self.data.append(['Information disclosure', host , url , 'The following key was found: ' + value])
+					output.append('Token finder found api_key: ' + value + 'at ' + url)
 		if len(access_key_ids) > 0:
 			for value in access_key_ids:
-				self.data.append(['Information disclosure', host , url , 'The following access_key_id was found: ' + value])
-				output.append('Token finder found access_key_id: ' + value + 'at ' + url)
+				if self.helper.sufficientStringEntropy(value):
+					self.data.append(['Information disclosure', host , url , 'The following access_key_id was found: ' + value])
+					output.append('Token finder found access_key_id: ' + value + 'at ' + url)
 		if len(secret_access_key_ids) > 0:
 			for value in secret_access_key_ids:
 				self.data.append(['Information disclosure', host , url , 'The following secret_access_key_id was found: ' + value])
@@ -147,6 +154,10 @@ class TokenFinder():
 		if len(access_token) > 0:
 			for value in access_token:
 				self.data.append(['Information disclosure', host , url , 'The following access_token was found: ' + value])
+				output.append('Token finder found access token: ' + value + 'at ' + url)
+		if len(access_token2) > 0:
+			for value in access_token:
+				self.data.append(['Information disclosure', host , url , 'The following access-token was found: ' + value])
 				output.append('Token finder found access token: ' + value + 'at ' + url)
 
 		return output

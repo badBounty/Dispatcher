@@ -111,13 +111,13 @@ class EndpointFinder():
 		if(response_len - endpoint_len <= end_response_len <= response_len + endpoint_len):
 			return output
 		else:
-			self.data.append(['Endpoint found',url,url,'Endpoint ' + url+endpoint + ' was found, it should be checked'])
-			output.append('EndpointFinder found: '+ url + endpoint)
 			if endpoint == '/login':
 				output.append(self.openRedirect.process(url+endpoint, url))
+				output.append('EndpointFinder found: '+ url + endpoint)
 			else:
 				self.data.append(['Endpoint found',url,url,'Endpoint ' + url+endpoint + ' was found, it should be checked'])
 				output.append('EndpointFinder found: '+ url + endpoint)
+			output = [x for x in output if x != []]
 			return output
 
 	def process(self, url):

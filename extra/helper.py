@@ -1,5 +1,6 @@
 import requests
 import re
+import math
 
 class Helper():
 
@@ -119,3 +120,18 @@ class Helper():
 					tmp.append(url)
 
 		return tmp
+
+	def sufficientStringEntropy(self, string):
+
+		"""Calculate the entropy of a string."""
+		entropy = 0
+		for number in range(256):
+			length = len(string.encode('utf-8'))
+			result = float(string.encode('utf-8').count(number)) / length
+			if result != 0:
+				entropy = entropy - result * math.log(result, 2)
+
+		if entropy >= 4:
+			return True
+		else:
+			return False

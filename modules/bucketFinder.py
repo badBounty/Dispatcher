@@ -257,7 +257,7 @@ class BucketFinder():
 				output.append(self.check_buckets(url, js_endpoint, bucket_list))
 
 				#Search urls in js file
-				http_in_js = self.helper.get_http_in_js(self.session, url)
+				http_in_js = self.helper.get_http_in_js(self.session, js_endpoint)
 
 				for http_endpoint in http_in_js:
 					if not self.helper.verifyURL(self.session, url, http_endpoint, self.error_data, 's3bucket'):
