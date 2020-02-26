@@ -126,6 +126,15 @@ class FullScanner():
 			#We get css from the url
 			css_in_url = self.helper.get_css_in_url(self.session, url)
 
+			urls_in_url = self.helper.get_http_in_js(self.session, url)
+
+			for url_in_url in urls_in_url:
+				if not self.helper.verifyURL(self.session, url, url_in_url, self.error_data, 'full'):
+					continue
+				output.append(self.bucketFinder.process(url, url_in_url))
+				output.append(self.firebaseFinder.process(url, url_in_url))
+				output.append(self.tokenFinder.process(url, url_in_url))	
+
 			#print('Scanning js files found in '+ url)
 			#We run the tools that interact with js files
 			for js_endpoint in js_in_url:
@@ -138,10 +147,7 @@ class FullScanner():
 				#Search urls in js file
 				urls_in_js = self.helper.get_http_in_js(self.session, js_endpoint)
 				#We run the tool that interacts with sub_urls
-				#print('Scanning sub_urls found in '+ js_endpoint + ' from ' + url)
 				urls_in_js = self.helper.checkScope(urls_in_js, self.scope)
-				#print(js_endpoint)
-				#print(urls_in_js)
 				for sub_url in urls_in_js:
 					if not self.helper.verifyURL(self.session, url, js_endpoint, self.error_data, 'full'):
 						continue

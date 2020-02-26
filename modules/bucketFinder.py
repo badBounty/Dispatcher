@@ -165,13 +165,22 @@ class BucketFinder():
 
 		bucketsFourth = list()
 		wayIV = re.findall('https://([^\"/,]+).s3.amazonaws.com/([^\"/,]+)/',response.text)
+		
 		for bucket in wayIV:
 			#In this case the match are tuples, not lists
 			bucket = list(bucket)
 			if any(x in self.regions for x in bucket[0]):
 				bucketsFourth.append(bucket[1])
 
-		bucket_list = bucketsFirstHTTP + bucketsSecondHTTP + bucketsFirstHTTPS + bucketsSecondHTTPS + bucketsThird + bucketsFourth
+		bucketsFifth = list()
+		wayV = re.findall('https://([^.\"/,]+).([^\"/,]+).amazonaws.com',response.text)
+		for bucket in wayV:
+			#In this case the match are tuples, not lists
+			bucket = list(bucket)
+			if 's3' in bucket[1]:
+				bucketsFifth.append(bucket[0])
+
+		bucket_list = bucketsFirstHTTP + bucketsSecondHTTP + bucketsFirstHTTPS + bucketsSecondHTTPS + bucketsThird + bucketsFourth + bucketsFifth
 		bucket_list = list(dict.fromkeys(bucket_list))
 
 		for i in range (len(bucket_list)):
