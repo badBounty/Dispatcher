@@ -116,8 +116,11 @@ class Helper():
 			for url in url_list:
 				split_url = url.split('/')
 				#The hostname will be position 2
-				if scope in split_url[2]:
-					tmp.append(url)
+				try:
+					if scope in split_url[2]:
+						tmp.append(url)
+				except IndexError:
+					continue
 
 		return tmp
 
