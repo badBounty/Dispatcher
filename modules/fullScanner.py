@@ -127,6 +127,7 @@ class FullScanner():
 			css_in_url = self.helper.get_css_in_url(self.session, url)
 
 			urls_in_url = self.helper.get_http_in_js(self.session, url)
+			urls_in_url = self.helper.checkScope(urls_in_url, self.scope)
 
 			for url_in_url in urls_in_url:
 				if not self.helper.verifyURL(self.session, url, url_in_url, self.error_data, 'full'):
