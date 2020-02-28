@@ -26,7 +26,7 @@ parser.add_argument('-i', '--input', help = "Input file that contains urls to be
 parser.add_argument('-mst','--msTeams', help = "MsTeams webhook",
 					required = False,
 					action = 'store')
-parser.add_argument('-u', '--url', help = "Single url",
+parser.add_argument('-u', '--url', help = "Single url with http or https",
 					required = False,
 					action = 'store')
 parser.add_argument('-o', '--output', help = "Output path (Optional)",
@@ -51,7 +51,12 @@ if args.url:
 	print(args.url)
 	urls.append(args.url)
 	inputFileName = args.url.split('/')
-	inputFileName = inputFileName[2]
+	try:
+		inputFileName = inputFileName[2]
+	except IndexError:
+		print('Remember that the URL must contain http:// or https://')
+		parser.print_help()
+		sys.exit(0)
 	inputFileName = inputFileName.replace(':','.')
 	outputFolderName = inputFileName
 else:
@@ -60,6 +65,9 @@ else:
 		lines = fp.read()
 		urls = lines.split('\n')
 		inputFileName = str(args.input).split('/')
+		#In case the input was put with \ instead of /
+		if len(inputFileName) < 2:
+			inputFileName = str(args.input.split('\\'))
 		outputFolderName = inputFileName[len(inputFileName)-1].replace('.txt','')
 
 if not args.output:
@@ -87,8 +95,14 @@ def generateOutput():
 main_df = pd.DataFrame(columns = ['Vulnerability','MainUrl','Reference','Description'])
 main_error_df = pd.DataFrame(columns = ['Module','MainUrl','Reference','Reason'])
 
+#Connect to microsoft teams if the -mst is enabled
 if args.msTeams:
 	teamsConnection = pymsteams.connectorcard(str(args.msTeams))
+
+################### MODULE AREA #####################
+# All modules work the same way in terms of running them
+# Instance is created, start screen shows and program is run
+# Dataframes are used for output, this will be turned into csv files later
 
 #------------------ Bucket Finder --------------------
 if args.mode == 's3bucket':
@@ -133,10 +147,7 @@ elif args.mode == 'header':
 		headerFinder.run(urls)
 	except KeyboardInterrupt:
 		pass
-	#data_df, error_df = headerFinder.output()
-	#main_df = main_df.append(data_df)
-	#main_errpr_df = main_error_df.append(error_df)
-	#generateOutput()
+	#HeaderFinder generates a separate csv file
 	headerFinder.output()
 	headerFinder.showEndScreen()
 
@@ -203,10 +214,10 @@ elif args.mode == 'firebase':
 		firebaseFinder.run(urls)
 	except KeyboardInterrupt:
 		pass
-	#data_df, error_df = headerFinder.output()
-	#main_df = main_df.append(data_df)
-	#main_errpr_df = main_error_df.append(error_df)
-	#generateOutput()
+	data_df, error_df = firebaseFinder.output()
+	main_df = main_df.append(data_df)
+	main_error_df = main_error_df.append(error_df)
+	generateOutput()
 	firebaseFinder.output()
 	firebaseFinder.showEndScreen()
 
