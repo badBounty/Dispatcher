@@ -120,14 +120,14 @@ class TokenFinder():
 		#Specific Tokens
 		#------------------------------ Algolia ------------------------------
 		# Algolia uses algoliasearch for connecting inside a js, we will search the key pair
-		algolia_key_pair = re.findall('algoliasearch(.+?);', response.text)
+		algolia_key_pair = re.findall('algoliasearch\((.+?)\);', response.text)
 		if len(algolia_key_pair) > 0:
 			for value in algolia_key_pair:
 				self.data.append(['Information disclosure', host , url , 'The following algolia key pair was found: ' + value])
 				output.append('Token finder found algolia key pair: ' + value + 'at ' + url)
 
 		#------------------------------ Asana ------------------------------
-		asana_access_token = re.findall('useAccessToken(.+?);', response.text)
+		asana_access_token = re.findall('useAccessToken\((.+?)\);', response.text)
 		if len(asana_access_token) > 0:
 			for value in asana_access_token:
 				self.data.append(['Information disclosure', host , url , 'The following assana access token was found: ' + value])
@@ -146,7 +146,7 @@ class TokenFinder():
 				output.append('Token finder found secret_access_key_id: ' + value + 'at ' + url)
 
 		#------------------------------ Bitly ------------------------------
-		bitlyTokens = re.findall('BitlyClient(.+?);', response.text)
+		bitlyTokens = re.findall('BitlyClient\((.+?)\);', response.text)
 		if len(bitlyTokens) > 0:
 			for value in bitlyTokens:
 				self.data.append(['Information disclosure', host , url , 'The following bitly token was found: ' + value])
@@ -154,7 +154,7 @@ class TokenFinder():
 
 		#------------------------------ Branchio ------------------------------
 		# Here we will get the whole client definithion, which contains key and secret_key
-		branchioInfo = re.findall('branchio(.+?);', response.text)
+		branchioInfo = re.findall('branchio\(\{(.+?)\}\);', response.text)
 		if len(branchioInfo) > 0:
 			for value in branchioInfo:
 				self.data.append(['Information disclosure', host , url , 'The following branchio definition was found: ' + value])
@@ -162,35 +162,35 @@ class TokenFinder():
 
 		#------------------------------ Dropbox ------------------------------
 		# Dropbox uses a method to set access token inside the javascript code
-		dropboxToken = re.findall('setAccessToken(.+?);', response.text)
+		dropboxToken = re.findall('Dropbox\(\{(.+?)\}\);', response.text)
 		if len(dropboxToken) > 0:
 			for value in dropboxToken:
 				self.data.append(['Information disclosure', host , url , 'The following dropbox token was found: ' + value])
 				output.append('Token finder found dropbox token: ' + value + 'at ' + url)
 
 		#------------------------------ Firebase ------------------------------
-		firebaseConfig = re.findall('firebaseConfig(.+?);', response.text)
+		firebaseConfig = re.findall('firebaseConfig(.+?)\};', response.text)
 		if len(firebaseConfig) > 0:
 			for value in firebaseConfig:
 				self.data.append(['Information disclosure', host , url , 'The following firebase config info was found: ' + value])
 				output.append('Token finder found firebase config info: ' + value + 'at ' + url)
 
 		#------------------------------ Gitlab ------------------------------
-		gitlabInfo = re.findall('Gitlab(.+?);', response.text)
+		gitlabInfo = re.findall('Gitlab\(\{(.+?)\}\);', response.text)
 		if len(gitlabInfo) > 0:
 			for value in gitlabInfo:
 				self.data.append(['Information disclosure', host , url , 'The following gitlab personal info was found: ' + value])
 				output.append('Token finder found gitlab personal info: ' + value + 'at ' + url)
 
 		#------------------------------ Google cloud messaging ------------------------------
-		gcm_key = re.findall('gcm.Sender(.+?);', response.text)
+		gcm_key = re.findall('gcm.Sender\((.+?)\);', response.text)
 		if len(gcm_key) > 0:
 			for value in gcm_key:
 				self.data.append(['Information disclosure', host , url , 'The following gcm api_key was found: ' + value])
 				output.append('Token finder found gcm api_key: ' + value + 'at ' + url)
 
 		#------------------------------ Google maps ------------------------------
-		g_maps_key = re.findall("require('@google/maps').createClient(.+?);", response.text)
+		g_maps_key = re.findall("require('@google/maps').createClient\(\{(.+?)\}\);", response.text)
 		if len(g_maps_key) > 0:
 			for value in g_maps_key:
 				self.data.append(['Information disclosure', host , url , 'The following google maps key was found: ' + value])
@@ -218,42 +218,42 @@ class TokenFinder():
 				output.append('Token finder found instagram config info: ' + value + 'at ' + url)
 
 		#------------------------------ Jump cloud ------------------------------
-		jumpcloud_key = re.findall('JumpCloud(.+?);', response.text)
+		jumpcloud_key = re.findall('JumpCloud\((.+?)\);', response.text)
 		if len(jumpcloud_key) > 0:
 			for value in jumpcloud_key:
 				self.data.append(['Information disclosure', host , url , 'The following jumpcloud key was found: ' + value])
 				output.append('Token finder found jumpcloud key: ' + value + 'at ' + url)
 
 		#------------------------------ Mail Chimp ------------------------------
-		mailchimp_key = re.findall('Mailchimp(.+?);', response.text)
+		mailchimp_key = re.findall('Mailchimp\((.+?)\);', response.text)
 		if len(mailchimp_key) > 0:
 			for value in mailchimp_key:
 				self.data.append(['Information disclosure', host , url , 'The following mailchimp key was found: ' + value])
 				output.append('Token finder found mailchimp key: ' + value + 'at ' + url)
 
 		#------------------------------ Pagerduty ------------------------------
-		pagerduty_key = re.findall('pdapiToken(.+?);', response.text)
+		pagerduty_key = re.findall('pdapiToken\((.+?)\);', response.text)
 		if len(pagerduty_key) > 0:
 			for value in pagerduty_key:
 				self.data.append(['Information disclosure', host , url , 'The following pagerduty key was found: ' + value])
 				output.append('Token finder found pagerduty key: ' + value + 'at ' + url)
 
 		#------------------------------ Paypal ------------------------------
-		paypal_config = re.findall('paypal.configure(.+?);', response.text)
+		paypal_config = re.findall('paypal.configure\(\{(.+?)\}\);', response.text)
 		if len(paypal_config) > 0:
 			for value in pagerduty_key:
 				self.data.append(['Information disclosure', host , url , 'The following paypal config info was found: ' + value])
 				output.append('Token finder found paypal config info: ' + value + 'at ' + url)
 
 		#------------------------------ Razorpay ------------------------------
-		razorpay_key = re.findall('Razorpay(.+?);', response.text)
+		razorpay_key = re.findall('Razorpay\(\{(.+?)\}\);', response.text)
 		if len(razorpay_key) > 0:
 			for value in razorpay_key:
 				self.data.append(['Information disclosure', host , url , 'The following razorpay config info was found: ' + value])
 				output.append('Token finder found razorpay config info: ' + value + 'at ' + url)
 
 		#------------------------------ SauceLabs ------------------------------
-		sauceLabs_key = re.findall('SauceLabs(.+?);', response.text)
+		sauceLabs_key = re.findall('SauceLabs\(\{(.+?)\}\);', response.text)
 		if len(sauceLabs_key) > 0:
 			for value in sauceLabs_key:
 				self.data.append(['Information disclosure', host , url , 'The following saucelab config info was found: ' + value])
@@ -267,14 +267,14 @@ class TokenFinder():
 				output.append('Token finder found sendgrid key: ' + value + 'at ' + url)
 
 		#------------------------------ Slack ------------------------------
-		slack_key = re.findall('Slack\{\((.+?)\)\}', response.text)
+		slack_key = re.findall('Slack\(\{(.+?)\}\)', response.text)
 		if len(slack_key) > 0:
 			for value in slack_key:
 				self.data.append(['Information disclosure', host , url , 'The following slack key was found: ' + value])
 				output.append('Token finder found slack key: ' + value + 'at ' + url)
 
 		#------------------------------ Spotify ------------------------------
-		spotify_key = re.findall('Spotify(.+?);', response.text)
+		spotify_key = re.findall('Spotify\(\{(.+?)\}\);', response.text)
 		if len(spotify_key) > 0:
 			for value in spotify_key:
 				self.data.append(['Information disclosure', host , url , 'The following spotify config was found: ' + value])
@@ -307,7 +307,7 @@ class TokenFinder():
 				output.append('Token finder found twilio auth token: ' + value + 'at ' + url)	
 
 		#------------------------------ Twitter ------------------------------
-		twitter_config = re.findall('Twitter\((.+?)\)', response.text)
+		twitter_config = re.findall('Twitter\(\{(.+?)\}\)', response.text)
 		if len(twitter_config) > 0:
 			for value in twitter_config:
 				self.data.twilio_auth_token(['Information disclosure', host , url , 'The following twitter config info was found: ' + value])
