@@ -110,5 +110,3 @@ class HeaderFinder():
 		for url in urls:
 
 			self.process(url)
-
-		self.output()
