@@ -12,3 +12,5 @@
 /login
 /solr/db/select
 /actuator/env
+/plugins/servlet/gadgets/makeRequest
+/rest/api/latest/groupuserpicker
