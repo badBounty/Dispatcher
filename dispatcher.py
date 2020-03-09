@@ -65,9 +65,6 @@ else:
 		lines = fp.read()
 		urls = lines.split('\n')
 		inputFileName = str(args.input).split('/')
-		#In case the input was put with \ instead of /
-		if len(inputFileName) < 2:
-			inputFileName = str(args.input.split('\\'))
 		outputFolderName = inputFileName[len(inputFileName)-1].replace('.txt','')
 
 if not args.output:
@@ -148,7 +145,10 @@ elif args.mode == 'header':
 	except KeyboardInterrupt:
 		pass
 	#HeaderFinder generates a separate csv file
-	headerFinder.output()
+	if not args.output:
+		headerFinder.output('output/'+ outputFolderName +'/'+outputFolderName+'_headerFinder.csv')
+	else:
+		headerFinder.output(args.output +'/'+outputFolderName+'_headerFinder.csv')
 	headerFinder.showEndScreen()
 
 #------------------ Open Redirect --------------------
@@ -233,7 +233,10 @@ elif args.mode == 'full':
 	except KeyboardInterrupt:
 		pass
 	#
-	data_df, error_df = fullScanner.output()
+	if not args.output:
+		data_df, error_df = fullScanner.output('output/'+ outputFolderName +'/'+outputFolderName+'_headerFinder.csv')
+	else:
+		data_df, error_df = fullScanner.output(args.output +'/'+outputFolderName+'_headerFinder.csv')
 	main_df = main_df.append(data_df)
 	main_error_df = main_error_df.append(error_df)
 	generateOutput()

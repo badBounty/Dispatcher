@@ -47,12 +47,12 @@ class HeaderFinder():
 		print('---------------------------------------------------------------------------------------')
 		print('Finished! Please check output for results!')
 
-	def output(self):
+	def output(self, path):
 		df = pd.DataFrame(self.data, columns = ['url','Content-Security-Policy','X-XSS-Protection',
 								   		'x-frame-options', 'X-Content-Type-options', 'Strict-Transport-Security',
 								   		'Access-Control-Allow-Origin'])
 
-		df.to_csv('output/'+self.inputName+'/headerFinder.csv', index = False)
+		df.to_csv(path, index = False)
 
 	def scan_target(self, session, url):
 
