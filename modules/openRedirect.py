@@ -1,6 +1,7 @@
 import requests
 import urllib3
 import pandas as pd
+from extra.helper import Helper
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -8,6 +9,8 @@ class OpenRedirect():
 
 	def __init__(self):
 		self.scanned_targets = []
+
+		self.helper = Helper()
 
 		self.data = []
 		self.error_data = []
