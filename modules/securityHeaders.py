@@ -69,6 +69,8 @@ class HeaderFinder():
 		except requests.exceptions.ConnectionError:
 			print('Connection error on ' + url)
 			return
+		except Exception as e:
+			return
 
 		content_security_policy = 0
 		x_xss_protection = 0
