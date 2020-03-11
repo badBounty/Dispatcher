@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import threading
 import sys
+import datetime
 
 from modules.bucketFinder import BucketFinder
 from modules.tokenFinder import TokenFinder
@@ -79,14 +80,17 @@ urls = filter(None, urls)
 urls = list(urls)
 urls = list(dict.fromkeys(urls))
 
+now = datetime.datetime.now()
+timestamp = str(now.year)+ '-'+ str(now.month) + '-'+ str(now.day)+ '-'+ str(now.hour)+ '-'+ str(now.minute)
+
 # Generating output
 def generateOutput():
 	if not args.output:
-		main_df.to_csv('output/'+ outputFolderName +'/'+outputFolderName+'_output.csv', index = False)
-		main_error_df.to_csv('output/'+ outputFolderName +'/'+outputFolderName+'_error.csv', index = False)
+		main_df.to_csv('output/'+ outputFolderName +'/'+str(timestamp)+'_'+outputFolderName+'_output.csv', index = False)
+		main_error_df.to_csv('output/'+ outputFolderName +'/'+str(timestamp)+'_'+outputFolderName+'_error.csv', index = False)
 	else:
-		main_df.to_csv(args.output +'/'+outputFolderName+'_output.csv', index = False)
-		main_error_df.to_csv(args.output +'/'+outputFolderName+'_error.csv', index = False)
+		main_df.to_csv(args.output +'/'+str(timestamp)+'_'+outputFolderName+'_output.csv', index = False)
+		main_error_df.to_csv(args.output +'/'+str(timestamp)+'_'+outputFolderName+'_error.csv', index = False)
 
 #Create a dataframe data can be appended to it
 main_df = pd.DataFrame(columns = ['Vulnerability','MainUrl','Reference','Description'])
@@ -146,9 +150,9 @@ elif args.mode == 'header':
 		pass
 	#HeaderFinder generates a separate csv file
 	if not args.output:
-		headerFinder.output('output/'+ outputFolderName +'/'+outputFolderName+'_headerFinder.csv')
+		headerFinder.output('output/'+ outputFolderName +'/'+str(timestamp)+'_'+outputFolderName+'_headerFinder.csv')
 	else:
-		headerFinder.output(args.output +'/'+outputFolderName+'_headerFinder.csv')
+		headerFinder.output(args.output +'/'+str(timestamp)+'_'+outputFolderName+'_headerFinder.csv')
 	headerFinder.showEndScreen()
 
 #------------------ Open Redirect --------------------
