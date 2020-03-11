@@ -38,6 +38,9 @@ parser.add_argument('-s', '--scope', help = "Scope for the search, ex = 'yahoo'"
 					required = False,
 					action = 'store',
 					default = 'None')
+parser.add_argument('-mm', '--monitor', help = "Enables monitor mode with minutes as input",
+					required = False,
+					action = 'store')
 
 
 args = parser.parse_args()
@@ -245,3 +248,4 @@ elif args.mode == 'full':
 	main_error_df = main_error_df.append(error_df)
 	generateOutput()
 	fullScanner.showEndScreen()
+
