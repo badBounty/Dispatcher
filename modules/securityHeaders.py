@@ -8,16 +8,13 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class HeaderFinder():
 
-	def __init__(self, inputName):
+	def __init__(self, inputName, SESSION):
 		self.scanned_targets = []
 		self.inputName = inputName
 		self.data = []
 		self.outputActivated = False
 
-		self.session = requests.Session()
-		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
-
-		self.session.headers.update(headers)
+		self.session = SESSION
 
 	def activateOutput(self):
 		self.outputActivated = True

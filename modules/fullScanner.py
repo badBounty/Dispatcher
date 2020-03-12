@@ -12,25 +12,25 @@ from extra.helper import Helper
 
 class FullScanner():
 
-	def __init__(self, outputFolderName, scope):
+	def __init__(self, outputFolderName, scope, SESSION):
 		self.data = []
 		self.error_data = []
+		self.textList = []
 
 		self.scope = scope
 
-		self.bucketFinder = BucketFinder()
-		self.tokenFinder = TokenFinder()
-		self.headerFinder = HeaderFinder(outputFolderName)
-		self.openRedirect = OpenRedirect()
-		self.cssChecker = CssChecker()
-		self.endpointFinder = EndpointFinder()
-		self.firebaseFinder = FirebaseFinder()
+		self.bucketFinder = BucketFinder(SESSION)
+		self.tokenFinder = TokenFinder(SESSION)
+		self.headerFinder = HeaderFinder(outputFolderName, SESSION)
+		self.openRedirect = OpenRedirect(SESSION)
+		self.cssChecker = CssChecker(SESSION)
+		self.endpointFinder = EndpointFinder(SESSION)
+		self.firebaseFinder = FirebaseFinder(SESSION)
 
 		self.helper = Helper()
 
-		self.session = requests.Session()
-		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
-		self.session.headers.update(headers)
+		self.session = SESSION
+
 
 	def activateMSTeams(self, msTeams):
 		self.bucketFinder.activateMSTeams(msTeams)
@@ -101,7 +101,52 @@ class FullScanner():
 		final_data_df = final_data_df.append(data_df)
 		final_error_df = final_error_df.append(error_df)
 
-		return(final_data_df, final_error_df)
+		return(final_data_df, final_error_df, self.textList)
+
+	def appendTxtInformation(self, url, bucketFinder, firebaseFinder, openRedirect, endpointFinder, tokenFinder, cssFinder):
+
+		self.textList.append(url)
+		if not bucketFinder:
+			#print('No finds with bucketFinder')
+			self.textList.append('    No finds with bucketFinder')
+		else:
+			for item in bucketFinder:
+				self.textList.append('    ' + item)
+
+		if not firebaseFinder:
+			#print('No finds with firebaseFinder')
+			self.textList.append('    No finds with firebaseFinder')
+		else:
+			for item in firebaseFinder:
+				self.textList.append('    ' + item)
+
+		if not openRedirect:
+			#print('No finds with openRedirect')
+			self.textList.append('    No finds with openRedirectFinder')
+		else:
+			for item in openRedirect:
+				self.textList.append('    ' + item)
+
+		if not endpointFinder:
+			#print('No finds with endpointFinder')
+			self.textList.append('    No finds with endpointFinder')
+		else:
+			for item in endpointFinder:
+				self.textList.append('    ' + item)
+
+		if not cssFinder:
+			#print('No finds with cssFinder')
+			self.textList.append('    No finds with cssFinder')
+		else:
+			for item in cssFinder:
+				self.textList.append('    ' + item)
+
+		if not tokenFinder:
+			#print('No finds with tokenFinder')
+			self.textList.append('    No finds with tokenFinder')
+		else:
+			for item in tokenFinder:
+				self.textList.append('    ' + item)
 
 	def run(self, urls):
 
@@ -109,17 +154,34 @@ class FullScanner():
 
 		#Start by iterating over urls
 		for url in urls:
+
 			output = []
+
+			bucketFinderOutput = []
+			firebaseFinderOutput = []
+			openRedirectOutput = []
+			endpointFinderOutput = []
+			tokenFinderOutput = []
+			cssFinderOutput = []
+
 			print('----------------------------------------------------')
 			print('Scanning '+ url)
 			if not self.helper.verifyURL(self.session, url, url, self.error_data, 'full'):
 				continue
 
-			output.append(self.bucketFinder.process(url, url))
-			output.append(self.firebaseFinder.process(url, url))
+			#output.append(self.bucketFinder.process(url, url))
+			bucketFinderOutput.append(self.bucketFinder.process(url,url))
+
+			#output.append(self.firebaseFinder.process(url, url))
+			firebaseFinderOutput.append(self.firebaseFinder.process(url, url))
+
 			output.append(self.headerFinder.process(url))
-			output.append(self.openRedirect.process(url, url))
-			output.append(self.endpointFinder.process(url))
+
+			#output.append(self.openRedirect.process(url, url))
+			openRedirectOutput.append(self.openRedirect.process(url, url))
+
+			#output.append(self.endpointFinder.process(url))
+			endpointFinderOutput.append(self.endpointFinder.process(url))
 
 			#We get js files from the url
 			js_in_url = self.helper.get_js_in_url(self.session, url)
@@ -132,18 +194,29 @@ class FullScanner():
 			for url_in_url in urls_in_url:
 				if not self.helper.verifyURL(self.session, url, url_in_url, self.error_data, 'full'):
 					continue
-				output.append(self.bucketFinder.process(url, url_in_url))
-				output.append(self.firebaseFinder.process(url, url_in_url))
-				output.append(self.tokenFinder.process(url, url_in_url))	
+				#output.append(self.bucketFinder.process(url, url_in_url))
+				bucketFinderOutput.append(self.bucketFinder.process(url, url_in_url))
+
+				#output.append(self.firebaseFinder.process(url, url_in_url))
+				firebaseFinderOutput.append(self.firebaseFinder.process(url, url_in_url))
+
+				#output.append(self.tokenFinder.process(url, url_in_url))
+				tokenFinderOutput.append(self.tokenFinder.process(url, url_in_url))	
 
 			#print('Scanning js files found in '+ url)
 			#We run the tools that interact with js files
 			for js_endpoint in js_in_url:
 				if not self.helper.verifyURL(self.session, url, js_endpoint, self.error_data, 'full'):
 					continue
-				output.append(self.bucketFinder.process(url, js_endpoint))
-				output.append(self.firebaseFinder.process(url, js_endpoint))
-				output.append(self.tokenFinder.process(url, js_endpoint))
+
+				#output.append(self.bucketFinder.process(url, js_endpoint))
+				bucketFinderOutput.append(self.bucketFinder.process(url, js_endpoint))
+
+				#output.append(self.firebaseFinder.process(url, js_endpoint))
+				firebaseFinderOutput.append(self.firebaseFinder.process(url, js_endpoint))
+
+				#output.append(self.tokenFinder.process(url, js_endpoint))
+				tokenFinderOutput.append(self.tokenFinder.process(url, js_endpoint))
 
 				#Search urls in js file
 				urls_in_js = self.helper.get_http_in_js(self.session, js_endpoint)
@@ -152,16 +225,40 @@ class FullScanner():
 				for sub_url in urls_in_js:
 					if not self.helper.verifyURL(self.session, url, js_endpoint, self.error_data, 'full'):
 						continue
-					output.append(self.bucketFinder.process(url, sub_url))
-					output.append(self.firebaseFinder.process(url, sub_url))
-					output.append(self.tokenFinder.process(url, sub_url))
+
+					#output.append(self.bucketFinder.process(url, sub_url))
+					bucketFinderOutput.append(self.bucketFinder.process(url, sub_url))
+
+					#output.append(self.firebaseFinder.process(url, sub_url))
+					firebaseFinderOutput.append(self.firebaseFinder.process(url, sub_url))
+
+					#output.append(self.tokenFinder.process(url, sub_url))
+					tokenFinderOutput.append(self.tokenFinder.process(url, sub_url))
 
 			for css_endpoint in css_in_url:
-				output.append(self.cssChecker.process(url, css_endpoint))
+				#output.append(self.cssChecker.process(url, css_endpoint))
+				cssFinderOutput.append(self.cssChecker.process(url, css_endpoint))
 
-			output = filter(None, output)
-			output = [item for sublist in output for item in sublist]
-			output = list(dict.fromkeys(output))
+
+			bucketFinderOutput = self.helper.normalizeList(bucketFinderOutput)
+			firebaseFinderOutput = self.helper.normalizeList(firebaseFinderOutput)
+			openRedirectOutput = self.helper.normalizeList(openRedirectOutput)
+			endpointFinderOutput = self.helper.normalizeList(endpointFinderOutput)
+			tokenFinderOutput = self.helper.normalizeList(tokenFinderOutput)
+			cssFinderOutput = self.helper.normalizeList(cssFinderOutput)
+
+			self.appendTxtInformation(url, bucketFinderOutput, firebaseFinderOutput, openRedirectOutput, endpointFinderOutput, 
+				tokenFinderOutput, cssFinderOutput)
+
+			output.append(bucketFinderOutput)
+			output.append(firebaseFinderOutput)
+			output.append(openRedirectOutput)
+			output.append(endpointFinderOutput)
+			output.append(tokenFinderOutput)
+			output.append(cssFinderOutput)
+
+			output = self.helper.normalizeList(output)
+
 			for item in output:
 				print(item)
 

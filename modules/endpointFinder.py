@@ -10,10 +10,10 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class EndpointFinder():
 
-	def __init__(self):
+	def __init__(self, SESSION):
 		self.scanned_targets = []
 
-		self.openRedirect = OpenRedirect()
+		self.openRedirect = OpenRedirect(SESSION)
 		self.helper = Helper()
 
 		self.data = []
@@ -24,10 +24,7 @@ class EndpointFinder():
 
 		self.invalid_codes = [301,302,303,400,403,404,503]
 
-		self.session = requests.Session()
-		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
-
-		self.session.headers.update(headers)
+		self.session = SESSION
 
 		with open('extra/endpointFinder_endpoints.txt') as fp:
 			lines = fp.read()

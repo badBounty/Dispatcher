@@ -7,7 +7,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class OpenRedirect():
 
-	def __init__(self):
+	def __init__(self, SESSION):
 		self.scanned_targets = []
 
 		self.helper = Helper()
@@ -18,10 +18,7 @@ class OpenRedirect():
 		self.outputActivated = False
 		self.msTeamsActivated = False
 
-		self.session = requests.Session()
-		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
-
-		self.session.headers.update(headers)
+		self.session = SESSION
 
 		with open('extra/openRedirect_parameters.txt') as fp:
 			lines = fp.read()

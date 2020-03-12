@@ -7,7 +7,7 @@ from extra.helper import Helper
 
 class TokenFinder():
 
-	def __init__(self):
+	def __init__(self, SESSION):
 		self.scanned_targets = []
 
 		self.data = []
@@ -16,10 +16,7 @@ class TokenFinder():
 
 		self.helper = Helper()
 
-		self.session = requests.Session()
-		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
-
-		self.session.headers.update(headers)
+		self.session = SESSION
 
 	def activateOutput(self):
 		self.outputActivated = True
@@ -112,9 +109,21 @@ class TokenFinder():
 
 		access_token2 = re.findall('access-token:"(.+?)"', response.text)
 		if len(access_token2) > 0:
-			for value in access_token:
+			for value in access_token2:
 				self.data.append(['Information disclosure', host , url , 'The following access-token was found: ' + value])
 				output.append('Token finder found access token: ' + value + 'at ' + url)
+
+		token_1 = re.findall('Token:"(.+?)"', response.text)
+		if len(token_1) > 0:
+			for value in token_1:
+				self.data.append(['Information disclosure', host , url , 'The following token was found: ' + value])
+				output.append('Token finder found token: ' + value + 'at ' + url)
+
+		token_2 = re.findall('token:"(.+?)"', response.text)
+		if len(token_2) > 0:
+			for value in token_2:
+				self.data.append(['Information disclosure', host , url , 'The following token was found: ' + value])
+				output.append('Token finder found token: ' + value + 'at ' + url)
 
 
 		#Specific Tokens

@@ -107,6 +107,13 @@ class Helper():
 		else:
 			return True
 
+		if response.status_code == 403:
+			print('Url: ' + url_to_verify + ' returned 403, forbidden')
+			error_data.append([from_module,origin_url,url_to_verify,'Returned 403, forbidden'])
+			return False
+		else:
+			return True
+
 	def checkScope(self, url_list, scope):
 
 		if scope == 'None':
@@ -138,3 +145,12 @@ class Helper():
 			return True
 		else:
 			return False
+
+	def normalizeList(self, listToFix):
+
+		output = listToFix
+		output = filter(None, output)
+		output = [item for sublist in output for item in sublist]
+		output = list(dict.fromkeys(output))
+
+		return output

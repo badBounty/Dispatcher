@@ -13,7 +13,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class FirebaseFinder():
 
-	def __init__(self):
+	def __init__(self, SESSION):
 		self.scanned_targets = []
 		self.data = []
 		self.error_data = []
@@ -21,9 +21,7 @@ class FirebaseFinder():
 		self.outputActivated = False
 		self.helper = Helper()
 
-		self.session = requests.Session()
-		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
-		self.session.headers.update(headers)
+		self.session = SESSION
 
 
 	def activateOutput(self):

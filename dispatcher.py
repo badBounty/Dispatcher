@@ -6,6 +6,7 @@ import pandas as pd
 import sys
 import datetime
 import time
+import requests
 
 from modules.bucketFinder import BucketFinder
 from modules.tokenFinder import TokenFinder
@@ -87,13 +88,19 @@ now = datetime.datetime.now()
 timestamp = str(now.year)+ '-'+ str(now.month) + '-'+ str(now.day)+ '-'+ str(now.hour)+ '.'+ str(now.minute)
 
 # Generating output
-def generateOutput(main_df, main_error_df):
+def generateOutput(main_df, main_error_df, txt_file_lines):
 	if not args.output:
 		main_df.to_csv('output/'+ outputFolderName +'/'+str(timestamp)+'_'+outputFolderName+'_output.csv', index = False)
 		main_error_df.to_csv('output/'+ outputFolderName +'/'+str(timestamp)+'_'+outputFolderName+'_error.csv', index = False)
+		with open('output/'+ outputFolderName +'/'+str(timestamp)+'_'+outputFolderName+'findings.txt', 'w') as f:
+			for item in txt_file_lines:
+				f.write("%s\n" % item)
 	else:
 		main_df.to_csv(args.output +'/'+str(timestamp)+'_'+outputFolderName+'_output.csv', index = False)
 		main_error_df.to_csv(args.output +'/'+str(timestamp)+'_'+outputFolderName+'_error.csv', index = False)
+		with open(args.output +'/'+str(timestamp)+'_'+outputFolderName+'findings.txt', 'w') as f:
+			for item in txt_file_lines:
+				f.write("%s\n" % item)
 
 #Connect to microsoft teams if the -mst is enabled
 def activateMSTeams():
@@ -105,8 +112,8 @@ def activateMSTeams():
 # Dataframes are used for output, this will be turned into csv files later
 
 #------------------ Bucket Finder --------------------
-def runS3BucketModule(main_df, main_error_df):
-	bucketFinder = BucketFinder()
+def runS3BucketModule(main_df, main_error_df, SESSION):
+	bucketFinder = BucketFinder(SESSION)
 	if args.msTeams:
 		bucketFinder.activateMSTeams(teamsConnection)
 	bucketFinder.showStartScreen()
@@ -123,8 +130,8 @@ def runS3BucketModule(main_df, main_error_df):
 	bucketFinder.showEndScreen()
 
 #------------------ Token Finder --------------------
-def runTokenModule(main_df, main_error_df):
-	tokenFinder = TokenFinder()
+def runTokenModule(main_df, main_error_df, SESSION):
+	tokenFinder = TokenFinder(SESSION)
 	tokenFinder.showStartScreen()
 	tokenFinder.activateOutput()
 	try:
@@ -139,8 +146,8 @@ def runTokenModule(main_df, main_error_df):
 	tokenFinder.showEndScreen()
 
 #------------------ Header Finder --------------------
-def runHeaderModule(main_df, main_error_df):
-	headerFinder = HeaderFinder(outputFolderName)
+def runHeaderModule(main_df, main_error_df, SESSION):
+	headerFinder = HeaderFinder(outputFolderName, SESSION)
 	headerFinder.showStartScreen()
 	headerFinder.activateOutput()
 	try:
@@ -155,8 +162,8 @@ def runHeaderModule(main_df, main_error_df):
 	headerFinder.showEndScreen()
 
 #------------------ Open Redirect --------------------
-def runOpenRedirectModule(main_df, main_error_df):
-	openRedirect = OpenRedirect()
+def runOpenRedirectModule(main_df, main_error_df, SESSION):
+	openRedirect = OpenRedirect(SESSION)
 	if args.msTeams:
 		openRedirect.activateMSTeams(teamsConnection)
 	openRedirect.showStartScreen()
@@ -173,8 +180,8 @@ def runOpenRedirectModule(main_df, main_error_df):
 	openRedirect.showEndScreen()
 
 #------------------- Css Checker ---------------------
-def runCSSModule(main_df, main_error_df):
-	cssChecker = CssChecker()
+def runCSSModule(main_df, main_error_df, SESSION):
+	cssChecker = CssChecker(SESSION)
 	if args.msTeams:
 		cssChecker.activateMSTeams(teamsConnection)
 	cssChecker.showStartScreen()
@@ -191,8 +198,8 @@ def runCSSModule(main_df, main_error_df):
 	cssChecker.showEndScreen()
 
 #------------------- Endpoint Finder ---------------------
-def runEndpointModule(main_df, main_error_df):
-	endpointFinder = EndpointFinder()
+def runEndpointModule(main_df, main_error_df, SESSION):
+	endpointFinder = EndpointFinder(SESSION)
 	if args.msTeams:
 		endpointFinder.activateMSTeams(teamsConnection)
 	endpointFinder.showStartScreen()
@@ -209,8 +216,8 @@ def runEndpointModule(main_df, main_error_df):
 	endpointFinder.showEndScreen()
 
 #------------------ Header Finder --------------------
-def runFirebaseModule(main_df, main_error_df):
-	firebaseFinder = FirebaseFinder()
+def runFirebaseModule(main_df, main_error_df, SESSION):
+	firebaseFinder = FirebaseFinder(SESSION)
 	firebaseFinder.showStartScreen()
 	firebaseFinder.activateOutput()
 	try:
@@ -226,8 +233,8 @@ def runFirebaseModule(main_df, main_error_df):
 
 
 #----------------------- Full -------------------------
-def runFullModule(main_df, main_error_df):
-	fullScanner = FullScanner(outputFolderName, args.scope)
+def runFullModule(main_df, main_error_df, SESSION):
+	fullScanner = FullScanner(outputFolderName, args.scope, SESSION)
 	if args.msTeams:
 		fullScanner.activateMSTeams(teamsConnection)
 	fullScanner.showStartScreen()
@@ -237,33 +244,33 @@ def runFullModule(main_df, main_error_df):
 		pass
 	#
 	if not args.output:
-		data_df, error_df = fullScanner.output('output/'+ outputFolderName +'/'+ str(timestamp) + '_' + outputFolderName+'_headerFinder.csv')
+		data_df, error_df, for_txt_file = fullScanner.output('output/'+ outputFolderName +'/'+ str(timestamp) + '_' + outputFolderName+'_headerFinder.csv')
 	else:
-		data_df, error_df = fullScanner.output(args.output +'/'+str(timestamp)+ '_' +outputFolderName+'_headerFinder.csv')
+		data_df, error_df, for_txt_file = fullScanner.output(args.output +'/'+str(timestamp)+ '_' +outputFolderName+'_headerFinder.csv')
 	main_df = main_df.append(data_df)
 	main_error_df = main_error_df.append(error_df)
-	generateOutput(main_df, main_error_df)
+	generateOutput(main_df, main_error_df, for_txt_file)
 	fullScanner.showEndScreen()
 
-def main(main_df, main_error_df):
+def main(main_df, main_error_df, SESSION):
 	if args.msTeams:
 		activateMSTeams()
 	if args.mode == 's3bucket':
-		runS3BucketModule(main_df, main_error_df)
+		runS3BucketModule(main_df, main_error_df, SESSION)
 	elif args.mode == 'token':
-		runTokenModule(main_df, main_error_df)
+		runTokenModule(main_df, main_error_df, SESSION)
 	elif args.mode == 'header':
-		runHeaderModule(main_df, main_error_df)
+		runHeaderModule(main_df, main_error_df, SESSION)
 	elif args.mode == 'openred':
-		runOpenRedirectModule(main_df, main_error_df)
+		runOpenRedirectModule(main_df, main_error_df, SESSION)
 	elif args.mode == 'css':
-		runCSSModule(main_df, main_error_df)
+		runCSSModule(main_df, main_error_df, SESSION)
 	elif args.mode == 'endpoint':
-		runEndpointModule(main_df, main_error_df)
+		runEndpointModule(main_df, main_error_df, SESSION)
 	elif args.mode == 'firebase':
-		runFirebaseModule(main_df, main_error_df)
+		runFirebaseModule(main_df, main_error_df, SESSION)
 	elif args.mode == 'full':
-		runFullModule(main_df, main_error_df)
+		runFullModule(main_df, main_error_df, SESSION)
 
 running = True
 while running:
@@ -271,8 +278,15 @@ while running:
 	main_df = pd.DataFrame(columns = ['Vulnerability','MainUrl','Reference','Description'])
 	main_error_df = pd.DataFrame(columns = ['Module','MainUrl','Reference','Reason'])
 	
+	SESSION = requests.Session()
+	SESSION.max_redirects = 3
+	SESSION.timeout = 3
+	SESSION.verify = False
+	headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'}
+	SESSION.headers.update(headers)
+
 	if not args.monitor:
-		main(main_df, main_error_df)
+		main(main_df, main_error_df, SESSION)
 		running = False
 		sys.exit(1)
 	else:
