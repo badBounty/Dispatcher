@@ -205,6 +205,13 @@ class TokenFinder():
 				self.data.append(['Information disclosure', host , url , 'The following google maps key was found: ' + value])
 				output.append('Token finder found google maps key: ' + value + 'at ' + url)
 
+		#------------------------------ Google autocomplete ------------------------------
+		g_autocomplete_key = re.findall("googleAutoCompleteKey:Object\(\{(.+?)\}\)", response.text)
+		if len(g_autocomplete_key) > 0:
+			for value in g_autocomplete_key:
+				self.data.append(['Information disclosure', host , url , 'The following google autocomplete key was found: ' + value])
+				output.append('Token finder found google autocomplete key: ' + value + 'at ' + url)
+
 		#------------------------------ Google recaptcha ------------------------------
 		g_recaptcha_key = re.findall('GoogleRecaptcha\(\{(.+?)\}', response.text)
 		if len(g_recaptcha_key) > 0:
@@ -322,8 +329,12 @@ class TokenFinder():
 				self.data.twilio_auth_token(['Information disclosure', host , url , 'The following twitter config info was found: ' + value])
 				output.append('Token finder found twitter config info: ' + value + 'at ' + url)	
 
-
-
+		#------------------------------ bugsnag ------------------------------
+		bugsnag = re.findall('bugsnagAPI:Object\(\{(.+?)\)\}', response.text)
+		if len(bugsnag) > 0:
+			for value in bugsnag:
+				self.data.twilio_auth_token(['Information disclosure', host , url , 'The following bugsnag config info was found: ' + value])
+				output.append('Token finder found bugsnag config info: ' + value + 'at ' + url)	
 
 		return output
 

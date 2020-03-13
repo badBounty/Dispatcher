@@ -47,6 +47,11 @@ class Helper():
 		for match in all_matches:
 			if '.js' in list(match)[0] and 'http' in list(match)[0]:
 				js_endpoints.append(list(match)[0])
+			elif '.js' in list(match)[0] and list(match)[0][0] == '.':
+				split_url = url.split('/')
+				final_url = split_url[0] + '//' + split_url[2]
+				url_with_js_endpoint = final_url + list(match)[0][1:]
+				js_endpoints.append(url_with_js_endpoint)
 
 		return js_endpoints
 
