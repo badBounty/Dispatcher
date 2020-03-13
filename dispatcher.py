@@ -88,19 +88,22 @@ now = datetime.datetime.now()
 timestamp = str(now.year)+ '-'+ str(now.month) + '-'+ str(now.day)+ '-'+ str(now.hour)+ '.'+ str(now.minute)
 
 # Generating output
-def generateOutput(main_df, main_error_df, txt_file_lines):
+def generateOutput(main_df, main_error_df, txt_file_lines = []):
 	if not args.output:
 		main_df.to_csv('output/'+ outputFolderName +'/'+str(timestamp)+'_'+outputFolderName+'_output.csv', index = False)
 		main_error_df.to_csv('output/'+ outputFolderName +'/'+str(timestamp)+'_'+outputFolderName+'_error.csv', index = False)
-		with open('output/'+ outputFolderName +'/'+str(timestamp)+'_'+outputFolderName+'findings.txt', 'w') as f:
-			for item in txt_file_lines:
-				f.write("%s\n" % item)
+		
+		if txt_file_lines:
+			with open('output/'+ outputFolderName +'/'+str(timestamp)+'_'+outputFolderName+'findings.txt', 'w') as f:
+				for item in txt_file_lines:
+					f.write("%s\n" % item)
 	else:
 		main_df.to_csv(args.output +'/'+str(timestamp)+'_'+outputFolderName+'_output.csv', index = False)
 		main_error_df.to_csv(args.output +'/'+str(timestamp)+'_'+outputFolderName+'_error.csv', index = False)
-		with open(args.output +'/'+str(timestamp)+'_'+outputFolderName+'findings.txt', 'w') as f:
-			for item in txt_file_lines:
-				f.write("%s\n" % item)
+		if txt_file_lines:
+			with open(args.output +'/'+str(timestamp)+'_'+outputFolderName+'findings.txt', 'w') as f:
+				for item in txt_file_lines:
+					f.write("%s\n" % item)
 
 #Connect to microsoft teams if the -mst is enabled
 def activateMSTeams():

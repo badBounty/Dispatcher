@@ -68,7 +68,7 @@ class BucketFinder():
 		res = []
 		#------ Filter invalid matches
 		for item in some_list:
-			if all(char not in item for char in ['\\','=','>','<','[',']','{','}',';','(',')','_']):
+			if all(char not in item for char in ['\\','=','>','<','[',']','{','}',';','(',')']):
 				res.append(item)
 		return res
 
@@ -158,17 +158,20 @@ class BucketFinder():
 		bucketsThird = self.filterInvalids(bucketsThird)
 
 		#---------Way IV----------
-		#bucketsFourth = re.findall('s3.amazonaws.com/(.+?)/', response.text)
-		#bucketsFourth = self.filterInvalids(bucketsFourth)
+		bucketsFourth = re.findall('https://s3.amazonaws.com/(.+?)/', response.text)
+		bucketsFourth = self.filterInvalids(bucketsFourth)
 
-		bucketsFourth = list()
-		wayIV = re.findall('https://([^\"/,]+).s3.amazonaws.com/([^\"/,]+)/',response.text)
+		wayIV_2 = re.findall('https://([^\"/,]+).s3.amazonaws.com/([^\"/,]+)/',response.text)
 		
-		for bucket in wayIV:
+		for bucket in wayIV_2:
 			#In this case the match are tuples, not lists
 			bucket = list(bucket)
 			if any(x in self.regions for x in bucket[0]):
 				bucketsFourth.append(bucket[1])
+
+		#---------Way IV----------
+		bucketsFourth = re.findall('https://s3.amazonaws.com/(.+?)/', response.text)
+		bucketsFourth = self.filterInvalids(bucketsFourth)
 
 		bucketsFifth = list()
 		wayV = re.findall('https://([^.\"/,]+).([^\"/,]+).amazonaws.com',response.text)
