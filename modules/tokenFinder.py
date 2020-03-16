@@ -257,7 +257,7 @@ class TokenFinder():
 		#------------------------------ Paypal ------------------------------
 		paypal_config = re.findall('paypal.configure\(\{(.+?)\}\);', response.text)
 		if len(paypal_config) > 0:
-			for value in pagerduty_key:
+			for value in paypal_config:
 				self.data.append(['Information disclosure', host , url , 'The following paypal config info was found: ' + value])
 				output.append('Token finder found paypal config info: ' + value + 'at ' + url)
 
@@ -278,7 +278,7 @@ class TokenFinder():
 		#------------------------------ Sendgrid ------------------------------
 		sendgrid_key = re.findall('sendgrid_api_key:"(.+?)"', response.text)
 		if len(sendgrid_key) > 0:
-			for value in sauceLabs_key:
+			for value in sendgrid_key:
 				self.data.append(['Information disclosure', host , url , 'The following sendgrid key was found: ' + value])
 				output.append('Token finder found sendgrid key: ' + value + 'at ' + url)
 
@@ -318,7 +318,7 @@ class TokenFinder():
 				self.data.append(['Information disclosure', host , url , 'The following twilio account sid was found: ' + value])
 				output.append('Token finder found twilio account sid key: ' + value + 'at ' + url)
 		if len(twilio_auth_token) > 0:
-			for value in travis_key:
+			for value in twilio_auth_token:
 				self.data.twilio_auth_token(['Information disclosure', host , url , 'The following twilio auth token was found: ' + value])
 				output.append('Token finder found twilio auth token: ' + value + 'at ' + url)	
 
