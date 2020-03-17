@@ -109,7 +109,8 @@ class EndpointFinder():
 			return output, verboseOutput
 		else:
 			if endpoint == '/login':
-				output.append(self.openRedirect.process(url+endpoint, url))
+				output_tmp, verboseOutput_tmp = self.openRedirect.process(url+endpoint, url)
+				output.append(output_tmp)
 				output.append('EndpointFinder found: '+ url + endpoint)
 				verboseOutput.append('EndpointFinder found login, started openRedirect')
 			else:
@@ -117,6 +118,8 @@ class EndpointFinder():
 				output.append('EndpointFinder found: '+ url + endpoint)
 				verboseOutput.append('EndpointFinder found: '+ url + endpoint)
 			
+			output = [x for x in output if x != []]
+			verboseOutput = [x for x in verboseOutput if x != []]
 			return output, verboseOutput
 
 	def process(self, url):
