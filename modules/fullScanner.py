@@ -208,11 +208,6 @@ class FullScanner():
 			endpointFinderOutput.append(endpointFinderOutput_tmp)
 			endpointFinderVerboseOutput.append(endpointFinderVerboseOutput_tmp)
 
-			tokenFinderOutput_tmp, tokenFinderVerboseOutput_tmp = self.tokenFinder.process(url, url)
-			tokenFinderOutput.append(tokenFinderOutput_tmp)
-			tokenFinderVerboseOutput.append(tokenFinderVerboseOutput_tmp)
-
-
 			#We get js files from the url
 			js_in_url = self.helper.get_js_in_url(self.session, url)
 			js_in_url = self.helper.checkScope(js_in_url, self.scope)
