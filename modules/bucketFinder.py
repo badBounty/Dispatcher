@@ -74,6 +74,7 @@ class BucketFinder():
 
 	def configureOutput(self, url, js_endpoint, bucket_list, ls_allowed, cprm_allowed, does_not_exist):
 		output = []
+		verboseOutput = []
 		#------ Adding info for output
 		for bucket in bucket_list:
 			ls = False
@@ -89,6 +90,7 @@ class BucketFinder():
 			if ls == True and cprm == True:
 				self.data.append(['Misconfigured S3 bucket', url, js_endpoint, 'Bucket '+ bucket + ' has copy, remove and ls available for authenticated users'])
 				output.append('BucketFinder found bucket ' + bucket + ' with ls and cprm allowed')
+				verboseOutput.append('BucketFinder found bucket ' + bucket + ' with ls and cprm allowed')
 				if self.msTeamsActivated:
 					self.msTeams.title('Bucket found!')
 					self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
@@ -97,6 +99,7 @@ class BucketFinder():
 			elif ls == True:
 				self.data.append(['Misconfigured S3 bucket', url, js_endpoint, 'Bucket '+ bucket + ' has ls available for authenticated users'])
 				output.append('BucketFinder found bucket ' + bucket + ' with ls allowed')
+				verboseOutput.append('BucketFinder found bucket ' + bucket + ' with ls allowed')
 				if self.msTeamsActivated:
 					self.msTeams.title('Bucket found!')
 					self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
@@ -105,6 +108,7 @@ class BucketFinder():
 			elif cprm == True:
 				self.data.append(['Misconfigured S3 bucket', url, js_endpoint, 'Bucket '+ bucket + ' has copy and remove available for authenticated users'])
 				output.append('BucketFinder found bucket ' + bucket + ' with cprm allowed')
+				verboseOutput.append('BucketFinder found bucket ' + bucket + ' with cprm allowed')
 				if self.msTeamsActivated:
 					self.msTeams.title('Bucket found!')
 					self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
@@ -113,12 +117,16 @@ class BucketFinder():
 			elif not_exist == True:
 				self.data.append(['Misconfigured S3 bucket', url, js_endpoint, 'Bucket '+ bucket + ' does not exist but resources are being loaded from it, bucket takeover possible'])
 				output.append('BucketFinder found bucket ' + bucket + ' that is not claimed')
+				verboseOutput.append('BucketFinder found bucket ' + bucket + ' that is not claimed')
 				if self.msTeamsActivated:
 					self.msTeams.title('Bucket found!')
 					self.msTeams.text('Bucket ' + bucket + ' was found at host: '+ url + ' in: ' +
 							js_endpoint+' with does not exist error')
 					self.msTeams.send()
-		return output
+			else:
+				verboseOutput.append('BucketFinder found bucket ' + bucket + ' with no vulnerabilities')
+
+		return output, verboseOutput
 
 	def get_buckets(self, session, url, host):
 
@@ -221,51 +229,58 @@ class BucketFinder():
 		return cprm_allowed_buckets
 
 	def check_buckets(self, hostname, subname, bucket_list):
+		output = []
+		verboseOutput = []
 		if len(bucket_list)>0:
-			#print('The following bucket/s were found at ' + subname + ' :')
-			#print(bucket_list)
 
-			#print('Checking bucket/s that allow ls...')
 			ls_allowed, does_not_exist = self.get_ls_buckets(bucket_list)
-			#print('Checking bucket/s that allow cprm...')
 			cprm_allowed = self.get_cprm_buckets(bucket_list)
 			access_denied = list(set(bucket_list) - set(ls_allowed) - set(cprm_allowed) - set(does_not_exist))
 
-			output = self.configureOutput(hostname, subname, bucket_list, ls_allowed, cprm_allowed, does_not_exist)
-			return output
+			output_tmp, verboseOutput_tmp = self.configureOutput(hostname, subname, bucket_list, ls_allowed, cprm_allowed, does_not_exist)
+			output.append(output_tmp)
+			verboseOutput.append(verboseOutput_tmp)
+
+			output = self.helper.normalizeList(output)
+			verboseOutput = self.helper.normalizeList(verboseOutput)
+
+		return output, verboseOutput
 
 	def process(self, url, endpoint):
 
-		output = []
 		bucket_list = self.get_buckets(self.session, endpoint, url)
-		output.append(self.check_buckets(url, endpoint, bucket_list))
+		output, verboseOutput = self.check_buckets(url, endpoint, bucket_list)
 
-		output = filter(None, output)
-		output = [item for sublist in output for item in sublist]
-		return output
+		return output, verboseOutput
 
 	#Receives an urlList
 	def run(self, urls):
 		
 		for url in urls:
 			output = []
+			verboseOutput = []
 			print('----------------------------------------------------')
 			print('Scanning '+ url)
 			if not self.helper.verifyURL(self.session, url, url, self.error_data, 's3bucket'):
 				continue
 
 			buckets_in_html = self.get_buckets(self.session, url, url)
-			output.append(self.check_buckets(url, 'html code', buckets_in_html))
+			output_tmp, verboseOutput_tmp = self.check_buckets(url, 'html code', buckets_in_html)
+			output.append(output_tmp)
+			verboseOutput.append(verboseOutput_tmp)
 
 			js_in_url = self.helper.get_js_in_url(self.session, url)
-			print(js_in_url)
+			#print(js_in_url)
 			
 			for js_endpoint in js_in_url:
 				if not self.helper.verifyURL(self.session, url, js_endpoint, self.error_data, 's3bucket'):
 					continue
 				# Searching for buckets
 				bucket_list = self.get_buckets(self.session, js_endpoint, url)
-				output.append(self.check_buckets(url, js_endpoint, bucket_list))
+				#print(bucket_list)
+				output_tmp, verboseOutput_tmp = self.check_buckets(url, js_endpoint, bucket_list)
+				output.append(output_tmp)
+				verboseOutput.append(verboseOutput_tmp)
 
 				#Search urls in js file
 				http_in_js = self.helper.get_http_in_js(self.session, js_endpoint)
@@ -274,10 +289,12 @@ class BucketFinder():
 					if not self.helper.verifyURL(self.session, url, http_endpoint, self.error_data, 's3bucket'):
 						continue
 					bucket_list = self.get_buckets(self.session, http_endpoint, url)
-					output.append(self.check_buckets(url, http_endpoint, bucket_list))
+					output_tmp, verboseOutput_tmp = self.check_buckets(url, http_endpoint, bucket_list)
+					output.append(output_tmp)
+					verboseOutput.append(verboseOutput_tmp)
 
-			output = filter(None, output)
-			output = [item for sublist in output for item in sublist]
-			output = list(dict.fromkeys(output))
+			output = self.helper.normalizeList(output)
+			verboseOutput = self.helper.normalizeList(verboseOutput)
+		
 			for item in output:
 				print(item)

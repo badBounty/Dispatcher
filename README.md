@@ -53,3 +53,5 @@ This can be done by following these steps.
 | -u | Single url input  | Single url input, must contain http or https|
 | -o | Output folder  | Output folder ex: C:\Users\Name\Desktop\Folder  |
 | -mst | ALERT  | Microsoft teams webhook for channel notifications (Notifies buckets, css and openRedirects)  |
+| -mm | MONITOR  | Monitor mode, input is in hours  |
+| -v | VERBOSE  | Creates a txt file with more information on what was (or not) found  |

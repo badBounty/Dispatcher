@@ -72,33 +72,33 @@ class EndpointFinder():
 	def scanEndpoint(self, url, endpoint):
 
 		output = []
+		verboseOutput = []
 
 		try:
 			normal_response = self.session.get(url, verify = False, timeout = 3, allow_redirects = False)
 		except requests.exceptions.Timeout:
-			return output
+			return output, verboseOutput
 		except Exception as e:
 			print(e)
-			return output
+			return output, verboseOutput
 
 		try:
 			#Wont allow redirects
 			endpoint_response = self.session.get(url+endpoint, verify = False, timeout = 3, allow_redirects = False)
 		except requests.exceptions.Timeout:
-			return output
+			return output, verboseOutput
 		except Exception as e:
 			print(e)
-			return output
+			return output, verboseOutput
 
-		################## Keep this?? ###################
 		for code in self.invalid_codes:
 			if normal_response.status_code == code:
-				return output
+				return output, verboseOutput
 
 		#Endpoint append returns 404 or 301 (redirect)
 		for code in self.invalid_codes:
 			if endpoint_response.status_code == code:
-				return output
+				return output, verboseOutput
 
 		response_len = len(normal_response.text)
 		end_response_len = len(endpoint_response.text)
@@ -106,16 +106,18 @@ class EndpointFinder():
 		#Verifying response length
 		#Cases where endpoint does not modify anything or only adds the endpoint len will return
 		if(response_len - endpoint_len <= end_response_len <= response_len + endpoint_len):
-			return output
+			return output, verboseOutput
 		else:
 			if endpoint == '/login':
 				output.append(self.openRedirect.process(url+endpoint, url))
 				output.append('EndpointFinder found: '+ url + endpoint)
+				verboseOutput.append('EndpointFinder found login, started openRedirect')
 			else:
 				self.data.append(['Endpoint found',url,url,'Endpoint ' + url+endpoint + ' was found, it should be checked'])
 				output.append('EndpointFinder found: '+ url + endpoint)
-			output = [x for x in output if x != []]
-			return output
+				verboseOutput.append('EndpointFinder found: '+ url + endpoint)
+			
+			return output, verboseOutput
 
 	def process(self, url):
 
@@ -124,6 +126,7 @@ class EndpointFinder():
 		self.scanned_targets.append(url)
 
 		output = []
+		verboseOutput = []
 
 		#Backspace verify
 		if url[-1] == '/':
@@ -131,27 +134,28 @@ class EndpointFinder():
 
 		for endpoint in self.endpoints:
 			time.sleep(.5)
-			output.append(self.scanEndpoint(url, endpoint))
+			output_tmp, verboseOutput_tmp = self.scanEndpoint(url, endpoint)
+			output.append(output_tmp)
+			verboseOutput.append(verboseOutput_tmp)
 
-		output = filter(None, output)
-		output = [item for sublist in output for item in sublist]
-		return output
+		output = self.helper.normalizeList(output)
+		verboseOutput = self.helper.normalizeList(verboseOutput)
+		return output, verboseOutput
 
 	#Receives an urlList
 	def run(self, urls):
 		
 		for url in urls:
 			output = []
+			verboseOutput = []
+
 			print('----------------------------------------------------')
 			print('Scanning '+ url)
 
 			if not self.helper.verifyURL(self.session, url, url, self.error_data, 'endpointFinder'):
 				continue
 
-			output.append(self.process(url))
+			output, verboseOutput = self.process(url)
 
-			output = filter(None, output)
-			output = [item for sublist in output for item in sublist]
-			output = list(dict.fromkeys(output))
 			for item in output:
 				print(item)

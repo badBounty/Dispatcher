@@ -72,19 +72,22 @@ class FirebaseFinder():
 	def check_firebase(self, url, endpoint, firebases):
 
 		output = []
+		verboseOutput = []
+
 		for firebase in firebases:
 			try:
 				firebase_response = self.session.get(firebase, verify = False, timeout = 3)
 			except Exception as e:
 				print (e)
+				verboseOutput.append('Catched exception ' + e)
 				continue
 
 			if firebase_response.status_code == 200:
 				output.append('FirebaseFinder found open firebase: ' + firebase)
-				print('Open firebase found!')
+				verboseOutput.append('FirebaseFinder found open firebase: ' + firebase)
 				self.data.append(['Open firebase', url, endpoint, 'There was an open firebase found at ' + firebase])
 
-		return output
+		return output, verboseOutput
 
 	def get_firebases(self, session, url, host):
 
@@ -123,18 +126,21 @@ class FirebaseFinder():
 	def process(self, url, endpoint):
 
 		output = []
+		verboseOutput = []
 		firebases = self.get_firebases(self.session, endpoint, url)
-		output.append(self.check_firebase(url, url, firebases))
+		output, verboseOutput = self.check_firebase(url, url, firebases)
 
-		output = filter(None, output)
-		output = [item for sublist in output for item in sublist]
-		return output
+		output = self.helper.normalizeList(output)
+		verboseOutput = self.helper.normalizeList(verboseOutput)
+
+		return output, verboseOutput
 
 	#Receives an urlList
 	def run(self, urls):
 		
 		for url in urls:
 			output = []
+			verboseOutput = []
 			print('----------------------------------------------------')
 			print('Scanning '+ url)
 
@@ -142,7 +148,9 @@ class FirebaseFinder():
 				continue
 
 			firebases = self.get_firebases(self.session, url, url)
-			output.append(self.check_firebase(url, 'html code', firebases))
+			output_tmp, verboseOutput_tmp = self.check_firebase(url, 'html code', firebases)
+			output.append(output_tmp)
+			verboseOutput.append(verboseOutput_tmp)
 
 			js_in_url = self.helper.get_js_in_url(self.session, url)
 			
@@ -151,7 +159,9 @@ class FirebaseFinder():
 					continue
 				# Searching for buckets
 				firebases = self.get_firebases(self.session, js_endpoint, url)
-				output.append(self.check_firebase(url, js_endpoint, firebases))
+				output_tmp, verboseOutput_tmp = self.check_firebase(url, js_endpoint, firebases)
+				output.append(output_tmp)
+				verboseOutput.append(verboseOutput_tmp)
 
 				#Search urls in js file
 				http_in_js = self.helper.get_http_in_js(self.session, url)
@@ -160,10 +170,11 @@ class FirebaseFinder():
 					if not self.helper.verifyURL(self.session, url, http_endpoint, self.error_data, 'firebaseFinder'):
 						continue
 					firebases = self.get_firebases(self.session, http_endpoint, url)
-					output.append(self.check_firebase(url, http_endpoint, firebases))
+					output_tmp, verboseOutput_tmp = self.check_firebase(url, http_endpoint, firebases)
+					output.append(output_tmp)
+					verboseOutput.append(verboseOutput_tmp)
 
-			output = filter(None, output)
-			output = [item for sublist in output for item in sublist]
-			output = list(dict.fromkeys(output))
+			output = self.helper.normalizeList(output)
+			verboseOutput = self.helper.normalizeList(verboseOutput)
 			for item in output:
 				print(item)

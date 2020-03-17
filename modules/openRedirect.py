@@ -69,15 +69,16 @@ class OpenRedirect():
 	#Testing open redirect
 	def testOpenRedirect(self, session, url):
 
+		output = []
+		verboseOutput = []
+
 		if url in self.scanned_targets:
-			return
+			return output, verboseOutput
 
 		self.scanned_targets.append(url)
 
 		if 'login' not in url:
-			return
-
-		output = []
+			return output, verboseOutput
 
 		#For each endpoint we try parameters and payloads
 		for parameter in self.parameters:
@@ -89,7 +90,8 @@ class OpenRedirect():
 
 				try:
 					response = session.get(url_to_scan, verify = False)
-				except:
+				except Exception as e:
+					verboseOutput.append('OpenRedirect finder caught exception ' + e)
 					continue
 
 				if response.status_code == 404:
@@ -110,16 +112,17 @@ class OpenRedirect():
 							self.msTeams.title('Open redirect vulnerability found!')
 							self.msTeams.text('Found at ' + url + 'with parameter: ' + parameter + ' and payload: ' + payload)
 							self.msTeams.send()
-		return output
+
+		return output, verboseOutput
 
 
 	def process(self, url, host):
 
 		output = []
-		output.append(self.testOpenRedirect(self.session, url))
-		output = filter(None, output)
-		output = [item for sublist in output for item in sublist]
-		return output
+		verboseOutput = []
+		output, verboseOutput = self.testOpenRedirect(self.session, url)
+		
+		return output, verboseOutput
 
 	def run(self, urls):
 
@@ -130,11 +133,8 @@ class OpenRedirect():
 			if not self.helper.verifyURL(self.session, url, url, self.error_data, 'full'):
 				continue
 
-			output.append(self.process(url, url))
+			output, verboseOutput = self.process(url, url)
 
-			output = filter(None, output)
-			output = [item for sublist in output for item in sublist]
-			output = list(dict.fromkeys(output))
 			for item in output:
 				print(item)
 

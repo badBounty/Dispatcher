@@ -34,12 +34,15 @@ parser.add_argument('-u', '--url', help = "Single url with http or https",
 parser.add_argument('-o', '--output', help = "Output path (Optional)",
 					required = False,
 					action = 'store')
+parser.add_argument('-v', '--verbose', help = "Generates txt file with a complete trace of finds",
+					required = False,
+					action = 'store_true')
 
 parser.add_argument('-s', '--scope', help = "Scope for the search, ex = 'yahoo'",
 					required = False,
 					action = 'store',
 					default = 'None')
-parser.add_argument('-mm', '--monitor', help = "Enables monitor mode with minutes as input",
+parser.add_argument('-mm', '--monitor', help = "Enables monitor mode with hours as input",
 					required = False,
 					type = int,
 					action = 'store')
@@ -93,14 +96,14 @@ def generateOutput(main_df, main_error_df, txt_file_lines = []):
 		main_df.to_csv('output/'+ outputFolderName +'/'+str(timestamp)+'_'+outputFolderName+'_output.csv', index = False)
 		main_error_df.to_csv('output/'+ outputFolderName +'/'+str(timestamp)+'_'+outputFolderName+'_error.csv', index = False)
 		
-		if txt_file_lines:
+		if args.verbose and txt_file_lines:
 			with open('output/'+ outputFolderName +'/'+str(timestamp)+'_'+outputFolderName+'findings.txt', 'w') as f:
 				for item in txt_file_lines:
 					f.write("%s\n" % item)
 	else:
 		main_df.to_csv(args.output +'/'+str(timestamp)+'_'+outputFolderName+'_output.csv', index = False)
 		main_error_df.to_csv(args.output +'/'+str(timestamp)+'_'+outputFolderName+'_error.csv', index = False)
-		if txt_file_lines:
+		if args.verbose and txt_file_lines:
 			with open(args.output +'/'+str(timestamp)+'_'+outputFolderName+'findings.txt', 'w') as f:
 				for item in txt_file_lines:
 					f.write("%s\n" % item)
@@ -299,7 +302,7 @@ while running:
 			running = False
 			sys.exit(1)
 		try:
-			time.sleep(args.monitor * 60)
+			time.sleep(args.monitor * 3600)
 		except KeyboardInterrupt:
 			sys.exit(1)
 

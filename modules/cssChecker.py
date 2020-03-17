@@ -78,6 +78,7 @@ class CssChecker():
 		self.scanned_targets.append(url)
 
 		output = []
+		verboseOutput = []
 
 		#We split url and host to check, if vuln is found, if host domain != url domain
 		url_split = url.split('/')
@@ -95,36 +96,45 @@ class CssChecker():
 		except:
 			if url_split[2] != host_split[2]:
 				self.data.append(['Possible css injection', ' ' + host, ' ' + url, 'Could not access the css file'])
-				print('Possible css injection on: ' + url)
+				output.append('Possible css injection on: ' + url)
+				verboseOutput.append('Possible css injection on: ' + url + 'could not access css file')
 				if self.msTeamsActivated:
 					self.msTeams.title('Possible css injection')
 					self.msTeams.text('The css file '+ url +' could not be accessed. Host url: ' + host)
 					output('The css file '+ url +' could not be accessed. Host url: ' + host)
 					self.msTeams.send()
-			return output
+			else:
+				verboseOutput.append('Css file ' + url + ' was accessed normally')
+			return output, verboseOutput
 
 		if response.status_code != 200:
 			if url_split[2] != host_split[2]:
 				self.data.append(['Possible css injection', host, url, ' Css file did not return 200'])
-				print('CssChecker found possible injection: ' + url)
+				output.append('CssChecker found possible injection: ' + url)
+				verboseOutput.append('CssChecker found possible injection: ' + url + ' css file did not return 200')
 				if self.msTeamsActivated:
 					self.msTeams.title('Possible css injection')
 					self.msTeams.text('The css file '+ url +' did not return code 200. Host url: ' + host)
 					self.msTeams.send()
+			else:
+				verboseOutput.append('Css file ' + url + ' was accessed normally')	
+		else:
+			verboseOutput.append('Css file ' + url + ' was accessed normally')
+
+		return output, verboseOutput
 
 	def process(self, url, css):
 
 		output = []
-		output.append(self.scan_css(self.session, url, css))
-
-		output = filter(None, output)
-		output = [item for sublist in output for item in sublist]
-		return output
+		verboseOutput = []
+		output, verboseOutput = self.scan_css(self.session, url, css)
+		return output, verboseOutput
 
 	def run(self, urls):
 
 		for url in urls:
 			output = []
+			verboseOutput = []
 			print('----------------------------------------------------')
 			print('Scanning ' + url)
 
@@ -135,10 +145,11 @@ class CssChecker():
 			#print(css_found)
 
 			for css in css_found:
-				output.append(self.scan_css(self.session, url, css))
+				output_tmp, verboseOutput_tmp = self.scan_css(self.session, url, css)
+				output.append(output_tmp)
+				verboseOutput.append(verboseOutput_tmp)
 
-			output = filter(None, output)
-			output = [item for sublist in output for item in sublist]
-			output = list(dict.fromkeys(output))
+			output = self.helper.normalizeList(output)
+			verboseOutput = self.helper.normalizeList(verboseOutput)
 			for item in output:
 				print(item)
