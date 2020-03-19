@@ -44,16 +44,19 @@ class Helper():
 
 		all_matches = [(m.group(1), m.start(0), m.end(0)) for m in re.finditer(regex, response.text)]
 		js_endpoints = list()
+		#print(all_matches)
 		for match in all_matches:
 			if '.js' in list(match)[0] and 'http' in list(match)[0]:
 				js_endpoints.append(list(match)[0])
-			elif '.js' in list(match)[0] and (list(match)[0][0] == '.' or list(match)[0][0] == '/'):
+			elif '.js' in list(match)[0]:
 				split_url = url.split('/')
 				final_url = split_url[0] + '//' + split_url[2]
 				if list(match)[0][0] == '.':
 					url_with_js_endpoint = final_url + list(match)[0][1:]
-				else:
+				elif list(match)[0][0] == '/' and not list(match)[0][:2] == '//':
 					url_with_js_endpoint = final_url + list(match)[0]
+				else:
+					url_with_js_endpoint = final_url + '/' + list(match)[0]
 				js_endpoints.append(url_with_js_endpoint)
 
 		return js_endpoints
