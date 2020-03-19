@@ -80,6 +80,19 @@ class OpenRedirect():
 		if 'login' not in url:
 			return output, verboseOutput
 
+		try:
+			response = session.get(url, verify = False)
+		except Exception as e:
+			verboseOutput.append('OpenRedirect finder caught exception ' + e)
+			return output, verboseOutput
+
+		headers = response.headers
+		cookie = headers["Set-Cookie"]
+		header_update = {'Set-Cookie': cookie}
+		self.session.headers.update(header_update)
+
+		#print(self.session.headers)
+
 		#For each endpoint we try parameters and payloads
 		for parameter in self.parameters:
 			#print('Reached')
@@ -89,7 +102,7 @@ class OpenRedirect():
 				url_to_scan = url + finalPayload
 
 				try:
-					response = session.get(url_to_scan, verify = False)
+					response = self.session.get(url_to_scan, verify = False)
 				except Exception as e:
 					verboseOutput.append('OpenRedirect finder caught exception ' + e)
 					continue
