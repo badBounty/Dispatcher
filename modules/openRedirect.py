@@ -86,10 +86,10 @@ class OpenRedirect():
 			verboseOutput.append('OpenRedirect finder caught exception ' + e)
 			return output, verboseOutput
 
-		headers = response.headers
-		cookie = headers["Set-Cookie"]
-		header_update = {'Set-Cookie': cookie}
-		self.session.headers.update(header_update)
+		#headers = response.headers
+		#cookie = headers["Set-Cookie"]
+		#header_update = {'Set-Cookie': cookie}
+		#self.session.headers.update(header_update)
 
 		#print(self.session.headers)
 
