@@ -44,14 +44,14 @@ This can be done by following these steps.
 | -m  |  MODE  | - `s3bucket`: Scans code in search of s3 buckets, then tries to execute ls and cp commands.|
 |||- `token`: Searches hidden tokens in html and javascript files|
 |||- `header`: Generates a csv file with the security headers present on each url|
-|||- `css`: Checks if css files used in the page are valid (return code 200)|
+|||- `css`: Checks for possible css injections|
 |||- `openred`: Checks if the url has a open redirect vulnerability (Currently only scanning login endpoints)|
-|||- `endpoint`: Checks common endpoints that could lead to vulnerabilities (solr injection for example)|
+|||- `endpoint`: Checks common endpoints that could lead to vulnerabilities, endpoints can be found in extra/EndpointFinder_endpoints. Custom endpoints can be added as long as the existing format is mantained|
 |||- `firebase`: Searches for firebases and check whether /.json is available for unauthenticated access|
 |||- `full`: All modules at the same time|
 | -i | INPUT  | Input file that contains urls to be scanned (with http/https)  |
 | -u | Single url input  | Single url input, must contain http or https|
 | -o | Output folder  | Output folder ex: C:\Users\Name\Desktop\Folder  |
 | -mst | ALERT  | Microsoft teams webhook for channel notifications (Notifies buckets, css and openRedirects)  |
-| -mm | MONITOR  | Monitor mode, input is in hours  |
+| -mm | MONITOR  | Monitor mode, input is in hours. Ex: `-mm 6` means that, once the scan finishes, 6 hours will pass until the scan starts again automatically  |
 | -v | VERBOSE  | Creates a txt file with more information on what was (or not) found  |
