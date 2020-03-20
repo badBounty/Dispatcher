@@ -249,7 +249,11 @@ class BucketFinder():
 	def process(self, url, endpoint):
 
 		bucket_list = self.get_buckets(self.session, endpoint, url)
-		output, verboseOutput = self.check_buckets(url, endpoint, bucket_list)
+		try:
+			output, verboseOutput = self.check_buckets(url, endpoint, bucket_list)
+		except Exception as e:
+			output = []
+			verboseOutput = ['BucketFinder presented error ' + str(e) + ' at ' + url]
 
 		return output, verboseOutput
 

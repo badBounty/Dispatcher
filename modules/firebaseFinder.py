@@ -128,7 +128,11 @@ class FirebaseFinder():
 		output = []
 		verboseOutput = []
 		firebases = self.get_firebases(self.session, endpoint, url)
-		output, verboseOutput = self.check_firebase(url, url, firebases)
+		try:
+			output, verboseOutput = self.check_firebase(url, url, firebases)
+		except Exception as e:
+			output = [[]]
+			verboseOutput = [['Firebase finder presented error ' + str(e) + ' at ' + url]]
 
 		output = self.helper.normalizeList(output)
 		verboseOutput = self.helper.normalizeList(verboseOutput)

@@ -127,7 +127,11 @@ class CssChecker():
 
 		output = []
 		verboseOutput = []
-		output, verboseOutput = self.scan_css(self.session, url, css)
+		try:
+			output, verboseOutput = self.scan_css(self.session, url, css)
+		except Exception as e:
+			output = []
+			verboseOutput = ['Css checker presented error ' + str(e) + ' at ' + url]
 		return output, verboseOutput
 
 	def run(self, urls):
