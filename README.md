@@ -51,7 +51,8 @@ This can be done by following these steps.
 |||- `full`: All modules at the same time|
 | -i | INPUT  | Input file that contains urls to be scanned (with http/https)  |
 | -u | Single url input  | Single url input, must contain http or https|
-| -o | Output folder  | Output folder ex: C:\Users\Name\Desktop\Folder  |
-| -mst | ALERT  | Microsoft teams webhook for channel notifications (Notifies buckets, css and openRedirects)  |
+| -o | Output folder  | Output folder ex: `C:\Users\Name\Desktop\Folder`  |
+| -s | SCOPE  | Adds a simple scope check to the urls found while scraping. Ex: -s `google` will prevent the scanning of any url that does not contain the keyword `google`  |
+| -mst | ALERT  | Microsoft teams webhook for channel notifications (Notifies buckets, css and openRedirects). Work in progress  |
 | -mm | MONITOR  | Monitor mode, input is in hours. Ex: `-mm 6` means that, once the scan finishes, 6 hours will pass until the scan starts again automatically  |
-| -v | VERBOSE  | Creates a txt file with more information on what was (or not) found  |
+| -v | VERBOSE  | Creates a txt file with more information on what was (or not) found. This will help trace possible errors  |
