@@ -423,7 +423,7 @@ class TokenFinder():
 			verboseOutput.append('No twilio account sid found on the page')
 		if len(twilio_auth_token) > 0:
 			for value in twilio_auth_token:
-				self.data.twilio_auth_token(['Information disclosure', host , url , 'The following twilio auth token was found: ' + value])
+				self.data.append(['Information disclosure', host , url , 'The following twilio auth token was found: ' + value])
 				output.append('Token finder found twilio auth token: ' + value + ' at ' + url)
 				verboseOutput.append('Token finder found twilio auth token: ' + value + ' at ' + url)
 		else:
@@ -433,7 +433,7 @@ class TokenFinder():
 		twitter_config = re.findall('Twitter\(\{(.+?)\}\)', response.text)
 		if len(twitter_config) > 0:
 			for value in twitter_config:
-				self.data.twilio_auth_token(['Information disclosure', host , url , 'The following twitter config info was found: ' + value])
+				self.data.append(['Information disclosure', host , url , 'The following twitter config info was found: ' + value])
 				output.append('Token finder found twitter config info: ' + value + ' at ' + url)
 				verboseOutput.append('Token finder found twitter config info: ' + value + ' at ' + url)
 		else:
@@ -443,7 +443,7 @@ class TokenFinder():
 		bugsnag = re.findall('bugsnagAPI:Object\(\{(.+?)\)\}', response.text)
 		if len(bugsnag) > 0:
 			for value in bugsnag:
-				self.data.twilio_auth_token(['Information disclosure', host , url , 'The following bugsnag config info was found: ' + value])
+				self.data.append(['Information disclosure', host , url , 'The following bugsnag config info was found: ' + value])
 				output.append('Token finder found bugsnag config info: ' + value + ' at ' + url)	
 				verboseOutput.append('Token finder found bugsnag config info: ' + value + ' at ' + url)
 		else:
